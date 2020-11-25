@@ -1,0 +1,6 @@
+.stack-work/
+files/
+var/
+src/Temp.hs
+hie.yaml
+Configs/
