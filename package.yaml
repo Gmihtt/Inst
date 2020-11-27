@@ -39,6 +39,8 @@ dependencies:
 - mongoDB
 - text
 - yaml
+- transformers
+- http-client-tls
 
 library:
   source-dirs: src
