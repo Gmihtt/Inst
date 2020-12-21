@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: ce8ed00f7aa3aa3a97c6ffa46a0d4e181ef04642e78499f8b56dd2c92b8799a2
+-- hash: 41519f033156fef395d04834e6a8678a78afc5dc48c87538aa3b12dd61f7dcd4
 
 name:           Inst
 version:        0.1.0.0
@@ -30,12 +30,15 @@ library
       APP.App
       Common.Errors
       Configs.Config
+      Types.Telegram.Response
+      Types.Telegram.Update
   other-modules:
       Paths_Inst
   hs-source-dirs:
       src
   build-depends:
       aeson
+    , aeson-casing
     , base >=4.7 && <5
     , blaze-html
     , blaze-markup
@@ -69,6 +72,7 @@ executable Inst-exe
   build-depends:
       Inst
     , aeson
+    , aeson-casing
     , base
     , blaze-html
     , blaze-markup
@@ -103,6 +107,7 @@ test-suite Inst-test
   build-depends:
       Inst
     , aeson
+    , aeson-casing
     , base
     , blaze-html
     , blaze-markup

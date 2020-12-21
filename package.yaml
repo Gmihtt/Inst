@@ -41,6 +41,7 @@ dependencies:
 - yaml
 - transformers
 - http-client-tls
+- aeson-casing
 
 library:
   source-dirs: src
