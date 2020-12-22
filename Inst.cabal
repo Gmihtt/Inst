@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 41519f033156fef395d04834e6a8678a78afc5dc48c87538aa3b12dd61f7dcd4
+-- hash: 6d2bb4b35c2698fb57af2058a0653b55a80ce3cb8a08e035dbf4b1839efbe756
 
 name:           Inst
 version:        0.1.0.0
@@ -31,7 +31,11 @@ library
       Common.Errors
       Configs.Config
       Types.Telegram.Response
-      Types.Telegram.Update
+      Types.Telegram.Types.Chat
+      Types.Telegram.Types.Message
+      Types.Telegram.Types.MessageEntity
+      Types.Telegram.Types.Update
+      Types.Telegram.Types.User
   other-modules:
       Paths_Inst
   hs-source-dirs:

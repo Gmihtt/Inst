@@ -4,7 +4,7 @@
 module API.Routes where
 
 import Control.Concurrent
-import Types.Telegram.Update (Updates)
+import Types.Telegram.Types.Update (Updates)
 import Types.Telegram.Response (Response)
 import Data.Aeson
   ( FromJSON (parseJSON),
@@ -33,7 +33,7 @@ getUpdates = client resApi
 run :: T.Text -> IO ()
 run token = do
   manager' <- newManager tlsManagerSettings
-  res <- runClientM (getUpdates token $ Just 1) (mkClientEnv manager' (BaseUrl Https "api.telegram.org" 443 ""))
+  res <- runClientM (getUpdates token Nothing) (mkClientEnv manager' (BaseUrl Https "api.telegram.org" 443 ""))
   print res
   --threadDelay (6 * second)
   where

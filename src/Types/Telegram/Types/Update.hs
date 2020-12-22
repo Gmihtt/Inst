@@ -1,6 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
 
-module Types.Telegram.Update
+module Types.Telegram.Types.Update
   ( Updates,
   )
 where
@@ -12,14 +12,15 @@ import Data.Aeson
     genericParseJSON,
     genericToJSON,
   )
-import Data.Aeson.Casing (aesonPrefix, snakeCase)
 import GHC.Generics (Generic)
+
+import Types.Telegram.Types.Message (Message)
 
 type Updates = [Update]
 
 data Update = Update
   { update_id :: Int,
-    message :: Maybe Value,
+    message :: Maybe Message,
     inline_query :: Maybe Value,
     chosen_inline_result :: Maybe Value,
     callback_query :: Maybe Value
