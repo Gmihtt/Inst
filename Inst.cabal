@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 6d2bb4b35c2698fb57af2058a0653b55a80ce3cb8a08e035dbf4b1839efbe756
+-- hash: 8275759e77d0a31896c43eec4133a00d8d3c14dadcffd9ae4b41885106c6614e
 
 name:           Inst
 version:        0.1.0.0
@@ -26,12 +26,20 @@ source-repository head
 
 library
   exposed-modules:
+      API.GetUpdates
       API.Routes
+      API.SendMessage
       APP.App
       Common.Errors
+      Common.Json
       Configs.Config
+      Types.Telegram.Methods.SendMessage
       Types.Telegram.Response
       Types.Telegram.Types.Chat
+      Types.Telegram.Types.Keyboard.ForceReply
+      Types.Telegram.Types.Keyboard.KeyboardButton
+      Types.Telegram.Types.Keyboard.ReplyKeyboardHide
+      Types.Telegram.Types.Keyboard.ReplyKeyboardMarkup
       Types.Telegram.Types.Message
       Types.Telegram.Types.MessageEntity
       Types.Telegram.Types.Update

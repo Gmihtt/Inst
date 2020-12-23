@@ -1,4 +1,4 @@
 module Common.Errors where
 
-tokenError :: String -> IO () 
+tokenError :: String -> IO ()
 tokenError = print

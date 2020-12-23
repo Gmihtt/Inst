@@ -1,9 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
 
-module Types.Telegram.Types.User
-  ( User,
-  )
-where
+module Types.Telegram.Types.Keyboard.ForceReply where
 
 import Common.Json
   ( FromJSON (..),
@@ -14,17 +11,15 @@ import Common.Json
 import Data.Text (Text)
 import GHC.Generics (Generic)
 
-data User
-  = User
-      { id :: Int,
-        first_name :: Text,
-        last_name :: Maybe Text,
-        username :: Maybe Text
+data ForceReply
+  = ForceReply
+      { force_reply :: Bool,
+        selective :: Maybe Bool
       }
   deriving (Show, Eq, Generic)
 
-instance ToJSON User where
+instance ToJSON ForceReply where
   toJSON = toJson
 
-instance FromJSON User where
+instance FromJSON ForceReply where
   parseJSON = parseJson
