@@ -4,6 +4,7 @@
 module Types.Telegram.Methods.SendMessage
   ( SendMessage,
     mkSendMessage,
+    ReplyMarkup(..)
   )
 where
 
@@ -21,10 +22,11 @@ import qualified Types.Telegram.Types.Chat as Chat
 import Types.Telegram.Types.Keyboard.ForceReply (ForceReply)
 import Types.Telegram.Types.Keyboard.ReplyKeyboardHide (ReplyKeyboardHide)
 import Types.Telegram.Types.Keyboard.ReplyKeyboardMarkup (ReplyKeyboardMarkup)
+import Types.Telegram.Types.Keyboard.InlineKeyboardMarkup (InlineKeyboardMarkup)
 import qualified Types.Telegram.Types.Message as Message
 
 data ReplyMarkup
-  = InlineKeyboard Value
+  = InlineKeyboard InlineKeyboardMarkup
   | Keyboard ReplyKeyboardMarkup
   | Hide ReplyKeyboardHide
   | Force ForceReply
@@ -57,7 +59,7 @@ data SendMessage
         disable_web_page_preview :: Maybe Bool,
         disable_notification :: Maybe Bool,
         reply_to_message_id :: Maybe Int,
-        reply_markup :: Maybe Value
+        reply_markup :: Maybe InlineKeyboardMarkup
       }
   deriving (Show, Eq, Generic)
 
@@ -67,8 +69,8 @@ instance ToJSON SendMessage where
 instance FromJSON SendMessage where
   parseJSON = parseJson
 
-mkSendMessage :: Message.Message -> SendMessage
-mkSendMessage message =
+mkSendMessage :: Message.Message -> Maybe InlineKeyboardMarkup -> SendMessage
+mkSendMessage message mbMarkup =
   SendMessage
     { chat_id = Chat.chat_id $ Message.chat message,
       text = fromMaybe "" $ Message.text message,
@@ -76,5 +78,5 @@ mkSendMessage message =
       disable_web_page_preview = Nothing,
       disable_notification = Nothing,
       reply_to_message_id = Nothing,
-      reply_markup = Nothing
+      reply_markup = mbMarkup
     }

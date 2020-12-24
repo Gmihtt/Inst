@@ -1,10 +1,8 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE OverloadedStrings #-}
 
 module Types.Telegram.Response
   ( Response (..),
     Body (..),
-    getBody,
   )
 where
 
@@ -15,6 +13,7 @@ import Common.Json
     toJson,
   )
 import Data.Maybe (fromMaybe)
+import Common.Error (throwTelegramErr)
 import Data.Text (Text)
 import GHC.Generics (Generic)
 
@@ -43,9 +42,3 @@ instance (ToJSON a) => ToJSON (Response a) where
 
 instance (FromJSON a) => FromJSON (Response a) where
   parseJSON = parseJson
-
-getBody :: Response a -> Either (Int, Text) a
-getBody response =
-  if ok response
-    then maybe (Left (666, "The impossible has happened")) Right $ result response
-    else Left (fromMaybe 0 $ error_code response, fromMaybe "" $ description response)
