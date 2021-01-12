@@ -3,35 +3,23 @@
 module APP.Telegram.SendMessage where
 
 import qualified API.Routes as API
-import Data.Text (Text, pack)
-import Data.Maybe (fromMaybe)
+import qualified APP.Telegram.Buttons as Buttons
 import Common.Error (throwTelegramErr)
+import Data.Maybe (fromMaybe)
+import Data.Text (Text, pack)
 import Network.HTTP.Client (Manager)
-import Types.Telegram.Response (Response(..))
-import qualified Types.Telegram.Types.Message as Message
-import Types.Telegram.Methods.SendMessage ( mkSendMessage , ReplyMarkup(..) )
+import Types.Telegram.Methods.SendMessage (ReplyMarkup (..), mkSendMessage)
+import Types.Telegram.Response (Response (..))
 import Types.Telegram.Types.Keyboard.InlineKeyboardButton
-    ( InlineKeyboardButton, mkInlineKeyboardButton )
+  ( mkInlineKeyboardButton,
+  )
 import Types.Telegram.Types.Keyboard.InlineKeyboardMarkup
-    ( mkInlineKeyboardMarkup )
+  ( mkInlineKeyboardMarkup,
+  )
+import qualified Types.Telegram.Types.Message as Message
 
 sendMessage :: Manager -> Text -> Message.Message -> IO (Response Message.Message)
 sendMessage manager token message = do
-  let markup = Just $ mkInlineKeyboardMarkup [[login, run, stop, payment, statistics]]
+  let markup = Just $ mkInlineKeyboardMarkup [[Buttons.login, Buttons.run, Buttons.stop, Buttons.payment, Buttons.statistics]]
   let sM = mkSendMessage message markup
   API.callTelegram (API.sendMessage token sM) manager
-
-login :: InlineKeyboardButton
-login = mkInlineKeyboardButton "login" (Just "https://vk.com/thekone4no") Nothing
-
-run :: InlineKeyboardButton
-run = mkInlineKeyboardButton "run" (Just "https://vk.com/thekone4no") Nothing
-
-stop :: InlineKeyboardButton
-stop = mkInlineKeyboardButton "stop" (Just "https://vk.com/thekone4no") Nothing
-
-payment :: InlineKeyboardButton
-payment = mkInlineKeyboardButton "payment" (Just "https://vk.com/thekone4no") Nothing
-
-statistics :: InlineKeyboardButton
-statistics = mkInlineKeyboardButton "statistics" (Just "https://vk.com/thekone4no") Nothing

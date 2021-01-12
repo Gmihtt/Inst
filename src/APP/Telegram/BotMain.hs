@@ -1,12 +1,11 @@
 module APP.Telegram.BotMain where
 
-import Data.Text (Text)
-import Data.Maybe (mapMaybe)
-import qualified Types.Telegram.Types.Update as Update
-import APP.Telegram.SendMessage (sendMessage)
 import APP.Telegram.GetUpdates (getUpdates)
+import APP.Telegram.SendMessage (sendMessage)
+import Data.Maybe (mapMaybe)
+import Data.Text (Text)
 import Network.HTTP.Client (Manager)
-
+import qualified Types.Telegram.Types.Update as Update
 
 run :: Maybe Integer -> Manager -> Text -> IO ()
 run updateId manager token = do

@@ -5,6 +5,7 @@ module API.Routes where
 
 import qualified API.GetUpdates as ApiGetUpdates
 import qualified API.SendMessage as ApiSendMessage
+import Common.Error (throwTelegramErr)
 import Data.Aeson
   ( FromJSON (parseJSON),
     ToJSON (toJSON),
@@ -17,7 +18,6 @@ import Data.Text (Text, pack)
 import Network.HTTP.Client (Manager)
 import Servant
 import Servant.Client hiding (Response)
-import Common.Error (throwTelegramErr)
 import qualified Types.Telegram.Methods.SendMessage as SendMessage
 import Types.Telegram.Response (Response)
 import qualified Types.Telegram.Types.Message as Message

@@ -35,13 +35,14 @@ dependencies:
 - servant-client
 - http-client
 - filepath
-- hedis
-- mongoDB
 - text
 - yaml
 - transformers
 - http-client-tls
 - aeson-casing
+- bson
+- hedis
+- mongoDB
 
 library:
   source-dirs: src

@@ -4,7 +4,7 @@
 module Types.Telegram.Methods.SendMessage
   ( SendMessage,
     mkSendMessage,
-    ReplyMarkup(..)
+    ReplyMarkup (..),
   )
 where
 
@@ -20,9 +20,9 @@ import Data.Text (Text)
 import GHC.Generics (Generic)
 import qualified Types.Telegram.Types.Chat as Chat
 import Types.Telegram.Types.Keyboard.ForceReply (ForceReply)
+import Types.Telegram.Types.Keyboard.InlineKeyboardMarkup (InlineKeyboardMarkup)
 import Types.Telegram.Types.Keyboard.ReplyKeyboardHide (ReplyKeyboardHide)
 import Types.Telegram.Types.Keyboard.ReplyKeyboardMarkup (ReplyKeyboardMarkup)
-import Types.Telegram.Types.Keyboard.InlineKeyboardMarkup (InlineKeyboardMarkup)
 import qualified Types.Telegram.Types.Message as Message
 
 data ReplyMarkup
@@ -73,7 +73,7 @@ mkSendMessage :: Message.Message -> Maybe InlineKeyboardMarkup -> SendMessage
 mkSendMessage message mbMarkup =
   SendMessage
     { chat_id = Chat.chat_id $ Message.chat message,
-      text = fromMaybe "" $ Message.text message,
+      text = fromMaybe "I don't understand:(" $ Message.text message,
       parse_mode = Nothing,
       disable_web_page_preview = Nothing,
       disable_notification = Nothing,

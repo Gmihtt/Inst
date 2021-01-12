@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 75b922c44b4a70964d93d0543ff56a88c64270d4d82067b5cb4bdbab6740e24d
+-- hash: 21841ffb38730671c22f084c719ed07bac1317ddc3e3cf3d04673c4641232986
 
 name:           Inst
 version:        0.1.0.0
@@ -31,15 +31,23 @@ library
       API.SendMessage
       APP.App
       APP.Telegram.BotMain
+      APP.Telegram.Buttons
       APP.Telegram.GetUpdates
+      APP.Telegram.MakeMassage
       APP.Telegram.SendMessage
       Common.Error
       Common.Exception.ConfigError
       Common.Exception.TelegramError
       Common.Json
       Configs.Config
+      MongoDB.Query
+      MongoDB.Transforms.InstAccount
+      MongoDB.Transforms.TgUser
+      Types.Domain.InstAccount
+      Types.Domain.TgUser
       Types.Telegram.Methods.SendMessage
       Types.Telegram.Response
+      Types.Telegram.Types.CallbackQuery
       Types.Telegram.Types.Chat
       Types.Telegram.Types.Keyboard.ForceReply
       Types.Telegram.Types.Keyboard.InlineKeyboardButton
@@ -61,6 +69,7 @@ library
     , base >=4.7 && <5
     , blaze-html
     , blaze-markup
+    , bson
     , bytestring
     , directory
     , filepath
@@ -95,6 +104,7 @@ executable Inst-exe
     , base
     , blaze-html
     , blaze-markup
+    , bson
     , bytestring
     , directory
     , filepath
@@ -130,6 +140,7 @@ test-suite Inst-test
     , base
     , blaze-html
     , blaze-markup
+    , bson
     , bytestring
     , directory
     , filepath

@@ -1,7 +1,7 @@
-module Common.Exception.ConfigError (ConfigError(..)) where
+module Common.Exception.ConfigError (ConfigError (..)) where
 
-import Control.Exception ( Exception )
+import Control.Exception (Exception)
 
-newtype ConfigError = ConfigError String deriving Show
+newtype ConfigError = ConfigError String deriving (Show)
 
 instance Exception ConfigError

@@ -1,13 +1,16 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module APP.Telegram.GetUpdates (getUpdates) where
+module APP.Telegram.GetUpdates
+  ( getUpdates,
+  )
+where
 
 import qualified API.Routes as API
-import Data.Text (Text, pack)
-import Data.Maybe (fromMaybe)
 import Common.Error (throwTelegramErr)
+import Data.Maybe (fromMaybe)
+import Data.Text (Text, pack)
 import Network.HTTP.Client (Manager)
-import Types.Telegram.Response (Response(..))
+import Types.Telegram.Response (Response (..))
 import qualified Types.Telegram.Types.Update as Update
 
 getUpdates :: Maybe Integer -> Manager -> Text -> IO Update.Updates

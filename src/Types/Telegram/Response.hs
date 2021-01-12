@@ -6,6 +6,7 @@ module Types.Telegram.Response
   )
 where
 
+import Common.Error (throwTelegramErr)
 import Common.Json
   ( FromJSON (..),
     ToJSON (..),
@@ -13,7 +14,6 @@ import Common.Json
     toJson,
   )
 import Data.Maybe (fromMaybe)
-import Common.Error (throwTelegramErr)
 import Data.Text (Text)
 import GHC.Generics (Generic)
 
