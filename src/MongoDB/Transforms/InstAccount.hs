@@ -20,12 +20,10 @@ import Data.Bson ((!?))
 import Types.Domain.InstAccount
   ( InstAccount (..),
   )
-import Prelude hiding (id)
-
+  
 mkDocByInstAcc :: InstAccount -> Document
 mkDocByInstAcc instAcc =
-  [ "id" =: String (pack . show $ id instAcc),
-    "login" =: String (login instAcc),
+  [ "login" =: String (login instAcc),
     "password" =: String (password instAcc),
     "subscription" =: Bool (subscription instAcc)
   ]
@@ -35,11 +33,10 @@ mkDocsByInstAccs = map mkDocByInstAcc
 
 mkInstAccByDoc :: Document -> Maybe InstAccount
 mkInstAccByDoc doc = do
-  id <- doc !? "id"
   login <- doc !? "login"
   password <- doc !? "password"
   subscription <- doc !? "subscription"
-  pure InstAccount { id = read (unpack id),
+  pure InstAccount { 
         login = login,
         password = password,
         subscription = subscription

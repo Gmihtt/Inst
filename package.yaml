@@ -43,6 +43,7 @@ dependencies:
 - bson
 - hedis
 - mongoDB
+- utf8-string
 
 library:
   source-dirs: src

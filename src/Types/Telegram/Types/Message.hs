@@ -2,6 +2,7 @@
 
 module Types.Telegram.Types.Message
   ( Message (..),
+    mkMessage
   )
 where
 
@@ -60,3 +61,8 @@ instance ToJSON Message where
 
 instance FromJSON Message where
   parseJSON = parseJson
+
+mkMessage :: Text -> Message -> Message
+mkMessage text msg = msg {
+  text = Just text
+}

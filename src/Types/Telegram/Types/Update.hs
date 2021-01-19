@@ -15,6 +15,7 @@ import Common.Json
   )
 import GHC.Generics (Generic)
 import Types.Telegram.Types.Message (Message)
+import  Types.Telegram.Types.CallbackQuery (CallbackQuery)
 
 type Updates = [Update]
 
@@ -24,7 +25,7 @@ data Update
         message :: Maybe Message,
         inline_query :: Maybe Value,
         chosen_inline_result :: Maybe Value,
-        callback_query :: Maybe Value
+        callback_query :: Maybe CallbackQuery
       }
   deriving (Show, Eq, Generic)
 

@@ -2,9 +2,12 @@ module APP.App (app) where
 
 import APP.Telegram.BotMain (run)
 import Common.Error (Error (..))
-import Configs.Config (getToken)
+import Common.Flow (mkEnv)
+import Control.Monad.Trans.Reader (runReaderT)
+import Configs.Config (getToken, getDataBase)
 import Control.Exception (Exception, SomeException, catch)
-import Database.MongoDB ( connect, host, close )
+import qualified Database.MongoDB as MongoDB
+import qualified Database.Redis as Redis
 import Control.Monad.Trans.Except (runExceptT)
 import Network.HTTP.Client (newManager)
 import Network.HTTP.Client.TLS (tlsManagerSettings)
@@ -15,11 +18,16 @@ app =
     ( do
         manager <- newManager tlsManagerSettings
         token <- getToken
-        pipe <- connect (host "127.0.0.1")
-        run Nothing manager token
-        close pipe
+        pipe <- MongoDB.connect (MongoDB.host "127.0.0.1")
+        conn <- Redis.checkedConnect Redis.defaultConnectInfo
+        mongoDB <- getDataBase
+        let env = mkEnv manager token pipe conn mongoDB
+        runReaderT (run Nothing) env
+        MongoDB.close pipe
     )
     handler
   where
     handler :: Error -> IO ()
-    handler = print
+    handler err = do
+      print err
+      print "hello"
