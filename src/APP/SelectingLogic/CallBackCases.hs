@@ -11,15 +11,16 @@ import qualified Types.Telegram.Types.CallbackQuery as CallbackQuery
 import qualified Types.Domain.Status.LoginStatus as LoginStatus
 import qualified Types.Telegram.Types.User as User
 import qualified Types.Telegram.Types.Message as Message
+import qualified APP.Telegram.Messages.FlowMessages as Messages
 import APP.Telegram.SendMessage ( sendMessage )
 
 execute :: CallbackQuery.CallbackQuery -> Message -> Flow (Response Message)
 execute callBack msg =
   case CallbackQuery.callback_data callBack of
     "login" -> Login.execute msg LoginStatus.Free userId
-    "run" -> undefined
-    "stop" -> undefined
-    "payment" -> undefined
-    "statistics" -> undefined
+    "run" -> Messages.baseMenu msg
+    "stop" -> Messages.baseMenu msg
+    "payment" -> Messages.baseMenu msg
+    "statistics" -> Messages.baseMenu msg
   where
     userId = User.id $ CallbackQuery.callback_from callBack
