@@ -1,6 +1,14 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module APP.Telegram.Messages.Messages where
+module APP.Telegram.Messages.MessagesBody (
+  baseMenu,
+  login,
+  success,
+  failAuth,
+  emptyUser,
+  repeatLogging,
+  oldMsg,
+) where
 
 import Data.Text(Text)
 import Types.Telegram.Types.Message (Message, mkMessage)
@@ -22,8 +30,8 @@ success :: Message -> Message
 success = 
   mkMessage "Успешно"
 
-fail :: Message -> Message 
-fail = 
+failAuth :: Message -> Message 
+failAuth = 
   mkMessage "Не удалось получить доступ к вашему инстаграмм аккаунту,возможно вы ввели некоректные данные"
 
 emptyUser :: Message -> Message 

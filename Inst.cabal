@@ -31,10 +31,13 @@ library
       API.Routes
       API.SendMessage
       APP.App
+      APP.SelectingLogic.CallBackCases
+      APP.SelectingLogic.UsualCases
       APP.Telegram.Login.Login
       APP.Telegram.BotMain
       APP.Telegram.Buttons.BaseMenu
-      APP.Telegram.Messages.Messages
+      APP.Telegram.Messages.FlowMessages
+      APP.Telegram.Messages.MessagesBody
       APP.Telegram.ParseUpdate
       APP.Telegram.GetUpdates
       APP.Telegram.SendMessage
@@ -45,6 +48,7 @@ library
       Common.Exception.ConfigError
       Common.Exception.TelegramError
       Common.Json
+      Common.Transforms
       Configs.Config
       Redis.Queries
       MongoDB.Queries
@@ -53,6 +57,7 @@ library
       Types.Domain.InstAccount
       Types.Domain.TgUser
       Types.Domain.UserStatus
+      Types.Domain.Status.LoginStatus
       Types.Telegram.Methods.SendMessage
       Types.Telegram.Response
       Types.Telegram.Types.CallbackQuery
