@@ -9,6 +9,7 @@ import qualified Types.Telegram.Types.User as User
 import Control.Monad.IO.Class ( MonadIO(liftIO) ) 
 import qualified Types.Domain.TgUser as TgUser
 import qualified Types.Domain.UserStatus as UserStatus
+import qualified Types.Domain.Scripts.Auth as Scripts
 import qualified Types.Domain.Status.LoginStatus as LoginStatus
 import qualified MongoDB.Transforms.InstAccount as Transforms
 import qualified MongoDB.Transforms.TgUser as Transforms
@@ -60,7 +61,7 @@ checkAccStatus msg userId accLogin accPassword = do
       mbAccStatus <- Redis.getValue accLogin
       pure $ maybe InstAccount.NewAccount InstAccount.mkAccountStatus mbAccStatus
 
-runScript :: String -> String -> Flow Bool
+runScript :: String -> String -> Flow Bool--Scripts.Response
 runScript accLogin accPassword = pure True
 
 saveAccAndUser :: String -> String -> Int -> Flow ()
@@ -69,7 +70,7 @@ saveAccAndUser accLogin accPassword userId = do
   Redis.putValue accLogin InstAccount.Logged
   let uId = T.pack $ show userId
   instAccs <- Mongo.findInstAccsByTgId uId "accounts"
-  let newInstAcc = InstAccount.mkInstAccount (T.pack accLogin) (T.pack accPassword) False
+  let newInstAcc = InstAccount.mkInstAccount "" (T.pack accLogin) (T.pack accPassword) False
   let tgUser = TgUser.mkTgUser uId (newInstAcc : instAccs)
   Mongo.updateInstAccs uId (Transforms.mkDocByTgUser tgUser) "accounts"
 

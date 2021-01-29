@@ -8,17 +8,17 @@ import Database.MongoDB
 import Control.Monad.IO.Class (MonadIO)
 import Control.Monad.Trans.Reader (ReaderT, ask)
 import Data.Text (Text)
-import Common.Flow (Flow, Environment)
-import qualified Common.Flow as Env
+import Common.Flow (Flow)
+import qualified Common.Environment as Environment
 import MongoDB.Transforms.InstAccount ( mkInstAccsByDocs )
 import Types.Domain.InstAccount ( InstAccount )
 import Prelude hiding (id)
 
-callDB :: MonadIO m => Action (ReaderT Environment m) b -> ReaderT Environment m b
+callDB :: MonadIO m => Action (ReaderT Environment.Environment m) b -> ReaderT Environment.Environment m b
 callDB action = do
   env <- ask
-  let pipe = Env.pipe env
-  let db = Env.mongoDB env
+  let pipe = Environment.pipe env
+  let db = Environment.mongoDB env
   access pipe master db action
 
 insertDB :: Document -> Collection -> Flow ()

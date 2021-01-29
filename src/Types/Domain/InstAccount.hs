@@ -22,16 +22,18 @@ type NumOfInstAccounts = Int
 
 data InstAccount
   = InstAccount
-      { login :: Text,
+      { id :: Text,
+        login :: Text,
         password :: Text,
         subscription :: Bool
       }
   deriving (Show, Eq, Generic)
 
-mkInstAccount :: Text -> Text -> Bool -> InstAccount
-mkInstAccount login password subs =
+mkInstAccount :: Text -> Text -> Text -> Bool -> InstAccount
+mkInstAccount id login password subs =
   InstAccount
-    { login = login,
+    { id = id,
+      login = login,
       password = password,
       subscription = subs
     }

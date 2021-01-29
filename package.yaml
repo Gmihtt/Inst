@@ -44,6 +44,7 @@ dependencies:
 - hedis
 - mongoDB
 - utf8-string
+- process
 
 library:
   source-dirs: src

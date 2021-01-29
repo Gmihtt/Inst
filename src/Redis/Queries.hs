@@ -2,7 +2,7 @@ module Redis.Queries (getValue, putValue) where
 
 import Common.Flow (Flow)
 import Control.Monad (void)
-import qualified Common.Flow as Environment
+import qualified Common.Environment as Environment
 import Control.Monad.Trans.Reader (ask)
 import qualified Database.Redis as Redis
 import qualified Common.Transforms as Common
