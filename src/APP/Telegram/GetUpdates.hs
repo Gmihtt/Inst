@@ -18,7 +18,7 @@ import Control.Concurrent (forkIO)
 import Control.Concurrent.Chan ( newChan, writeList2Chan, Chan )
 import Types.Domain.TgUpdates (ListOfUpdates)
 import Network.HTTP.Client (Manager)
-import Types.Telegram.Response (Response (..))
+import qualified Types.Telegram.Response as Response
 import qualified Types.Telegram.Types.Update as Update
 
 execute :: Maybe Integer -> Environment.Environment -> IO ListOfUpdates
@@ -43,11 +43,15 @@ getUpdates updateId listOfUpdates = do
     second = 1000000
 
 
-getBody :: Response a -> Flow a
+getBody :: Response.Response a -> Flow a
 getBody response =
-  if ok response
-    then maybe (throwTgErr "Function: getBody. When try to get 'result' of 'response'") pure $ result response
+  liftIO $ if Response.ok response
+    then 
+      maybe 
+        (throwTgErr "Function: getBody. When try to get 'result' of 'response'") 
+        pure
+        (Response.result response)
     else
       throwTelegramErr
-        (error_code response)
-        (fromMaybe "Function: getBody. When try to get 'description' of 'response'" $ description response)
+        (Response.error_code response)
+        (fromMaybe "Function: getBody. When try to get 'description' of 'response'" $ Response.description response)

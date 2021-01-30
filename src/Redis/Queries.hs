@@ -24,4 +24,4 @@ putValue key val = do
   env <- ask
   let conn = Environment.conn env
   status <- liftIO . Redis.runRedis conn $ Redis.set (Common.packBs key) (Common.packBs val)
-  either (throwRedisErr . show) pure (void status)
+  liftIO $ either (throwRedisErr . show) pure (void status)

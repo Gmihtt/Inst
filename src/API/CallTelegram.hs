@@ -14,4 +14,4 @@ callTelegram method = do
   env <- ask
   let eManager = Environment.manager env
   res <- liftIO $ runClientM method (mkClientEnv eManager (BaseUrl Https "api.telegram.org" 443 ""))
-  either (throwTelegramErr Nothing . pack . show) pure res
+  liftIO $ either (throwTelegramErr Nothing . pack . show) pure res

@@ -36,5 +36,4 @@ parseUpdate update = do
     mbMsg = Update.message update
 
 getMsg :: Maybe Message -> Flow Message
-getMsg =
-  maybe (throwTgErr "Function: parseUpdate. In 'update' field 'message' is Nothing") pure
+getMsg mbMsg = liftIO $ maybe (throwTgErr "Function: parseUpdate. In 'update' field 'message' is Nothing") pure mbMsg
