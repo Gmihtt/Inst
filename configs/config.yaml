@@ -1,2 +1,4 @@
 token : 1436919530:AAF-dK8XXr4id5i4N_k_83_AY2pKDA9c5rE
 mongoDB : "instagram"
+path_login : ./src/APP/ScriptsLogic/Scripts/inst/login.js
+path_stat : ./src/APP/ScriptsLogic/Scripts/inst/index.js

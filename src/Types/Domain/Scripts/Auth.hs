@@ -15,7 +15,8 @@ import GHC.Generics (Generic)
 
 data Request
   = Request
-      { username :: Text,
+      {
+        username :: Text,
         password :: Text
       }
   deriving (Show, Eq, Generic)
@@ -35,7 +36,7 @@ instance FromJSON Request where
 
 data Response
   = Response
-      { response_id :: Maybe Text,
+      { response_inst_id :: Maybe Text,
         response_username :: Text,
         response_status :: Bool,
         response_errorMessage :: Maybe Text

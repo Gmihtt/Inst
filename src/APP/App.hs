@@ -3,7 +3,7 @@ module APP.App (app) where
 import APP.Telegram.BotMain (run)
 import Common.Error (Error (..))
 import Common.Environment (mkEnv)
-import Configs.Config (getToken, getDataBase)
+import qualified Configs.Config as Config
 import Control.Exception (Exception, SomeException, catch)
 import qualified Database.MongoDB as MongoDB
 import qualified Database.Redis as Redis
@@ -17,12 +17,14 @@ app =
   catch
     ( do
         manager <- newManager tlsManagerSettings
-        token <- getToken
+        token <- Config.getToken
         pipe <- MongoDB.connect (MongoDB.host "127.0.0.1")
-        --processLogin <- System.createProcess_ "login script" (System.proc "node ./src/APP/ScriptsLogic/Scripts/inst/login.js" [])
-        --processStat <- System.createProcess_ "statistics script" (System.proc "node ./src/APP/ScriptsLogic/Scripts/inst/index.js" [])
+        pLogin <- Config.getLoginPath
+        processLogin <- System.createProcess_ "login script" (System.proc "node" [pLogin])
+        pStat <- Config.getStatPath
+        processStat <- System.createProcess_ "statistics script" (System.proc "node" [pStat])
         conn <- Redis.checkedConnect Redis.defaultConnectInfo
-        mongoDB <- getDataBase
+        mongoDB <- Config.getDataBase
         let env = mkEnv manager token pipe conn mongoDB
         run Nothing env
         MongoDB.close pipe

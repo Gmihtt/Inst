@@ -13,7 +13,7 @@ import GHC.Generics (Generic)
 
 newtype Request
   = Request
-      { id :: Text
+      { inst_id :: Text
       }
   deriving (Show, Eq, Generic)
 

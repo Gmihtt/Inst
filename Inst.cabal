@@ -33,6 +33,7 @@ library
       APP.App
       APP.SelectingLogic.CallBackCases
       APP.SelectingLogic.UsualCases
+      APP.ScriptsLogic.RunSocket
       APP.Telegram.Login.Login
       APP.Telegram.BotMain
       APP.Telegram.Buttons.BaseMenu
@@ -107,6 +108,9 @@ library
     , yaml
     , utf8-string
     , process
+    , websockets
+    , connection
+    , network
   default-language: Haskell2010
 
 executable Inst-exe
