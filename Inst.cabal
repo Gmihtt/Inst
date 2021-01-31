@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: aab9d5e23864ceac3ddd7f1d460c2393f4eb800a6c7a3731579e945c05465c76
+-- hash: 2b46433346cca5b4761df81ab852cacbea66fd3e62b2d38fa745e1b2a821b5a0
 
 name:           Inst
 version:        0.1.0.0
@@ -31,10 +31,12 @@ library
       API.Routes
       API.SendMessage
       APP.App
-      APP.ScriptsLogic.Auth
-      APP.ScriptsLogic.Socket
-      APP.ScriptsLogic.Statistics
-      APP.ScriptsLogic.Stream
+      APP.Scripts.Auth
+      APP.Scripts.Scripts
+      APP.Scripts.Sockets.API
+      APP.Scripts.Sockets.SocketApp
+      APP.Scripts.Sockets.Stream
+      APP.Scripts.Statistics
       APP.SelectingLogic.CallBackCases
       APP.SelectingLogic.UsualCases
       APP.Telegram.BotMain
@@ -52,6 +54,7 @@ library
       Common.Exception.RedisError
       Common.Exception.SocketError
       Common.Exception.TelegramError
+      Common.Exception.ThreadsError
       Common.Flow
       Common.Json
       Common.Transforms
@@ -63,9 +66,12 @@ library
       Types.Domain.InstAccount
       Types.Domain.Scripts.Auth
       Types.Domain.Scripts.Statistics
+      Types.Domain.Socket
+      Types.Domain.Stream
       Types.Domain.Status.LoginStatus
       Types.Domain.TgUpdates
       Types.Domain.TgUser
+      Types.Domain.Threads
       Types.Domain.UserStatus
       Types.Telegram.Methods.SendMessage
       Types.Telegram.Response
@@ -93,6 +99,7 @@ library
     , blaze-markup
     , bson
     , bytestring
+    , ctrie
     , directory
     , filepath
     , hedis
@@ -113,6 +120,7 @@ library
     , warp
     , websockets
     , yaml
+    , network
   default-language: Haskell2010
 
 executable Inst-exe
@@ -131,6 +139,7 @@ executable Inst-exe
     , blaze-markup
     , bson
     , bytestring
+    , ctrie
     , directory
     , filepath
     , hedis
@@ -170,6 +179,7 @@ test-suite Inst-test
     , blaze-markup
     , bson
     , bytestring
+    , ctrie
     , directory
     , filepath
     , hedis

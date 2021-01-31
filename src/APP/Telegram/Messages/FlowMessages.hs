@@ -10,6 +10,7 @@ module APP.Telegram.Messages.FlowMessages
   ) where
 
 import Common.Flow (Flow)
+import Data.Text (empty)
 import Types.Telegram.Response (Response (..))
 import qualified APP.Telegram.Messages.MessagesBody as Messages
 import Types.Telegram.Types.Message (Message)
@@ -31,7 +32,7 @@ msgForEmptyUser msg = do
 
 failAuthMsg :: Message -> Flow (Response Message)
 failAuthMsg msg = do
-  sendMessage Nothing (Messages.failAuth msg)
+  sendMessage Nothing (Messages.failAuth empty msg)
   baseMenu msg
 
 loginMsg :: Message -> Flow (Response Message)

@@ -46,6 +46,8 @@ dependencies:
 - utf8-string
 - process
 - websockets
+- ctrie
+- network
 
 library:
   source-dirs: src

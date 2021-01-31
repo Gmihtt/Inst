@@ -30,9 +30,9 @@ success :: Message -> Message
 success = 
   mkMessage "Успешно"
 
-failAuth :: Message -> Message 
-failAuth = 
-  mkMessage "Не удалось получить доступ к вашему инстаграмм аккаунту,возможно вы ввели некоректные данные"
+failAuth :: Text -> Message -> Message 
+failAuth text  = 
+  mkMessage ("Не удалось получить доступ к вашему инстаграмм аккаунту. " <> text)
 
 emptyUser :: Message -> Message 
 emptyUser = 

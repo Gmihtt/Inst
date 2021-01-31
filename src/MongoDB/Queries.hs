@@ -32,7 +32,7 @@ getSize collection = callDB (count (select [] collection))
 
 updateInstAccs :: Text -> Document -> Collection -> Flow ()
 updateInstAccs tg_id val collection = 
-  callDB (replace (select ["id" =: tg_id] collection) val)
+  callDB (upsert (select ["id" =: tg_id] collection) val)
 
 findInstAccsByTgId :: Text -> Collection -> Flow [InstAccount]
 findInstAccsByTgId tg_id collection = do

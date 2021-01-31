@@ -11,6 +11,7 @@ import Control.Monad.Trans.Reader (runReaderT)
 import Control.Concurrent.Chan (getChanContents)
 import Network.HTTP.Client (Manager)
 import qualified Types.Telegram.Types.Update as Update
+import qualified APP.Scripts.Auth as ScriptsAuth
 
 run :: Maybe Integer -> Environment.Environment -> IO ()
 run updateId env = do

@@ -15,6 +15,7 @@ import Control.Concurrent (forkIO)
 import Control.Concurrent.Chan (readChan)
 import Types.Domain.TgUpdates (ListOfUpdates)
 import Control.Monad.Trans.Reader (runReaderT)
+import qualified APP.Scripts.Scripts as Scripts
 import qualified Types.Telegram.Types.Update as Update
 import qualified APP.SelectingLogic.UsualCases as UsualCases
 import qualified APP.Telegram.Messages.FlowMessages as Messages

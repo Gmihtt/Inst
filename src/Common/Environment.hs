@@ -9,6 +9,7 @@ import Data.Text (Text)
 import Database.MongoDB.Connection (Pipe)
 import Database.Redis (Connection)
 import Network.HTTP.Client (Manager)
+import qualified Types.Domain.Threads as Threads
 
 data Environment
   = Environment
@@ -16,15 +17,19 @@ data Environment
         token :: Text,
         pipe :: Pipe,
         conn :: Connection,
-        mongoDB :: Text
+        mongoDB :: Text,
+        authThreads :: Threads.ThreadsMap ,
+        statThreads :: Threads.ThreadsMap
       }
 
-mkEnv :: Manager -> Text -> Pipe -> Connection -> Text -> Environment
-mkEnv manager token pipe conn mongoDB =
+mkEnv :: Manager -> Text -> Pipe -> Connection -> Text -> Threads.ThreadsMap -> Threads.ThreadsMap -> Environment
+mkEnv manager token pipe conn mongoDB authThreads statThreads =
   Environment
     { manager = manager,
       token = token,
       pipe = pipe,
       conn = conn,
-      mongoDB = mongoDB
+      mongoDB = mongoDB,
+      authThreads = authThreads,
+      statThreads = statThreads
     }

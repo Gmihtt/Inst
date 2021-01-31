@@ -6,6 +6,7 @@ module Common.Error
     throwTelegramErr,
     throwTgErr,
     throwSocketErr,
+    throwThreadsError,
   )
 where
 
@@ -14,6 +15,7 @@ import Common.Exception.TelegramError as Error
 import Common.Exception.RedisError as Error
 import Common.Exception.MongoError as Error
 import Common.Exception.SocketError as Error
+import Common.Exception.ThreadsError as Error
 import Control.Monad.IO.Class (liftIO)
 import Control.Exception (Exception, throwIO)
 import Data.Maybe (fromMaybe)
@@ -25,6 +27,7 @@ data Error
   | Redis Error.RedisError
   | Mongo Error.MongoError
   | Socket Error.SocketError
+  | Threads Error.ThreadsError
   deriving (Show)
 
 instance Exception Error
@@ -40,6 +43,9 @@ throwMongoErr err = throwIO . Mongo $ Error.MongoError err
 
 throwSocketErr :: String -> IO a
 throwSocketErr err = throwIO . Socket $ Error.SocketError err
+
+throwThreadsError :: String -> IO a
+throwThreadsError err = throwIO . Threads $ Error.ThreadsError err
 
 throwTgErr :: Text -> IO a
 throwTgErr = throwTelegramErr Nothing
