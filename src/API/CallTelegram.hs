@@ -1,12 +1,12 @@
 module API.CallTelegram (callTelegram) where
 
-import Common.Error (throwTelegramErr)
-import Control.Monad.Trans.Reader (ask)
-import Common.Flow (Flow)
 import qualified Common.Environment as Environment
+import Common.Error (throwTelegramErr)
+import Common.Flow (Flow)
 import Control.Monad.IO.Class (liftIO)
-import Network.HTTP.Client (Manager)
+import Control.Monad.Trans.Reader (ask)
 import Data.Text (pack)
+import Network.HTTP.Client (Manager)
 import Servant.Client
 
 callTelegram :: ClientM a -> Flow a

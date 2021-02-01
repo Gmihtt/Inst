@@ -1,21 +1,21 @@
 module APP.Telegram.Messages.FlowMessages
-  (
-    baseMenu,
+  ( baseMenu,
     oldMsg,
     msgForEmptyUser,
     failAuthMsg,
     loginMsg,
     successAuthMsg,
     repeatLoggingMsg,
-  ) where
+  )
+where
 
+import APP.Telegram.Buttons.BaseMenu (baseKeyboard)
+import qualified APP.Telegram.Messages.MessagesBody as Messages
+import APP.Telegram.SendMessage (sendMessage)
 import Common.Flow (Flow)
 import Data.Text (empty)
 import Types.Telegram.Response (Response (..))
-import qualified APP.Telegram.Messages.MessagesBody as Messages
 import Types.Telegram.Types.Message (Message)
-import APP.Telegram.SendMessage ( sendMessage )
-import APP.Telegram.Buttons.BaseMenu (baseKeyboard )
 
 baseMenu :: Message -> Flow (Response Message)
 baseMenu msg = sendMessage (Just baseKeyboard) (Messages.baseMenu msg)

@@ -1,4 +1,4 @@
-module Common.Exception.SocketError(SocketError(..)) where
+module Common.Exception.SocketError (SocketError (..)) where
 
 import Control.Exception (Exception)
 

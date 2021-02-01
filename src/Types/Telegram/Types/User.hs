@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 
 module Types.Telegram.Types.User
-  ( User(..)
+  ( User (..),
   )
 where
 

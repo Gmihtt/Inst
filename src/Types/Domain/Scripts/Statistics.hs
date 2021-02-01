@@ -14,9 +14,11 @@ import Common.Json
 import Data.Text (Text)
 import GHC.Generics (Generic)
 
-data Action 
-  = Start | Stop 
+data Action
+  = Start
+  | Stop
   deriving (Show, Eq, Generic)
+
 instance ToJSON Action where
   toJSON = toJson
 
@@ -27,7 +29,7 @@ data Request
   = Request
       { inst_id :: Text,
         action :: Action,
-        timeout :: Maybe Integer 
+        timeout :: Maybe Integer
       }
   deriving (Show, Eq, Generic)
 

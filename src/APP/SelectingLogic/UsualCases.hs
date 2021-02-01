@@ -1,15 +1,15 @@
 module APP.SelectingLogic.UsualCases where
 
-import Common.Flow (Flow)
-import Types.Telegram.Response (Response (..))
-import qualified APP.Telegram.Messages.FlowMessages as Messages
-import Types.Telegram.Types.Message (Message)
 import qualified APP.Telegram.Login.Login as Login
+import qualified APP.Telegram.Messages.FlowMessages as Messages
+import APP.Telegram.SendMessage (sendMessage)
+import Common.Flow (Flow)
 import qualified Redis.Queries as Redis
 import qualified Types.Domain.UserStatus as UserStatus
-import qualified Types.Telegram.Types.User as User
+import Types.Telegram.Response (Response (..))
+import Types.Telegram.Types.Message (Message)
 import qualified Types.Telegram.Types.Message as Message
-import APP.Telegram.SendMessage ( sendMessage )
+import qualified Types.Telegram.Types.User as User
 
 execute :: Message -> Flow (Response Message)
 execute msg = do
@@ -23,5 +23,5 @@ checkStatus msg userId = do
   maybe (Messages.baseMenu msg) (choseAction msg userId . UserStatus.mkUserStatus) status
 
 choseAction :: Message -> Int -> UserStatus.UserStatus -> Flow (Response Message)
-choseAction msg userId (UserStatus.Login status ) = Login.execute msg status userId
+choseAction msg userId (UserStatus.Login status) = Login.execute msg status userId
 choseAction msg _ _ = Messages.baseMenu msg

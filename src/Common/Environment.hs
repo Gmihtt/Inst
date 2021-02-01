@@ -18,7 +18,7 @@ data Environment
         pipe :: Pipe,
         conn :: Connection,
         mongoDB :: Text,
-        authThreads :: Threads.ThreadsMap ,
+        authThreads :: Threads.ThreadsMap,
         statThreads :: Threads.ThreadsMap
       }
 

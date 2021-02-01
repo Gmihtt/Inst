@@ -1,6 +1,6 @@
 module Types.Domain.Status.LoginStatus where
 
-data LoginStatus 
+data LoginStatus
   = Free
   | WaitAuth
   deriving (Show)

@@ -1,19 +1,21 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module APP.Telegram.Buttons.BaseMenu (baseKeyboard) where
+module APP.Telegram.Buttons.BaseMenu
+  ( baseKeyboard,
+  )
+where
 
 import Types.Telegram.Types.Keyboard.InlineKeyboardButton
   ( InlineKeyboardButton,
     mkInlineKeyboardButton,
   )
-
 import Types.Telegram.Types.Keyboard.InlineKeyboardMarkup
   ( InlineKeyboardMarkup,
     mkInlineKeyboardMarkup,
   )
 
 baseKeyboard :: InlineKeyboardMarkup
-baseKeyboard = mkInlineKeyboardMarkup [[login, run, stop, payment, statistics]] 
+baseKeyboard = mkInlineKeyboardMarkup [[login, run, stop, payment, statistics]]
 
 login :: InlineKeyboardButton
 login = mkInlineKeyboardButton "login" Nothing (Just "login")

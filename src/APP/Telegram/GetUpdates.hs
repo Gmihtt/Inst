@@ -7,23 +7,23 @@ where
 
 import API.CallTelegram (callTelegram)
 import qualified API.Routes as API
+import qualified Common.Environment as Environment
 import Common.Error (throwTelegramErr, throwTgErr)
 import Common.Flow (Flow)
+import Control.Concurrent (forkIO)
+import Control.Concurrent.Chan (Chan, newChan, writeList2Chan)
 import Control.Monad.IO.Class (liftIO)
-import qualified Common.Environment as Environment
-import Control.Monad.Trans.Reader (runReaderT, ask)
+import Control.Monad.Trans.Reader (ask, runReaderT)
 import Data.Maybe (fromMaybe)
 import Data.Text (Text, pack)
-import Control.Concurrent (forkIO)
-import Control.Concurrent.Chan ( newChan, writeList2Chan, Chan )
-import Types.Domain.TgUpdates (ListOfUpdates)
 import Network.HTTP.Client (Manager)
+import Types.Domain.TgUpdates (ListOfUpdates)
 import qualified Types.Telegram.Response as Response
 import qualified Types.Telegram.Types.Update as Update
 
 execute :: Maybe Integer -> Environment.Environment -> IO ListOfUpdates
 execute updateId env = do
-  listOfUpdates <- newChan 
+  listOfUpdates <- newChan
   forkIO $ runReaderT (getUpdates updateId listOfUpdates) env
   pure listOfUpdates
 
@@ -35,23 +35,23 @@ getUpdates updateId listOfUpdates = do
   updates <- getBody eUpdates
   let newUpdateId = getMax $ map Update.update_id updates
   liftIO $ writeList2Chan listOfUpdates updates
-  getUpdates newUpdateId listOfUpdates  
+  getUpdates newUpdateId listOfUpdates
   where
     getMax :: [Integer] -> Maybe Integer
     getMax [] = updateId
     getMax list = Just $ last list + 1
     second = 1000000
 
-
 getBody :: Response.Response a -> Flow a
 getBody response =
-  liftIO $ if Response.ok response
-    then 
-      maybe 
-        (throwTgErr "Function: getBody. When try to get 'result' of 'response'") 
-        pure
-        (Response.result response)
-    else
-      throwTelegramErr
-        (Response.error_code response)
-        (fromMaybe "Function: getBody. When try to get 'description' of 'response'" $ Response.description response)
+  liftIO $
+    if Response.ok response
+      then
+        maybe
+          (throwTgErr "Function: getBody. When try to get 'result' of 'response'")
+          pure
+          (Response.result response)
+      else
+        throwTelegramErr
+          (Response.error_code response)
+          (fromMaybe "Function: getBody. When try to get 'description' of 'response'" $ Response.description response)

@@ -1,15 +1,15 @@
 module Redis.Queries (getValue, putValue) where
 
-import Common.Flow (Flow)
-import Control.Monad (void)
 import qualified Common.Environment as Environment
-import Control.Monad.Trans.Reader (ask)
-import qualified Database.Redis as Redis
-import qualified Common.Transforms as Common
-import Control.Monad.IO.Class (liftIO)
-import Data.Either (fromRight)
-import Data.ByteString (ByteString)
 import Common.Error (throwRedisErr)
+import Common.Flow (Flow)
+import qualified Common.Transforms as Common
+import Control.Monad (void)
+import Control.Monad.IO.Class (liftIO)
+import Control.Monad.Trans.Reader (ask)
+import Data.ByteString (ByteString)
+import Data.Either (fromRight)
+import qualified Database.Redis as Redis
 
 getValue :: Show a => a -> Flow (Maybe String)
 getValue key = do
@@ -19,7 +19,7 @@ getValue key = do
   let value = Common.unpackBs <$> fromRight Nothing res
   pure value
 
-putValue :: (Show a, Show b) => a -> b -> Flow () 
+putValue :: (Show a, Show b) => a -> b -> Flow ()
 putValue key val = do
   env <- ask
   let conn = Environment.conn env

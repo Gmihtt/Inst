@@ -14,8 +14,8 @@ import Common.Json
     toJson,
   )
 import GHC.Generics (Generic)
+import Types.Telegram.Types.CallbackQuery (CallbackQuery)
 import Types.Telegram.Types.Message (Message)
-import  Types.Telegram.Types.CallbackQuery (CallbackQuery)
 
 type Updates = [Update]
 

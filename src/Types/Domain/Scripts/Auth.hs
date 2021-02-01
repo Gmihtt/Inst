@@ -15,18 +15,17 @@ import GHC.Generics (Generic)
 
 data Request
   = Request
-      {
-        username :: Text,
+      { username :: Text,
         password :: Text
       }
   deriving (Show, Eq, Generic)
 
 mkRequest :: Text -> Text -> Request
-mkRequest username password = 
-  Request {
-    username = username,
-    password = password
-  }
+mkRequest username password =
+  Request
+    { username = username,
+      password = password
+    }
 
 instance ToJSON Request where
   toJSON = toJson

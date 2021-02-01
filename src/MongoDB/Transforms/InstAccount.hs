@@ -4,24 +4,24 @@ module MongoDB.Transforms.InstAccount
   ( mkDocByInstAcc,
     mkDocsByInstAccs,
     mkInstAccByDoc,
-    mkInstAccsByDocs
+    mkInstAccsByDocs,
   )
 where
 
-import Data.Text (unpack, pack)
+import Data.Bson ((!?))
+import Data.Maybe (mapMaybe)
+import Data.Text (pack, unpack)
 import Database.MongoDB
   ( (=:),
     Document,
     Field,
     Value (..),
   )
-import Data.Maybe ( mapMaybe )
-import Data.Bson ((!?))
 import Types.Domain.InstAccount
   ( InstAccount (..),
   )
 import Prelude hiding (id)
-  
+
 mkDocByInstAcc :: InstAccount -> Document
 mkDocByInstAcc instAcc =
   [ "login" =: String (login instAcc),
@@ -38,8 +38,9 @@ mkInstAccByDoc doc = do
   login <- doc !? "login"
   password <- doc !? "password"
   subscription <- doc !? "subscription"
-  pure InstAccount {
-        id = id, 
+  pure
+    InstAccount
+      { id = id,
         login = login,
         password = password,
         subscription = subscription

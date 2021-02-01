@@ -8,13 +8,13 @@ import qualified APP.Scripts.Sockets.API as API
 import Common.Error (throwSocketErr, throwThreadsError)
 import Control.Concurrent (ThreadId, forkIO, threadDelay)
 import Control.Concurrent.MVar (newEmptyMVar, putMVar, takeMVar)
-import qualified Types.Domain.Threads as Threads
 import qualified Control.Concurrent.Map as Map
 import Control.Monad (forever, unless)
 import Data.Aeson (FromJSON, ToJSON, decode, encode)
 import Data.ByteString.Lazy (ByteString)
-import qualified Types.Domain.Socket as Socket
 import Data.Text (Text)
+import qualified Types.Domain.Socket as Socket
+import qualified Types.Domain.Threads as Threads
 
 runConnection :: Socket.Socket -> (ByteString -> IO Text) -> IO Threads.ThreadsMap
 runConnection socket getKey = do

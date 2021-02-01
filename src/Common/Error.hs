@@ -11,19 +11,19 @@ module Common.Error
 where
 
 import Common.Exception.ConfigError as Error
-import Common.Exception.TelegramError as Error
-import Common.Exception.RedisError as Error
 import Common.Exception.MongoError as Error
+import Common.Exception.RedisError as Error
 import Common.Exception.SocketError as Error
+import Common.Exception.TelegramError as Error
 import Common.Exception.ThreadsError as Error
-import Control.Monad.IO.Class (liftIO)
 import Control.Exception (Exception, throwIO)
+import Control.Monad.IO.Class (liftIO)
 import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 
-data Error 
-  = Config Error.ConfigError 
-  | Telegram Error.TelegramError 
+data Error
+  = Config Error.ConfigError
+  | Telegram Error.TelegramError
   | Redis Error.RedisError
   | Mongo Error.MongoError
   | Socket Error.SocketError

@@ -4,7 +4,7 @@ module Types.Domain.InstAccount
   ( InstAccount (..),
     AccountStatus (..),
     mkInstAccount,
-    mkAccountStatus
+    mkAccountStatus,
   )
 where
 

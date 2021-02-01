@@ -2,30 +2,30 @@
 
 module APP.Telegram.ParseUpdates where
 
-import Common.Error (throwTgErr)
-import Common.Flow (Flow)
-import qualified Common.Environment as Environment
-import Types.Telegram.Response (Response (..))
-import qualified Types.Telegram.Types.CallbackQuery as CallbackQuery
-import qualified APP.SelectingLogic.CallBackCases as CallBackCases
-import Types.Telegram.Types.Message (Message)
-import Control.Monad.IO.Class (liftIO)
-import Types.Telegram.Types.Update (Update)
-import Control.Concurrent (forkIO)
-import Control.Concurrent.Chan (readChan)
-import Types.Domain.TgUpdates (ListOfUpdates)
-import Control.Monad.Trans.Reader (runReaderT)
 import qualified APP.Scripts.Scripts as Scripts
-import qualified Types.Telegram.Types.Update as Update
+import qualified APP.SelectingLogic.CallBackCases as CallBackCases
 import qualified APP.SelectingLogic.UsualCases as UsualCases
 import qualified APP.Telegram.Messages.FlowMessages as Messages
+import qualified Common.Environment as Environment
+import Common.Error (throwTgErr)
+import Common.Flow (Flow)
+import Control.Concurrent (forkIO)
+import Control.Concurrent.Chan (readChan)
+import Control.Monad.IO.Class (liftIO)
+import Control.Monad.Trans.Reader (runReaderT)
+import Types.Domain.TgUpdates (ListOfUpdates)
+import Types.Telegram.Response (Response (..))
+import qualified Types.Telegram.Types.CallbackQuery as CallbackQuery
+import Types.Telegram.Types.Message (Message)
+import Types.Telegram.Types.Update (Update)
+import qualified Types.Telegram.Types.Update as Update
 
 execute :: ListOfUpdates -> Environment.Environment -> IO ()
 execute updates env = do
   update <- readChan updates
   forkIO $ runReaderT (parseUpdate update) env
   execute updates env
-  
+
 parseUpdate :: Update -> Flow ()
 parseUpdate update = do
   case mbCallBack of
