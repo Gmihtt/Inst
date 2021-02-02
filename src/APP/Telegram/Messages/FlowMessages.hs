@@ -6,6 +6,8 @@ module APP.Telegram.Messages.FlowMessages
     loginMsg,
     successAuthMsg,
     repeatLoggingMsg,
+    sendStat,
+    sendEmptyStat,
   )
 where
 
@@ -47,4 +49,14 @@ successAuthMsg msg = do
 repeatLoggingMsg :: Message -> Flow (Response Message)
 repeatLoggingMsg msg = do
   sendMessage Nothing (Messages.repeatLogging msg)
+  baseMenu msg
+
+sendStat :: Message -> Int -> Flow (Response Message)
+sendStat msg stat = do
+  sendMessage Nothing (Messages.stat msg stat)
+  baseMenu msg
+
+sendEmptyStat :: Message -> Flow (Response Message)
+sendEmptyStat msg = do
+  sendMessage Nothing (Messages.emptyStat msg)
   baseMenu msg

@@ -24,7 +24,8 @@ import Prelude hiding (id)
 
 mkDocByInstAcc :: InstAccount -> Document
 mkDocByInstAcc instAcc =
-  [ "login" =: String (login instAcc),
+  [ "id" =: String (id instAcc),
+    "login" =: String (login instAcc),
     "password" =: String (password instAcc),
     "subscription" =: Bool (subscription instAcc)
   ]

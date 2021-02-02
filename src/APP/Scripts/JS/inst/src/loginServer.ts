@@ -25,7 +25,7 @@ server.on('connection', function connection(socket){
         console.log('connection finished');
     }
     socket.on('message', async function incoming(message: Buffer){
-        console.log(message);
+        console.log(message.toString());
         const userData: LoginRequest = JSON.parse(message.toString());
         try {
             const loginInfo: LoginResponse = await login(userData.username, userData.password);

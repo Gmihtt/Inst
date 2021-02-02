@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module APP.Scripts.Statistics.API where
 
 import qualified APP.Scripts.Socket.Connection as Connection
@@ -9,7 +11,7 @@ import Control.Monad ( unless )
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Trans.Reader (ask)
 import Data.Aeson (decode, encode)
-import Data.Text (Text)
+import Data.Text (Text, unpack)
 import Data.Maybe ( fromMaybe ) 
 import qualified Types.Domain.Scripts.Statistics as ScriptsStat
 import qualified Types.Domain.Statistic as Statistic
@@ -32,10 +34,10 @@ mkStatistics bsBody mbStat = do
   where
     addUsers users stat = foldr Statistic.addUser stat users
     getUsers value =
-      if ScriptsStat.response_status value
-        then print (ScriptsStat.response_errorMessage value) >> pure []
+      if not $ ScriptsStat.response_status value
+        then print (("Error : " <>) . unpack <$> ScriptsStat.response_errorMessage value) >> pure []
         else pure . fromMaybe [] $ ScriptsStat.response_users value
 
-sendMsg :: Text -> Manager.AuthManager -> ScriptsStat.Request -> IO ()
-sendMsg key (Manager.Manager manager stream) req = do
+sendMsg :: Manager.StatisticsManager -> ScriptsStat.Request -> IO ()
+sendMsg (Manager.Manager manager stream) req = do
   API.sendMsg (encode req) stream

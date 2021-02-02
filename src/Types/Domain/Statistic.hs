@@ -20,7 +20,7 @@ empty =
   }
 
 addUser :: Text -> Statistic -> Statistic 
-addUser user stat@(Statistic  users lastUsers)
+addUser user stat@(Statistic users lastUsers)
   | Set.member user users = stat
   | otherwise =
   Statistic {
@@ -32,6 +32,9 @@ addUser user stat@(Statistic  users lastUsers)
       if Seq.length lastUsers == 1000
         then Seq.deleteAt 999 lastUsers
         else lastUsers
+
+getSize :: Statistic -> Int
+getSize (Statistic users _) = Set.size users
 
 isMember :: Text -> Statistic -> Bool
 isMember user stat@(Statistic users _) = Set.member user users

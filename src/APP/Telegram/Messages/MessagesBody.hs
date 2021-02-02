@@ -8,10 +8,12 @@ module APP.Telegram.Messages.MessagesBody
     emptyUser,
     repeatLogging,
     oldMsg,
+    stat,
+    emptyStat
   )
 where
 
-import Data.Text (Text)
+import Data.Text (Text, pack)
 import Types.Telegram.Types.Message (Message, mkMessage)
 
 baseMenu :: Message -> Message
@@ -46,3 +48,11 @@ repeatLogging =
 oldMsg :: Message -> Message
 oldMsg =
   mkMessage "Прошло слишком много времени с момента отправки сообщения, давайте попробуем ещё раз"
+
+stat :: Message -> Int -> Message
+stat msg num = 
+  mkMessage ("Статистика по вашему инстаграм аккаунту : " <> (pack $ show num)) msg
+
+emptyStat :: Message -> Message
+emptyStat = 
+  mkMessage "Вы не указали ещё не один истаграм аккаунт"

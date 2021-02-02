@@ -1,10 +1,14 @@
 module Types.Domain.Status.ScriptStatus where
 
 data ScriptStatus
-  = Run
-  | Stop
+  = ShowAcc
+  | WaitAccount
+  | ShowAccMenu
+  | ConfirmStop
   deriving (Show)
 
 mkLoginStatus :: String -> ScriptStatus
-mkLoginStatus "Run" = Run
-mkLoginStatus _ = Stop
+mkLoginStatus "WaitAccount" = WaitAccount
+mkLoginStatus "ShowAccMenu" = ShowAccMenu
+mkLoginStatus "ConfirmStop" = ConfirmStop
+mkLoginStatus _ = ShowAcc

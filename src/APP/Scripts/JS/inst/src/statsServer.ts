@@ -12,6 +12,7 @@ let activeFollowerGetters: Set<string> = new Set();
 
 async function getAndSendFollowersCount(socket: any, id: string, timeout: number){
     const usersInfo: StatsResponse = await getFollowers(id);
+    console.log(JSON.stringify(usersInfo));
     socket.send(Buffer.from(JSON.stringify(usersInfo)));
     if (activeFollowerGetters.has(id)){
         setTimeout(getAndSendFollowersCount, timeout, socket, id, timeout);
@@ -31,17 +32,17 @@ server.on('connection', function connection(socket){
     }
 
     socket.on('message', async function incoming(message: Buffer){
-        console.log(message);
+        console.log(message.toString());
         const request: StatsRequest = JSON.parse(message.toString());
 
-        if (request.action === 'start'){
+        if (request.action === 'Start'){
             activeFollowerGetters.add(request.inst_id);
             let timeout: number = 60000;
             if ("timeout" in request){
                 timeout = request.timeout as number;
             }
             getAndSendFollowersCount(socket, request.inst_id, timeout).catch(e => console.log(`Error while getting data: ${e}`));
-        } else if(request.action === 'stop'){
+        } else if(request.action === 'Stop'){
             activeFollowerGetters.delete(request.inst_id);
         }
     })

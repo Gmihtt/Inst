@@ -18,6 +18,8 @@ setFree = Login Free
 mkUserStatus :: String -> UserStatus
 mkUserStatus "Login Free" = Login Free
 mkUserStatus "Login WaitAuth" = Login WaitAuth
-mkUserStatus "Script Run" = Script Run
-mkUserStatus "Script Stop" = Script Stop
+mkUserStatus "Script ShowAcc" = Script ShowAcc
+mkUserStatus "Script WaitAccount" = Script WaitAccount
+mkUserStatus "Script ConfirmStop" = Script ConfirmStop
+mkUserStatus "Script ShowAccMenu" = Script ShowAccMenu
 mkUserStatus _ = MainMenu
