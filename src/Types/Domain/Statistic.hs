@@ -1,34 +1,34 @@
 module Types.Domain.Statistic where
 
-import Data.Text (Text)
-import qualified Data.Set as Set
 import qualified Data.Sequence as Seq
 import Data.Sequence ((|>))
+import qualified Data.Set as Set
+import Data.Text (Text)
 
-data Statistic 
-  = Statistic {
-    users :: Set.Set Text,
-    lastUsers :: Seq.Seq Text
-  } deriving (Show)
-
+data Statistic
+  = Statistic
+      { users :: Set.Set Text,
+        lastUsers :: Seq.Seq Text
+      }
+  deriving (Show)
 
 empty :: Statistic
-empty = 
-  Statistic {
-    users = Set.empty,
-    lastUsers = Seq.empty
-  }
+empty =
+  Statistic
+    { users = Set.empty,
+      lastUsers = Seq.empty
+    }
 
-addUser :: Text -> Statistic -> Statistic 
+addUser :: Text -> Statistic -> Statistic
 addUser user stat@(Statistic users lastUsers)
   | Set.member user users = stat
   | otherwise =
-  Statistic {
-    users = Set.insert user users,
-    lastUsers = fixLastUsers |> user
-  }
+    Statistic
+      { users = Set.insert user users,
+        lastUsers = fixLastUsers |> user
+      }
   where
-    fixLastUsers = 
+    fixLastUsers =
       if Seq.length lastUsers == 1000
         then Seq.deleteAt 999 lastUsers
         else lastUsers
@@ -40,8 +40,8 @@ isMember :: Text -> Statistic -> Bool
 isMember user stat@(Statistic users _) = Set.member user users
 
 initWithLastUsers :: [Text] -> Statistic
-initWithLastUsers users = 
-  Statistic {
-    users = Set.fromList users ,
-    lastUsers = Seq.fromList users 
-  }
+initWithLastUsers users =
+  Statistic
+    { users = Set.fromList users,
+      lastUsers = Seq.fromList users
+    }

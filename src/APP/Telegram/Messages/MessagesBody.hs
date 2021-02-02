@@ -9,7 +9,7 @@ module APP.Telegram.Messages.MessagesBody
     repeatLogging,
     oldMsg,
     stat,
-    emptyStat
+    emptyStat,
   )
 where
 
@@ -50,9 +50,9 @@ oldMsg =
   mkMessage "Прошло слишком много времени с момента отправки сообщения, давайте попробуем ещё раз"
 
 stat :: Message -> Int -> Message
-stat msg num = 
+stat msg num =
   mkMessage ("Статистика по вашему инстаграм аккаунту : " <> (pack $ show num)) msg
 
 emptyStat :: Message -> Message
-emptyStat = 
+emptyStat =
   mkMessage "Вы не указали ещё не один истаграм аккаунт"

@@ -33,20 +33,20 @@ data Request
   deriving (Show, Eq, Generic)
 
 mkStartReq :: Text -> Request
-mkStartReq inst_id = 
-  Request {
-    inst_id = inst_id,
-    action = Start,
-    timeout = Just 20000
-  }
+mkStartReq inst_id =
+  Request
+    { inst_id = inst_id,
+      action = Start,
+      timeout = Just 20000
+    }
 
 mkStopReq :: Text -> Request
-mkStopReq inst_id = 
-  Request {
-    inst_id = inst_id,
-    action = Stop,
-    timeout = Just 20000
-  }
+mkStopReq inst_id =
+  Request
+    { inst_id = inst_id,
+      action = Stop,
+      timeout = Just 20000
+    }
 
 instance ToJSON Request where
   toJSON = toJson

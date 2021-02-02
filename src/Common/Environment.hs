@@ -19,7 +19,7 @@ data Environment
         conn :: Connection,
         mongoDB :: Text,
         authManager :: Manager.AuthManager,
-        statisticsManager :: Manager.StatisticsManager 
+        statisticsManager :: Manager.StatisticsManager
       }
 
 mkEnv :: Manager -> Text -> Pipe -> Connection -> Text -> Manager.AuthManager -> Manager.StatisticsManager -> Environment

@@ -7,8 +7,8 @@ import qualified Common.Environment as Environment
 import Common.Flow (Flow)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.Trans.Reader (ReaderT, ask)
-import Data.Text (Text)
 import Data.Maybe (isNothing)
+import Data.Text (Text)
 import Database.MongoDB
 import MongoDB.Transforms.InstAccount (mkInstAccsByDocs)
 import Types.Domain.InstAccount (InstAccount)

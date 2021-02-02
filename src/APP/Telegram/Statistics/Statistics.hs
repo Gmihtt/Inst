@@ -2,21 +2,21 @@
 
 module APP.Telegram.Statistics.Statistics where
 
+import qualified APP.Scripts.Statistics.API as API
+import qualified APP.Telegram.Messages.FlowMessages as Messages
+import qualified Common.Environment as Environment
 import Common.Flow (Flow)
-import qualified Types.Telegram.Types.Message as Message
-import Types.Telegram.Response (Response (..))
-import Data.Text (pack)
+import qualified Control.Concurrent.Map as Map
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Trans.Reader (ask)
-import qualified Common.Environment as Environment
-import qualified APP.Scripts.Statistics.API as API
-import qualified Types.Domain.Scripts.Statistics as ScriptsStat
+import Data.Text (pack)
 import qualified MongoDB.Queries as QMongo
 import qualified Types.Domain.InstAccount as InstAccount
 import qualified Types.Domain.Manager as Manager
-import qualified Control.Concurrent.Map as Map
+import qualified Types.Domain.Scripts.Statistics as ScriptsStat
 import qualified Types.Domain.Statistic as Statistic
-import qualified APP.Telegram.Messages.FlowMessages as Messages
+import Types.Telegram.Response (Response (..))
+import qualified Types.Telegram.Types.Message as Message
 
 start :: Message.Message -> Int -> Flow (Response Message.Message)
 start msg userId = do
@@ -41,7 +41,7 @@ stop msg userId = do
 stat :: Message.Message -> Int -> Flow (Response Message.Message)
 stat msg userId = do
   instAccs <- QMongo.findInstAccsByTgId (pack $ show userId) "accounts"
-  if null instAccs 
+  if null instAccs
     then Messages.sendEmptyStat msg
     else do
       let instAcc = head instAccs
@@ -50,4 +50,3 @@ stat msg userId = do
       let instAccId = InstAccount.id instAcc
       mbStat <- liftIO $ Map.lookup instAccId manager
       Messages.sendStat msg $ maybe 0 Statistic.getSize mbStat
-      

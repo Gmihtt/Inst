@@ -2,24 +2,24 @@
 
 module APP.Scripts.Statistics.API where
 
-import qualified APP.Scripts.Socket.Connection as Connection
 import qualified APP.Scripts.Socket.API as API
+import qualified APP.Scripts.Socket.Connection as Connection
 import qualified Common.Environment as Environment
 import Common.Error (throwSocketErr)
 import Common.Flow (Flow)
-import Control.Monad ( unless )
+import Control.Monad (unless)
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Trans.Reader (ask)
 import Data.Aeson (decode, encode)
-import Data.Text (Text, unpack)
-import Data.Maybe ( fromMaybe ) 
-import qualified Types.Domain.Scripts.Statistics as ScriptsStat
-import qualified Types.Domain.Statistic as Statistic
-import qualified Types.Domain.Socket as Socket
-import qualified Types.Domain.Manager as Manager
 import Data.ByteString.Lazy (ByteString)
+import Data.Maybe (fromMaybe)
+import Data.Text (Text, unpack)
+import qualified Types.Domain.Manager as Manager
+import qualified Types.Domain.Scripts.Statistics as ScriptsStat
+import qualified Types.Domain.Socket as Socket
+import qualified Types.Domain.Statistic as Statistic
 
-statConnection :: Socket.Socket -> IO Manager.StatisticsManager 
+statConnection :: Socket.Socket -> IO Manager.StatisticsManager
 statConnection socket = do
   liftIO $ Connection.runConnection socket getUsername mkStatistics
   where

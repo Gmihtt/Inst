@@ -1,7 +1,7 @@
 module Types.Domain.UserStatus where
 
-import Types.Domain.Status.LoginStatus ( LoginStatus(..) )
-import Types.Domain.Status.ScriptStatus (ScriptStatus(..))
+import Types.Domain.Status.LoginStatus (LoginStatus (..))
+import Types.Domain.Status.ScriptStatus (ScriptStatus (..))
 
 data UserStatus
   = Login LoginStatus
