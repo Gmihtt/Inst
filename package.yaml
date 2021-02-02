@@ -48,6 +48,7 @@ dependencies:
 - websockets
 - ctrie
 - network
+- containers
 
 library:
   source-dirs: src

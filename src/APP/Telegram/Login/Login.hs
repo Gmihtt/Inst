@@ -5,7 +5,7 @@ module APP.Telegram.Login.Login
   )
 where
 
-import qualified APP.Scripts.Auth as ScriptsAuth
+import qualified APP.Scripts.Auth.API as ScriptsAuth
 import qualified APP.Telegram.Messages.FlowMessages as Message
 import Common.Flow (Flow)
 import Control.Monad.IO.Class (MonadIO (liftIO))

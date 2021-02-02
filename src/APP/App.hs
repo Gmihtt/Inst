@@ -1,7 +1,7 @@
 module APP.App (app) where
 
-import qualified APP.Scripts.Auth as ScriptsAuth
-import qualified APP.Scripts.Statistics as ScriptsStatistics
+import qualified APP.Scripts.Auth.API as ScriptsAuth
+import qualified APP.Scripts.Statistics.API as ScriptsStatistics
 import APP.Telegram.BotMain (run)
 import Common.Environment (mkEnv)
 import Common.Error (Error (..))
@@ -26,9 +26,9 @@ app =
         mongoDB <- Config.getDataBase
         authSocket <- Config.getAuthSocket
         statSocket <- Config.getStatSocket
-        authThreads <- ScriptsAuth.authConnection authSocket
-        --statThreads <- ScriptsStatistics.statConnection statSocket
-        let env = mkEnv manager token pipe conn mongoDB authThreads undefined
+        authManager <- ScriptsAuth.authConnection authSocket
+        statManager <- ScriptsStatistics.statConnection statSocket
+        let env = mkEnv manager token pipe conn mongoDB authManager statManager
         run Nothing env
         MongoDB.close pipe
     )

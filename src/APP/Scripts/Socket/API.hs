@@ -1,10 +1,9 @@
-module APP.Scripts.Sockets.API (Stream.Stream, run, sendMsg, receiveMsg) where
+module APP.Scripts.Socket.API (Stream.Stream, run, sendMsg, receiveMsg) where
 
-import qualified APP.Scripts.Sockets.SocketApp as Socket
-import qualified APP.Scripts.Sockets.Stream as Stream
+import qualified APP.Scripts.Socket.App as Socket
+import qualified APP.Scripts.Socket.Stream as Stream
 import Control.Concurrent (forkIO)
 import Data.ByteString.Lazy (ByteString)
-import Network.Socket (withSocketsDo)
 import qualified Network.WebSockets as WS
 import qualified Types.Domain.Socket as Socket
 import qualified Types.Domain.Stream as Stream

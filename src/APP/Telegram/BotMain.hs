@@ -1,6 +1,6 @@
 module APP.Telegram.BotMain where
 
-import qualified APP.Scripts.Auth as ScriptsAuth
+import qualified APP.Scripts.Auth.API as ScriptsAuth
 import qualified APP.Telegram.GetUpdates as GetUpdates
 import qualified APP.Telegram.ParseUpdates as ParseUpdates
 import qualified Common.Environment as Environment

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 2b46433346cca5b4761df81ab852cacbea66fd3e62b2d38fa745e1b2a821b5a0
+-- hash: c1be60d93b19e9dac78e833c6d73ce4ef644c589423e0436e3171b48f716ffb6
 
 name:           Inst
 version:        0.1.0.0
@@ -31,12 +31,12 @@ library
       API.Routes
       API.SendMessage
       APP.App
-      APP.Scripts.Auth
-      APP.Scripts.Scripts
-      APP.Scripts.Sockets.API
-      APP.Scripts.Sockets.SocketApp
-      APP.Scripts.Sockets.Stream
-      APP.Scripts.Statistics
+      APP.Scripts.Auth.API
+      APP.Scripts.Socket.API
+      APP.Scripts.Socket.App
+      APP.Scripts.Socket.Connection
+      APP.Scripts.Socket.Stream
+      APP.Scripts.Statistics.API
       APP.SelectingLogic.CallBackCases
       APP.SelectingLogic.UsualCases
       APP.Telegram.BotMain
@@ -47,6 +47,7 @@ library
       APP.Telegram.Messages.MessagesBody
       APP.Telegram.ParseUpdates
       APP.Telegram.SendMessage
+      APP.Telegram.Statistics.Statistics
       Common.Environment
       Common.Error
       Common.Exception.ConfigError
@@ -64,14 +65,17 @@ library
       MongoDB.Transforms.TgUser
       Redis.Queries
       Types.Domain.InstAccount
+      Types.Domain.Manager
       Types.Domain.Scripts.Auth
       Types.Domain.Scripts.Statistics
       Types.Domain.Socket
-      Types.Domain.Stream
+      Types.Domain.Statistic
+      Types.Domain.Statistics
       Types.Domain.Status.LoginStatus
+      Types.Domain.Status.ScriptStatus
+      Types.Domain.Stream
       Types.Domain.TgUpdates
       Types.Domain.TgUser
-      Types.Domain.Threads
       Types.Domain.UserStatus
       Types.Telegram.Methods.SendMessage
       Types.Telegram.Response
@@ -99,6 +103,7 @@ library
     , blaze-markup
     , bson
     , bytestring
+    , containers
     , ctrie
     , directory
     , filepath
@@ -108,6 +113,7 @@ library
     , http-media
     , mongoDB
     , mtl
+    , network
     , process
     , servant
     , servant-client
@@ -120,7 +126,6 @@ library
     , warp
     , websockets
     , yaml
-    , network
   default-language: Haskell2010
 
 executable Inst-exe
@@ -139,6 +144,7 @@ executable Inst-exe
     , blaze-markup
     , bson
     , bytestring
+    , containers
     , ctrie
     , directory
     , filepath
@@ -148,6 +154,7 @@ executable Inst-exe
     , http-media
     , mongoDB
     , mtl
+    , network
     , process
     , servant
     , servant-client
@@ -179,6 +186,7 @@ test-suite Inst-test
     , blaze-markup
     , bson
     , bytestring
+    , containers
     , ctrie
     , directory
     , filepath
@@ -191,6 +199,7 @@ test-suite Inst-test
     , http-media
     , mongoDB
     , mtl
+    , network
     , process
     , servant
     , servant-client

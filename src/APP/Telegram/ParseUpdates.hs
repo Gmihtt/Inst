@@ -2,7 +2,6 @@
 
 module APP.Telegram.ParseUpdates where
 
-import qualified APP.Scripts.Scripts as Scripts
 import qualified APP.SelectingLogic.CallBackCases as CallBackCases
 import qualified APP.SelectingLogic.UsualCases as UsualCases
 import qualified APP.Telegram.Messages.FlowMessages as Messages
