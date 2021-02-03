@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c1be60d93b19e9dac78e833c6d73ce4ef644c589423e0436e3171b48f716ffb6
+-- hash: ff321b4d9efebc4c0db12dfdc04382eeb031d176c0a8fb4dab449a63e58a4ed7
 
 name:           Inst
 version:        0.1.0.0
@@ -26,28 +26,23 @@ source-repository head
 
 library
   exposed-modules:
-      API.CallTelegram
-      API.GetUpdates
-      API.Routes
-      API.SendMessage
-      APP.App
-      APP.Scripts.Auth.API
-      APP.Scripts.Socket.API
-      APP.Scripts.Socket.App
-      APP.Scripts.Socket.Connection
-      APP.Scripts.Socket.Stream
-      APP.Scripts.Statistics.API
-      APP.SelectingLogic.CallBackCases
-      APP.SelectingLogic.UsualCases
-      APP.Telegram.BotMain
-      APP.Telegram.Buttons.BaseMenu
-      APP.Telegram.GetUpdates
-      APP.Telegram.Login.Login
-      APP.Telegram.Messages.FlowMessages
-      APP.Telegram.Messages.MessagesBody
-      APP.Telegram.ParseUpdates
-      APP.Telegram.SendMessage
-      APP.Telegram.Statistics.Statistics
+      App.App
+      App.Bot.BotMain
+      App.Bot.Buttons.BaseMenu
+      App.Bot.GetUpdates
+      App.Bot.Login.Login
+      App.Bot.Messages.FlowMessages
+      App.Bot.Messages.MessagesBody
+      App.Bot.ParseUpdates
+      App.Bot.Statistics.Statistics
+      App.Scripts.Auth.API
+      App.Scripts.Socket.API
+      App.Scripts.Socket.App
+      App.Scripts.Socket.Connection
+      App.Scripts.Statistics.API
+      App.SelectingLogic.CallBackCases
+      App.SelectingLogic.UsualCases
+      Common.Config
       Common.Environment
       Common.Error
       Common.Exception.ConfigError
@@ -59,38 +54,41 @@ library
       Common.Flow
       Common.Json
       Common.Transforms
-      Configs.Config
       MongoDB.Queries
       MongoDB.Transforms.InstAccount
       MongoDB.Transforms.TgUser
       Redis.Queries
+      Telegram.API.Methods.CallTelegram
+      Telegram.API.Methods.SendMessage
+      Telegram.API.Routes
+      Telegram.API.Routes.GetUpdates
+      Telegram.API.Routes.SendMessage
+      Telegram.Types.Communication.Response
+      Telegram.Types.Domain.CallbackQuery
+      Telegram.Types.Domain.Chat
+      Telegram.Types.Domain.Keyboard.ForceReply
+      Telegram.Types.Domain.Keyboard.InlineKeyboardButton
+      Telegram.Types.Domain.Keyboard.InlineKeyboardMarkup
+      Telegram.Types.Domain.Keyboard.KeyboardButton
+      Telegram.Types.Domain.Keyboard.ReplyKeyboardHide
+      Telegram.Types.Domain.Keyboard.ReplyKeyboardMarkup
+      Telegram.Types.Domain.Message
+      Telegram.Types.Domain.MessageEntity
+      Telegram.Types.Domain.Update
+      Telegram.Types.Domain.User
+      Telegram.Types.Methods.SendMessage
+      Types.Communication.Scripts.Auth
+      Types.Communication.Scripts.Statistics
       Types.Domain.InstAccount
       Types.Domain.Manager
-      Types.Domain.Scripts.Auth
-      Types.Domain.Scripts.Statistics
       Types.Domain.Socket
       Types.Domain.Statistic
-      Types.Domain.Statistics
       Types.Domain.Status.LoginStatus
       Types.Domain.Status.ScriptStatus
+      Types.Domain.Status.UserStatus
       Types.Domain.Stream
       Types.Domain.TgUpdates
       Types.Domain.TgUser
-      Types.Domain.UserStatus
-      Types.Telegram.Methods.SendMessage
-      Types.Telegram.Response
-      Types.Telegram.Types.CallbackQuery
-      Types.Telegram.Types.Chat
-      Types.Telegram.Types.Keyboard.ForceReply
-      Types.Telegram.Types.Keyboard.InlineKeyboardButton
-      Types.Telegram.Types.Keyboard.InlineKeyboardMarkup
-      Types.Telegram.Types.Keyboard.KeyboardButton
-      Types.Telegram.Types.Keyboard.ReplyKeyboardHide
-      Types.Telegram.Types.Keyboard.ReplyKeyboardMarkup
-      Types.Telegram.Types.Message
-      Types.Telegram.Types.MessageEntity
-      Types.Telegram.Types.Update
-      Types.Telegram.Types.User
   other-modules:
       Paths_Inst
   hs-source-dirs:

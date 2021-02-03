@@ -18,8 +18,6 @@ import Data.Text (Text)
 import GHC.Generics (Generic)
 import Prelude hiding (id)
 
-type NumOfInstAccounts = Int
-
 data InstAccount
   = InstAccount
       { id :: Text,
@@ -30,11 +28,11 @@ data InstAccount
   deriving (Show, Eq, Generic)
 
 mkInstAccount :: Text -> Text -> Text -> Bool -> InstAccount
-mkInstAccount id login password subs =
+mkInstAccount inst_id inst_login inst_password subs =
   InstAccount
-    { id = id,
-      login = login,
-      password = password,
+    { id = inst_id,
+      login = inst_login,
+      password = inst_password,
       subscription = subs
     }
 
