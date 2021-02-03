@@ -7,7 +7,7 @@ const TIMEOUT: number = 5000;
 
 export interface StatsRequest {
     inst_id: string;
-    action: string; //start | stop
+    action: string; //Start | Stop
     timeout?: number;
 }
 

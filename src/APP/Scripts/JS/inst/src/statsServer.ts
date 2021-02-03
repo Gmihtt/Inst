@@ -47,10 +47,3 @@ server.on('connection', function connection(socket){
         }
     })
 });
-
-//startDebug(1, 'alone.shard', 'Kone4nOG4V92FBf');
-//startDebug(3, 'orgazm.exe', 'G4V92FBf');
-//startBrowser(4, 'alone.shard', 'Kone4nOG4V92FBf');
-//startBrowser(4, 'alone.shard', 'Kone4nOG4V92FBf');
-//startBrowser(5, 'orgazm.exe', 'G4V92FBf');
-//startBrowser(6, 'mood.to.love', 'Kone4nODurahan');
