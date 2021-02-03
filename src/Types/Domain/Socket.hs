@@ -9,9 +9,9 @@ data Socket
   deriving (Show)
 
 mkSocket :: String -> Int -> String -> Socket
-mkSocket host port path =
+mkSocket s_host s_port s_path =
   Socket
-    { host = host,
-      port = port,
-      path = path
+    { host = s_host,
+      port = s_port,
+      path = s_path
     }

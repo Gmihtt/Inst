@@ -17,7 +17,6 @@ import Common.Exception.SocketError as Error
 import Common.Exception.TelegramError as Error
 import Common.Exception.ThreadsError as Error
 import Control.Exception (Exception, throwIO)
-import Control.Monad.IO.Class (liftIO)
 import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 
@@ -51,9 +50,9 @@ throwTgErr :: Text -> IO a
 throwTgErr = throwTelegramErr Nothing
 
 throwTelegramErr :: Maybe Int -> Text -> IO a
-throwTelegramErr code desc =
+throwTelegramErr mbCode desc =
   throwIO . Telegram $
     TelegramError
-      { code = fromMaybe 0 code,
+      { code = fromMaybe 0 mbCode,
         description = desc
       }
