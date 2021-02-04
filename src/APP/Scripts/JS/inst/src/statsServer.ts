@@ -10,40 +10,44 @@ const server = new ws.Server({
 
 let activeFollowerGetters: Set<string> = new Set();
 
-async function getAndSendFollowersCount(socket: any, id: string, timeout: number){
-    const usersInfo: StatsResponse = await getFollowers(id);
-    console.log(JSON.stringify(usersInfo));
-    socket.send(Buffer.from(JSON.stringify(usersInfo)));
-    if (activeFollowerGetters.has(id)){
+async function getAndSendFollowersCount(socket: any, id: string, timeout: number) {
+    try {
+        const usersInfo: StatsResponse = await getFollowers(id);
+        socket.send(Buffer.from(JSON.stringify(usersInfo)));
+    } catch (e) {
+        socket.send(Buffer.from(JSON.stringify(e.message)));
+    }
+
+    if (activeFollowerGetters.has(id)) {
         setTimeout(getAndSendFollowersCount, timeout, socket, id, timeout);
     }
 }
 
 
+server.on('connection', function connection(socket) {
 
+    console.log('Stats: connection established');
 
-
-server.on('connection', function connection(socket){
-
-    console.log('connection established');
-
-    socket.onclose = function (){
-        console.log('connection closed');
+    socket.onclose = function () {
+        console.log('Stats: connection closed');
     }
 
-    socket.on('message', async function incoming(message: Buffer){
-        console.log(message.toString());
+    socket.on('message', async function incoming(message: Buffer) {
+        console.log(`Stats: ${message.toString()}`);
         const request: StatsRequest = JSON.parse(message.toString());
 
-        if (request.action === 'Start'){
-            activeFollowerGetters.add(request.inst_id);
-            let timeout: number = 60000;
-            if ("timeout" in request){
-                timeout = request.timeout as number;
-            }
-            getAndSendFollowersCount(socket, request.inst_id, timeout).catch(e => console.log(`Error while getting data: ${e}`));
-        } else if(request.action === 'Stop'){
-            activeFollowerGetters.delete(request.inst_id);
+        switch (request.action) {
+            case 'start':
+                activeFollowerGetters.add(request.inst_id);
+                let timeout: number = 60000;
+                if (request.timeout != undefined) {
+                    timeout = request.timeout;
+                }
+                getAndSendFollowersCount(socket, request.inst_id, timeout).catch(e => console.log(`Error while getting data: ${e}`));
+                break;
+            case 'stop':
+                activeFollowerGetters.delete(request.inst_id);
+                break;
         }
     })
 });

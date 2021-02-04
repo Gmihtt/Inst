@@ -2,7 +2,7 @@ import puppeteer = require('puppeteer');
 import path = require('path');
 import {Mutex} from "async-mutex";
 
-const fs = require('fs-extra');
+import fs from "fs-extra";
 
 export interface LoginRequest {
     username: string;
@@ -77,7 +77,7 @@ async function LoginAndGetId(page: puppeteer.Page, username: string, password: s
     await page.waitForTimeout(3000);
     //await page.screenshot({path: '1-loginPage.png'});
 
-    if ((await page.$('[href="/accounts/activity/"]') == null)) {
+    if ((await page.$('[href="/accounts/activity/"]') === null)) {
         await fillInputsAndSubmit(page, username, password);
     }
 
@@ -102,9 +102,16 @@ async function fillInputsAndSubmit(page: puppeteer.Page, username: string, passw
 
 async function getId(page: puppeteer.Page, username: string): Promise<string> {
     let responseObject: any = await page.evaluate(async (username: string) => {
-        const response = await fetch(`https://www.instagram.com/${username}/?__a=1`);
-        return response.json();
+        try {
+            const response = await fetch(`https://www.instagram.com/${username}/?__a=1`);
+            return response.json();
+        } catch (e){
+            return null;
+        }
     }, username);
+    if (responseObject === null){
+        throw new Error('Error while fetching id');
+    }
     return responseObject.graphql.user.id;
 }
 
