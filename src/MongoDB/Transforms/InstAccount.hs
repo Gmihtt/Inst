@@ -10,11 +10,9 @@ where
 
 import Data.Bson ((!?))
 import Data.Maybe (mapMaybe)
-import Data.Text (pack, unpack)
 import Database.MongoDB
   ( (=:),
     Document,
-    Field,
     Value (..),
   )
 import Types.Domain.InstAccount
@@ -35,16 +33,16 @@ mkDocsByInstAccs = map mkDocByInstAcc
 
 mkInstAccByDoc :: Document -> Maybe InstAccount
 mkInstAccByDoc doc = do
-  id <- doc !? "id"
-  login <- doc !? "login"
-  password <- doc !? "password"
-  subscription <- doc !? "subscription"
+  inst_id <- doc !? "id"
+  inst_login <- doc !? "login"
+  inst_password <- doc !? "password"
+  inst_subscription <- doc !? "subscription"
   pure
     InstAccount
-      { id = id,
-        login = login,
-        password = password,
-        subscription = subscription
+      { id = inst_id,
+        login = inst_login,
+        password = inst_password,
+        subscription = inst_subscription
       }
 
 mkInstAccsByDocs :: [Document] -> [InstAccount]
