@@ -12,8 +12,14 @@ export interface LoginRequest {
 export interface LoginResponse {
     status: boolean;
     username: string;
+    is_private?: boolean;
     inst_id?: string;
     errorMessage?: string;
+}
+
+interface UserIdAndPrivacy{
+    inst_id: string;
+    is_private: boolean;
 }
 
 const dirNumberMutex = new Mutex();
@@ -34,15 +40,18 @@ export async function login(username: string, password: string): Promise<LoginRe
         ]
     });
 
-    let id: string | null = null;
+    let inst_id: string | null = null;
+
 
     const page: puppeteer.Page = await browser.newPage();
     try {
-        id = await LoginAndGetId(page, username, password);
+        let is_private: boolean;
+        ({inst_id, is_private} = await LoginAndGetId(page, username, password));
         return {
             status: true,
             username: username,
-            inst_id: id,
+            inst_id: inst_id,
+            is_private: is_private,
         }
     } catch (e) {
         return {
@@ -52,8 +61,8 @@ export async function login(username: string, password: string): Promise<LoginRe
         }
     } finally {
         await browser.close();
-        if (id != null) {
-            await copyUserFolderIntoCookiesDir(dirNumber, id);
+        if (inst_id != null) {
+            await copyUserFolderIntoCookiesDir(dirNumber, inst_id);
         }
         await removeUserDirFolder(dirNumber);
     }
@@ -81,7 +90,7 @@ async function LoginAndGetId(page: puppeteer.Page, username: string, password: s
         await fillInputsAndSubmit(page, username, password);
     }
 
-    return await getId(page, username);
+    return await getIdAndPrivacy(page, username);
 }
 
 
@@ -100,7 +109,7 @@ async function fillInputsAndSubmit(page: puppeteer.Page, username: string, passw
     //await page.screenshot({path: '1-afterLogin.png'});
 }
 
-async function getId(page: puppeteer.Page, username: string): Promise<string> {
+async function getIdAndPrivacy(page: puppeteer.Page, username: string): Promise<UserIdAndPrivacy> {
     let responseObject: any = await page.evaluate(async (username: string) => {
         try {
             const response = await fetch(`https://www.instagram.com/${username}/?__a=1`);
@@ -112,6 +121,9 @@ async function getId(page: puppeteer.Page, username: string): Promise<string> {
     if (responseObject === null){
         throw new Error('Error while fetching id');
     }
-    return responseObject.graphql.user.id;
+    return {
+        inst_id: responseObject.graphql.user.id,
+        is_private: responseObject.graphql.user.is_private,
+    };
 }
 
