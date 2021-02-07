@@ -45,8 +45,10 @@ password msg userId accLogin accPassword = do
   mbRes <- runScript accLogin accPassword
   maybe (errorCase msg userId) (successCase accLogin) mbRes
   where
-    successCase accLogin instId = do
-      Message.successAuthMsg msg
+    successCase accLogin (instId, private) = do
+      if private
+        then Message.successAuthMsg msg
+        else Message.publicAccount msg
       saveAccAndUser instId accLogin accPassword userId
       Message.accountMenu msg
     errorCase msg userId = do
@@ -56,10 +58,17 @@ password msg userId accLogin accPassword = do
       instAccs <- Common.getInstAccs userId
       Message.showInstAccs msg (map InstAccount.login instAccs)
 
-runScript :: Text -> Text -> Flow (Maybe Text)
+runScript :: Text -> Text -> Flow (Maybe (Text, Bool))
 runScript accLogin accPassword = do
   res <- ScriptsAuth.auth accLogin accPassword
-  pure $ Auth.response_inst_id res
+  let mbInstId = Auth.response_inst_id res
+  let mbPrivate = Auth.response_private res
+  pure $ mkRes mbInstId mbPrivate
+  where
+    mkRes mbInstId mbPrivate = do
+      instId <- mbInstId
+      private <- mbPrivate
+      pure (instId, private)
 
 saveAccAndUser :: Text -> Text -> Text -> Int -> Flow Bool
 saveAccAndUser instId accLogin accPassword userId = do
