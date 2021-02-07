@@ -14,7 +14,7 @@ export interface LoginResponse {
     username: string;
     is_private?: boolean;
     inst_id?: string;
-    errorMessage?: string;
+    error_message?: string;
 }
 
 interface UserIdAndPrivacy{
@@ -57,7 +57,7 @@ export async function login(username: string, password: string): Promise<LoginRe
         return {
             status: false,
             username: username,
-            errorMessage: e.message,
+            error_message: e.message,
         }
     } finally {
         await browser.close();
@@ -83,30 +83,24 @@ async function LoginAndGetId(page: puppeteer.Page, username: string, password: s
 
 
     await page.goto('https://www.instagram.com/accounts/login/');
-    await page.waitForTimeout(3000);
-    //await page.screenshot({path: '1-loginPage.png'});
 
-    if ((await page.$('[href="/accounts/activity/"]') === null)) {
-        await fillInputsAndSubmit(page, username, password);
-    }
+    await fillInputsAndSubmit(page, username, password);
 
     return await getIdAndPrivacy(page, username);
 }
 
 
 async function fillInputsAndSubmit(page: puppeteer.Page, username: string, password: string) {
+    await page.waitForSelector('[name=username]');
     await page.type('[name=username]', username);
     await page.type('[name=password]', password);
-    //await page.screenshot({path: '1-passwordTyping.png'});
     await page.click('[type=submit]');
-    await page.waitForTimeout(5000);
+    await page.waitForTimeout(7000);
+    //
     if (await page.$('[role="alert"]') != null) {
-        //await page.screenshot({path: 'errorEnter.png'});
-        // Check ${path.resolve(__dirname, 'errorEnter.png')}
         throw new Error(`Instagram exception: probably wrong password`);
     }
-    await page.waitForTimeout(5000);
-    //await page.screenshot({path: '1-afterLogin.png'});
+    await page.waitForSelector('[href="/"]')
 }
 
 async function getIdAndPrivacy(page: puppeteer.Page, username: string): Promise<UserIdAndPrivacy> {

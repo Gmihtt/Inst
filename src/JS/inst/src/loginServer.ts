@@ -34,7 +34,7 @@ server.on('connection', function connection(socket){
             let errorInfo: LoginResponse = {
                 status: false,
                 username: userData.username,
-                errorMessage: "Failure to start browser: " + e.message,
+                error_message: "Failure to start browser: " + e.message,
             }
             socket.send(Buffer.from(JSON.stringify(errorInfo)));
         }
