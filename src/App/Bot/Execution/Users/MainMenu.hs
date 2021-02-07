@@ -4,15 +4,15 @@ module App.Bot.Execution.Users.MainMenu where
 
 import qualified App.Bot.Messages.FlowMessages as Message
 import Common.Flow (Flow)
-import qualified MongoDB.Queries as Mongo
+import qualified Common.FlowEnv as Common
 import qualified Data.Text as T
-import qualified Types.Domain.InstAccount as InstAccount
+import qualified MongoDB.Queries as Mongo
+import qualified Redis.Queries as Redis
 import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.Message as Message
-import qualified Redis.Queries as Redis
-import qualified Common.FlowEnv as Common
-import qualified Types.Domain.Status.TgUsersStatus as TgUsersStatus
+import qualified Types.Domain.InstAccount as InstAccount
 import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
+import qualified Types.Domain.Status.TgUsersStatus as TgUsersStatus
 import Prelude hiding (id)
 
 accounts :: Message.Message -> Int -> Flow (Response Message.Message)

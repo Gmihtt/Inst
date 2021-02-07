@@ -14,5 +14,5 @@ import Telegram.Types.Domain.Keyboard.InlineKeyboardMarkup
   )
 
 mainMenuKeyboard :: InlineKeyboardMarkup
-mainMenuKeyboard = 
-    mkInlineKeyboardMarkup [[mkButton "Accounts", mkButton "Help"]]
+mainMenuKeyboard =
+  mkInlineKeyboardMarkup [[mkButton "Accounts", mkButton "Help"]]

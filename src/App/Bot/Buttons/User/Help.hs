@@ -11,5 +11,5 @@ import Telegram.Types.Domain.Keyboard.InlineKeyboardMarkup
   )
 
 helpKeyboard :: InlineKeyboardMarkup
-helpKeyboard = 
-    mkInlineKeyboardMarkup [[mkButton "Back"]]
+helpKeyboard =
+  mkInlineKeyboardMarkup [[mkButton "Back"]]

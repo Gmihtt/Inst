@@ -5,7 +5,7 @@ module App.Scripts.Statistics.API where
 import qualified App.Scripts.Socket.API as API
 import qualified App.Scripts.Socket.Connection as Connection
 import qualified Common.Environment as Environment
-import Common.Error (throwSocketErr, printError, printDebug)
+import Common.Error (printDebug, printError, throwSocketErr)
 import Common.Flow (Flow)
 import Control.Monad (unless)
 import Control.Monad.IO.Class (liftIO)
@@ -14,8 +14,8 @@ import Data.Aeson (decode, encode)
 import Data.ByteString.Lazy (ByteString)
 import Data.Maybe (fromMaybe)
 import Data.Text (Text, unpack)
-import qualified Types.Domain.Manager as Manager
 import qualified Types.Communication.Scripts.Statistics as ScriptsStat
+import qualified Types.Domain.Manager as Manager
 import qualified Types.Domain.Socket as Socket
 import qualified Types.Domain.Statistic as Statistic
 

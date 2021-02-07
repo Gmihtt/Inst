@@ -1,6 +1,6 @@
-module App.Scripts.Socket.API 
-  (run,
-  ) 
+module App.Scripts.Socket.API
+  ( run,
+  )
 where
 
 import qualified App.Scripts.Socket.App as Socket

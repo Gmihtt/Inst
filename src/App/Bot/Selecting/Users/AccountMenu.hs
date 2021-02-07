@@ -4,17 +4,17 @@ module App.Bot.Selecting.Users.AccountMenu where
 
 import qualified App.Bot.Execution.Users.Statistics as Statistics
 import qualified App.Bot.Messages.FlowMessages as Messages
-import Telegram.API.Methods.SendMessage (sendMessage)
-import Control.Monad.IO.Class (liftIO)
 import Common.Flow (Flow)
+import qualified Common.FlowEnv as Common
+import Control.Monad.IO.Class (liftIO)
 import Data.Text (Text)
+import qualified MongoDB.Queries as Mongo
+import Telegram.API.Methods.SendMessage (sendMessage)
 import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.CallbackQuery as CallbackQuery
 import Telegram.Types.Domain.Message (Message)
-import qualified Common.FlowEnv as Common
 import qualified Telegram.Types.Domain.Message as Message
 import qualified Telegram.Types.Domain.User as User
-import qualified MongoDB.Queries as Mongo
 
 accountMenu :: CallbackQuery.CallbackQuery -> Message -> Text -> Flow (Response Message)
 accountMenu callBack msg instAcc =

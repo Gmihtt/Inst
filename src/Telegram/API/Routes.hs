@@ -7,8 +7,6 @@ module Telegram.API.Routes
   )
 where
 
-import Telegram.API.Routes.GetUpdates (GetUpdates)
-import Telegram.API.Routes.SendMessage (SendMessage)
 import Data.Aeson
   ( FromJSON (parseJSON),
     ToJSON (toJSON),
@@ -19,10 +17,12 @@ import Data.Aeson
 import Data.Text (Text)
 import Servant
 import Servant.Client (ClientM, client)
-import qualified Telegram.Types.Methods.SendMessage as SendMessage
+import Telegram.API.Routes.GetUpdates (GetUpdates)
+import Telegram.API.Routes.SendMessage (SendMessage)
 import Telegram.Types.Communication.Response (Response)
 import Telegram.Types.Domain.Message (Message)
 import Telegram.Types.Domain.Update (Updates)
+import qualified Telegram.Types.Methods.SendMessage as SendMessage
 
 type API = GetUpdates :<|> SendMessage
 

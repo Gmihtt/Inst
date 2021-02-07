@@ -1,32 +1,32 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module App.Bot.Execution.Users.Login   
+module App.Bot.Execution.Users.Login
   ( login,
     password,
   )
 where
 
-import qualified App.Scripts.Auth.API as ScriptsAuth
 import qualified App.Bot.Messages.FlowMessages as Message
+import qualified App.Scripts.Auth.API as ScriptsAuth
 import Common.Flow (Flow)
+import qualified Common.FlowEnv as Common
 import Control.Monad.IO.Class (MonadIO (liftIO))
+import qualified Data.List as List
 import Data.Maybe (fromMaybe, maybe)
 import Data.String (lines)
 import Data.Text (Text)
-import qualified Data.List as List
 import qualified Data.Text as T
 import qualified MongoDB.Queries as Mongo
 import qualified MongoDB.Transforms.InstAccount as Transforms
 import qualified MongoDB.Transforms.TgUser as Transforms
 import qualified Redis.Queries as Redis
-import qualified Types.Domain.InstAccount as InstAccount
-import qualified Types.Communication.Scripts.Auth as Auth
-import qualified Types.Domain.TgUser as TgUser
 import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.Message as Message
-import qualified Common.FlowEnv as Common
-import qualified Types.Domain.Status.TgUsersStatus as TgUsersStatus
+import qualified Types.Communication.Scripts.Auth as Auth
+import qualified Types.Domain.InstAccount as InstAccount
 import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
+import qualified Types.Domain.Status.TgUsersStatus as TgUsersStatus
+import qualified Types.Domain.TgUser as TgUser
 import Prelude hiding (id)
 
 login :: Message.Message -> Int -> Text -> Flow (Response Message.Message)

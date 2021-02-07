@@ -8,21 +8,21 @@ module Common.Error
     throwSocketErr,
     throwThreadsError,
     printDebug,
-    printError
+    printError,
   )
 where
 
 import Common.Exception.ConfigError as Error
 import Common.Exception.MongoError as Error
 import Common.Exception.RedisError as Error
-import Common.Exception.SocketError as Error ( SocketError(..) )
+import Common.Exception.SocketError as Error (SocketError (..))
 import Common.Exception.TelegramError as Error
 import Common.Exception.ThreadsError as Error
 import Control.Exception (Exception, throwIO)
 import Control.Monad.IO.Class (MonadIO (liftIO))
-import System.Log.Logger ( debugM, errorM )
 import Data.Maybe (fromMaybe)
 import Data.Text (Text)
+import System.Log.Logger (debugM, errorM)
 
 data Error
   = Config Error.ConfigError

@@ -1,8 +1,8 @@
 module Types.Domain.Status.TgUsersStatus where
 
-import Types.Domain.Status.TgUserStatus ( TgUserStatus )
-import Data.Text (Text)
 import qualified Control.Concurrent.Map as Map
+import Data.Text (Text)
+import Types.Domain.Status.TgUserStatus (TgUserStatus)
 
 type TgUsersStatus = Map.Map Text TgUserStatus
 

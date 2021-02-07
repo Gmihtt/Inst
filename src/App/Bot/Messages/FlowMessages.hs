@@ -20,10 +20,10 @@ where
 
 import qualified App.Bot.Buttons.Keyboards as Keyboard
 import qualified App.Bot.Messages.MessagesBody as Messages
-import Telegram.API.Methods.SendMessage (sendMessage)
 import Common.Flow (Flow)
 import Data.Text (Text)
 import qualified Data.Text as Text
+import Telegram.API.Methods.SendMessage (sendMessage)
 import Telegram.Types.Communication.Response (Response (..))
 import Telegram.Types.Domain.Message (Message)
 
@@ -63,9 +63,9 @@ sendStat msg stat = do
   sendMessage Nothing (Messages.stat msg stat)
 
 showInstAccs :: Message -> [Text] -> Flow (Response Message)
-showInstAccs msg instAccs = 
-  sendMessage 
-    (Just $ Keyboard.instAccsKeyboard instAccs) 
+showInstAccs msg instAccs =
+  sendMessage
+    (Just $ Keyboard.instAccsKeyboard instAccs)
     (Messages.showInstAccs msg)
 
 strangeMessage :: Message -> Flow (Response Message)
@@ -81,11 +81,11 @@ accountMenu msg =
   sendMessage (Just Keyboard.accountMenuKeyboard) (Messages.accountMenu msg)
 
 start :: Message -> Flow (Response Message)
-start msg = 
+start msg =
   sendMessage Nothing (Messages.startMsg msg)
 
 stop :: Message -> Flow (Response Message)
-stop msg = 
+stop msg =
   sendMessage Nothing (Messages.stopMsg msg)
 
 todoMsg :: Message -> Flow (Response Message)

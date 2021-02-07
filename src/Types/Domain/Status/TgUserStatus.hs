@@ -5,6 +5,7 @@ import Data.Text (Text)
 data TgUserStatus = TgUser UserStatus | TgAdmin AdminStatus deriving (Show)
 
 type AccLogin = Text
+
 type InstId = Text
 
 data UserStatus

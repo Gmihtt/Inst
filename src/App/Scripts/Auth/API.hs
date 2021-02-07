@@ -3,7 +3,7 @@ module App.Scripts.Auth.API where
 import qualified App.Scripts.Socket.API as API
 import qualified App.Scripts.Socket.Connection as Connection
 import qualified Common.Environment as Environment
-import Common.Error (throwSocketErr, printDebug)
+import Common.Error (printDebug, throwSocketErr)
 import Common.Flow (Flow)
 import Control.Concurrent (threadDelay)
 import Control.Concurrent.MVar (newEmptyMVar, putMVar, takeMVar)
@@ -12,8 +12,8 @@ import Control.Monad.Trans.Reader (ask)
 import Data.Aeson (decode, encode)
 import Data.ByteString.Lazy (ByteString)
 import Data.Text (Text)
-import qualified Types.Domain.Manager as Manager
 import qualified Types.Communication.Scripts.Auth as ScriptsAuth
+import qualified Types.Domain.Manager as Manager
 import qualified Types.Domain.Socket as Socket
 
 auth :: Text -> Text -> Flow ScriptsAuth.Response

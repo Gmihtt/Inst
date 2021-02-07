@@ -2,23 +2,23 @@
 
 module App.Bot.ParseUpdates where
 
-import qualified App.Bot.Selecting.Users.API as UserAPI
 import qualified App.Bot.Messages.FlowMessages as Messages
+import qualified App.Bot.Selecting.Users.API as UserAPI
 import qualified Common.Environment as Environment
 import Common.Error (throwTgErr)
 import Common.Flow (Flow)
+import qualified Common.FlowEnv as Common
 import Control.Concurrent (forkIO)
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Trans.Reader (runReaderT)
-import qualified Types.Domain.TgUpdates as TgUpdates
 import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.CallbackQuery as CallbackQuery
 import Telegram.Types.Domain.Message (Message)
 import Telegram.Types.Domain.Update (Update)
-import qualified Common.FlowEnv as Common
-import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
-import qualified Telegram.Types.Domain.User as User
 import qualified Telegram.Types.Domain.Update as Update
+import qualified Telegram.Types.Domain.User as User
+import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
+import qualified Types.Domain.TgUpdates as TgUpdates
 
 execute :: TgUpdates.ListOfUpdates -> Environment.Environment -> IO ()
 execute updates env = do
@@ -50,7 +50,6 @@ checkUserStatus cb msg = do
     Just _ -> Messages.strangeMessage msg
   where
     userId = User.id $ CallbackQuery.callback_from cb
-
 
 getMsg :: Maybe Message -> Flow Message
 getMsg mbMsg = liftIO $ maybe (throwTgErr "Function: parseUpdate. In 'update' field 'message' is Nothing") pure mbMsg

@@ -7,10 +7,10 @@ import qualified Common.Environment as Environment
 import Common.Flow (Flow)
 import Control.Monad.IO.Class (MonadIO)
 import Control.Monad.Trans.Reader (ReaderT, ask)
+import qualified Data.List as List
 import Data.Text (Text)
 import qualified Database.MongoDB as Mongo
-import Database.MongoDB ((=:), (!?))
-import qualified Data.List as List
+import Database.MongoDB ((!?), (=:))
 import MongoDB.Transforms.InstAccount (mkInstAccsByDocs)
 import qualified Types.Domain.InstAccount as InstAccount
 import Prelude hiding (id)

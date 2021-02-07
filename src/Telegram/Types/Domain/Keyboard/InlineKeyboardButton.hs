@@ -46,7 +46,7 @@ mkInlineKeyboardButton keyboard_text keyboard_url callback =
     }
 
 mkButton :: Text -> InlineKeyboardButton
-mkButton t = 
+mkButton t =
   InlineKeyboardButton
     { text = t,
       url = Nothing,

@@ -25,15 +25,15 @@ data Environment
         logName :: String
       }
 
-mkEnv :: 
-  Manager -> 
-  Text -> 
-  Pipe -> 
-  Connection -> 
-  Text -> 
-  Text -> 
-  Manager.AuthManager -> 
-  Manager.StatisticsManager -> 
+mkEnv ::
+  Manager ->
+  Text ->
+  Pipe ->
+  Connection ->
+  Text ->
+  Text ->
+  Manager.AuthManager ->
+  Manager.StatisticsManager ->
   TgUsersStatus.TgUsersStatus ->
   String ->
   Environment

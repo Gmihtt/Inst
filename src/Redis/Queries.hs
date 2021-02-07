@@ -3,7 +3,7 @@ module Redis.Queries (getValue, putValue) where
 import qualified Common.Environment as Environment
 import Common.Error (throwRedisErr)
 import Common.Flow (Flow)
-import Common.Json (FromJSON, ToJSON, encodeBs, decodeBs)
+import Common.Json (FromJSON, ToJSON, decodeBs, encodeBs)
 import Control.Monad (void)
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Trans.Reader (ask)

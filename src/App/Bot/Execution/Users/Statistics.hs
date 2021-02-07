@@ -2,26 +2,26 @@
 
 module App.Bot.Execution.Users.Statistics where
 
-import qualified App.Scripts.Statistics.API as API
 import qualified App.Bot.Messages.FlowMessages as Messages
+import qualified App.Scripts.Statistics.API as API
 import qualified Common.Environment as Environment
+import Common.Error (throwRedisErr)
 import Common.Flow (Flow)
+import qualified Common.FlowEnv as Common
 import qualified Control.Concurrent.Map as Map
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Trans.Reader (ask)
-import Common.Error (throwRedisErr)
 import Data.Text (Text)
-import qualified Redis.Queries as Redis
 import qualified MongoDB.Queries as QMongo
+import qualified Redis.Queries as Redis
+import Telegram.Types.Communication.Response (Response (..))
+import qualified Telegram.Types.Domain.Message as Message
+import qualified Types.Communication.Scripts.Statistics as ScriptsStat
 import qualified Types.Domain.InstAccount as InstAccount
 import qualified Types.Domain.Manager as Manager
 import qualified Types.Domain.Statistic as Statistic
-import qualified Types.Communication.Scripts.Statistics as ScriptsStat
-import qualified Types.Domain.Status.TgUsersStatus as TgUsersStatus
 import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
-import qualified Common.FlowEnv as Common
-import Telegram.Types.Communication.Response (Response (..))
-import qualified Telegram.Types.Domain.Message as Message
+import qualified Types.Domain.Status.TgUsersStatus as TgUsersStatus
 
 start :: Message.Message -> Int -> Text -> Flow (Response Message.Message)
 start msg userId instId = do
@@ -48,7 +48,7 @@ logout :: Message.Message -> Flow (Response Message.Message)
 logout = Messages.todoMsg
 
 subscription :: Message.Message -> Flow (Response Message.Message)
-subscription = Messages.todoMsg 
+subscription = Messages.todoMsg
 
 back :: Message.Message -> Int -> Flow (Response Message.Message)
 back msg userId = do
