@@ -37,8 +37,9 @@ data Response
   = Response
       { response_inst_id :: Maybe Text,
         response_username :: Text,
+        response_is_private :: Maybe Bool,
         response_status :: Bool,
-        response_errorMessage :: Maybe Text
+        response_error_message :: Maybe Text
       }
   deriving (Show, Eq, Generic)
 

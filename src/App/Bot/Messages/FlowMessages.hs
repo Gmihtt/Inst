@@ -15,6 +15,7 @@ module App.Bot.Messages.FlowMessages
     start,
     stop,
     todoMsg,
+    publicAccount,
   )
 where
 
@@ -91,3 +92,7 @@ stop msg =
 todoMsg :: Message -> Flow (Response Message)
 todoMsg msg =
   sendMessage Nothing (Messages.todoMsg msg)
+
+publicAccount :: Message -> Flow (Response Message)
+publicAccount msg =
+  sendMessage Nothing (Messages.publicAccount msg)

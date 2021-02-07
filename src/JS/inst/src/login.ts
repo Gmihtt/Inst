@@ -12,8 +12,14 @@ export interface LoginRequest {
 export interface LoginResponse {
     status: boolean;
     username: string;
+    is_private?: boolean;
     inst_id?: string;
-    errorMessage?: string;
+    error_message?: string;
+}
+
+interface UserIdAndPrivacy{
+    inst_id: string;
+    is_private: boolean;
 }
 
 const dirNumberMutex = new Mutex();
@@ -34,26 +40,29 @@ export async function login(username: string, password: string): Promise<LoginRe
         ]
     });
 
-    let id: string | null = null;
+    let inst_id: string | null = null;
+
 
     const page: puppeteer.Page = await browser.newPage();
     try {
-        id = await LoginAndGetId(page, username, password);
+        let is_private: boolean;
+        ({inst_id, is_private} = await LoginAndGetId(page, username, password));
         return {
             status: true,
             username: username,
-            inst_id: id,
+            inst_id: inst_id,
+            is_private: is_private,
         }
     } catch (e) {
         return {
             status: false,
             username: username,
-            errorMessage: e.message,
+            error_message: e.message,
         }
     } finally {
         await browser.close();
-        if (id != null) {
-            await copyUserFolderIntoCookiesDir(dirNumber, id);
+        if (inst_id != null) {
+            await copyUserFolderIntoCookiesDir(dirNumber, inst_id);
         }
         await removeUserDirFolder(dirNumber);
     }
@@ -74,33 +83,27 @@ async function LoginAndGetId(page: puppeteer.Page, username: string, password: s
 
 
     await page.goto('https://www.instagram.com/accounts/login/');
-    await page.waitForTimeout(3000);
-    //await page.screenshot({path: '1-loginPage.png'});
 
-    if ((await page.$('[href="/accounts/activity/"]') === null)) {
-        await fillInputsAndSubmit(page, username, password);
-    }
+    await fillInputsAndSubmit(page, username, password);
 
-    return await getId(page, username);
+    return await getIdAndPrivacy(page, username);
 }
 
 
 async function fillInputsAndSubmit(page: puppeteer.Page, username: string, password: string) {
+    await page.waitForSelector('[name=username]');
     await page.type('[name=username]', username);
     await page.type('[name=password]', password);
-    //await page.screenshot({path: '1-passwordTyping.png'});
     await page.click('[type=submit]');
-    await page.waitForTimeout(5000);
+    await page.waitForTimeout(7000);
+    //
     if (await page.$('[role="alert"]') != null) {
-        //await page.screenshot({path: 'errorEnter.png'});
-        // Check ${path.resolve(__dirname, 'errorEnter.png')}
         throw new Error(`Instagram exception: probably wrong password`);
     }
-    await page.waitForTimeout(5000);
-    //await page.screenshot({path: '1-afterLogin.png'});
+    await page.waitForSelector('[href="/"]')
 }
 
-async function getId(page: puppeteer.Page, username: string): Promise<string> {
+async function getIdAndPrivacy(page: puppeteer.Page, username: string): Promise<UserIdAndPrivacy> {
     let responseObject: any = await page.evaluate(async (username: string) => {
         try {
             const response = await fetch(`https://www.instagram.com/${username}/?__a=1`);
@@ -112,6 +115,8 @@ async function getId(page: puppeteer.Page, username: string): Promise<string> {
     if (responseObject === null){
         throw new Error('Error while fetching id');
     }
-    return responseObject.graphql.user.id;
+    return {
+        inst_id: responseObject.graphql.user.id,
+        is_private: responseObject.graphql.user.is_private,
+    };
 }
-
