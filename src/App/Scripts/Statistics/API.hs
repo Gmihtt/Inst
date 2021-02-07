@@ -5,7 +5,7 @@ module App.Scripts.Statistics.API where
 import qualified App.Scripts.Socket.API as API
 import qualified App.Scripts.Socket.Connection as Connection
 import qualified Common.Environment as Environment
-import Common.Error (throwSocketErr)
+import Common.Error (throwSocketErr, printError, printDebug)
 import Common.Flow (Flow)
 import Control.Monad (unless)
 import Control.Monad.IO.Class (liftIO)
@@ -35,9 +35,10 @@ mkStatistics bsBody mbStat = do
     addUsers users stat = foldr Statistic.addUser stat users
     getUsers value =
       if not $ ScriptsStat.response_status value
-        then print (("Error : " <>) . unpack <$> ScriptsStat.response_errorMessage value) >> pure []
+        then printError (("Error : " <>) . unpack <$> ScriptsStat.response_errorMessage value) >> pure []
         else pure . fromMaybe [] $ ScriptsStat.response_users value
 
 sendMsg :: Manager.StatisticsManager -> ScriptsStat.Request -> IO ()
 sendMsg manager req = do
+  printDebug req
   Manager.sendMsg (encode req) manager

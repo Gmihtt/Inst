@@ -7,16 +7,20 @@ module Common.Error
     throwTgErr,
     throwSocketErr,
     throwThreadsError,
+    printDebug,
+    printError
   )
 where
 
 import Common.Exception.ConfigError as Error
 import Common.Exception.MongoError as Error
 import Common.Exception.RedisError as Error
-import Common.Exception.SocketError as Error
+import Common.Exception.SocketError as Error ( SocketError(..) )
 import Common.Exception.TelegramError as Error
 import Common.Exception.ThreadsError as Error
 import Control.Exception (Exception, throwIO)
+import Control.Monad.IO.Class (MonadIO (liftIO))
+import System.Log.Logger ( debugM, errorM )
 import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 
@@ -31,20 +35,25 @@ data Error
 
 instance Exception Error
 
+throwError :: Error -> IO a
+throwError err = do
+  printError err
+  throwIO err
+
 throwConfigErr :: String -> IO a
-throwConfigErr err = throwIO . Config $ Error.ConfigError err
+throwConfigErr err = throwError . Config $ Error.ConfigError err
 
 throwRedisErr :: String -> IO a
-throwRedisErr err = throwIO . Redis $ Error.RedisError err
+throwRedisErr err = throwError . Redis $ Error.RedisError err
 
 throwMongoErr :: String -> IO a
-throwMongoErr err = throwIO . Mongo $ Error.MongoError err
+throwMongoErr err = throwError . Mongo $ Error.MongoError err
 
 throwSocketErr :: String -> IO a
-throwSocketErr err = throwIO . Socket $ Error.SocketError err
+throwSocketErr err = throwError . Socket $ Error.SocketError err
 
 throwThreadsError :: String -> IO a
-throwThreadsError err = throwIO . Threads $ Error.ThreadsError err
+throwThreadsError err = throwError . Threads $ Error.ThreadsError err
 
 throwTgErr :: Text -> IO a
 throwTgErr = throwTelegramErr Nothing
@@ -56,3 +65,11 @@ throwTelegramErr mbCode desc =
       { code = fromMaybe 0 mbCode,
         description = desc
       }
+
+printDebug :: Show a => a -> IO ()
+printDebug msg =
+  liftIO $ debugM "BotLogger.Main" (show msg)
+
+printError :: Show a => a -> IO ()
+printError msg =
+  liftIO $ errorM "BotLogger.Main" (show msg)

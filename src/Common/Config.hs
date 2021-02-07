@@ -3,6 +3,7 @@
 module Common.Config
   ( getToken,
     getDataBase,
+    getCollection,
     getAuthSocket,
     getStatSocket,
   )
@@ -27,9 +28,6 @@ getToken = do
   value <- getValue "token"
   pure $ "bot" <> value
 
-getDataBase :: IO Text
-getDataBase = getValue "mongoDB"
-
 getAuthSocket :: IO Socket
 getAuthSocket = do
   port <- unpack <$> getValue "auth_socket_port"
@@ -41,3 +39,9 @@ getStatSocket = do
   port <- unpack <$> getValue "stat_socket_port"
   host <- unpack <$> getValue "stat_socket_host"
   pure $ mkSocket host (read port) ""
+
+getDataBase :: IO Text
+getDataBase = getValue "mongo_db"
+
+getCollection :: IO Text
+getCollection = getValue "mongo_collection"

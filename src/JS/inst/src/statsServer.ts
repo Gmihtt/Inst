@@ -37,7 +37,7 @@ server.on('connection', function connection(socket) {
         const request: StatsRequest = JSON.parse(message.toString());
 
         switch (request.action) {
-            case 'start':
+            case 'Start':
                 activeFollowerGetters.add(request.inst_id);
                 let timeout: number = 60000;
                 if (request.timeout != undefined) {
@@ -45,7 +45,7 @@ server.on('connection', function connection(socket) {
                 }
                 getAndSendFollowersCount(socket, request.inst_id, timeout).catch(e => console.log(`Error while getting data: ${e}`));
                 break;
-            case 'stop':
+            case 'Stop':
                 activeFollowerGetters.delete(request.inst_id);
                 break;
         }

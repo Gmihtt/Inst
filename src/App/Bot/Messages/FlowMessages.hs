@@ -1,62 +1,93 @@
 module App.Bot.Messages.FlowMessages
-  ( baseMenu,
+  ( mainMenu,
     oldMsg,
     msgForEmptyUser,
     failAuthMsg,
     loginMsg,
+    passwordMsg,
     successAuthMsg,
     repeatLoggingMsg,
     sendStat,
-    sendEmptyStat,
+    showInstAccs,
+    strangeMessage,
+    helpMessage,
+    accountMenu,
+    start,
+    stop,
+    todoMsg,
   )
 where
 
-import App.Bot.Buttons.BaseMenu (baseKeyboard)
+import qualified App.Bot.Buttons.Keyboards as Keyboard
 import qualified App.Bot.Messages.MessagesBody as Messages
 import Telegram.API.Methods.SendMessage (sendMessage)
 import Common.Flow (Flow)
-import Data.Text (empty)
+import Data.Text (Text)
+import qualified Data.Text as Text
 import Telegram.Types.Communication.Response (Response (..))
 import Telegram.Types.Domain.Message (Message)
 
-baseMenu :: Message -> Flow (Response Message)
-baseMenu msg = sendMessage (Just baseKeyboard) (Messages.baseMenu msg)
+mainMenu :: Message -> Flow (Response Message)
+mainMenu msg = sendMessage (Just Keyboard.mainMenuKeyboard) (Messages.mainMenu msg)
 
 oldMsg :: Message -> Flow (Response Message)
 oldMsg msg = do
   sendMessage Nothing (Messages.oldMsg msg)
-  baseMenu msg
 
 msgForEmptyUser :: Message -> Flow (Response Message)
 msgForEmptyUser msg = do
   sendMessage Nothing (Messages.emptyUser msg)
-  baseMenu msg
 
 failAuthMsg :: Message -> Flow (Response Message)
 failAuthMsg msg = do
-  sendMessage Nothing (Messages.failAuth empty msg)
-  baseMenu msg
+  sendMessage Nothing (Messages.failAuth Text.empty msg)
 
 loginMsg :: Message -> Flow (Response Message)
 loginMsg msg = do
   sendMessage Nothing (Messages.login msg)
 
+passwordMsg :: Message -> Flow (Response Message)
+passwordMsg msg = do
+  sendMessage Nothing (Messages.password msg)
+
 successAuthMsg :: Message -> Flow (Response Message)
 successAuthMsg msg = do
   sendMessage Nothing (Messages.success msg)
-  baseMenu msg
 
 repeatLoggingMsg :: Message -> Flow (Response Message)
 repeatLoggingMsg msg = do
   sendMessage Nothing (Messages.repeatLogging msg)
-  baseMenu msg
 
 sendStat :: Message -> Int -> Flow (Response Message)
 sendStat msg stat = do
   sendMessage Nothing (Messages.stat msg stat)
-  baseMenu msg
 
-sendEmptyStat :: Message -> Flow (Response Message)
-sendEmptyStat msg = do
-  sendMessage Nothing (Messages.emptyStat msg)
-  baseMenu msg
+showInstAccs :: Message -> [Text] -> Flow (Response Message)
+showInstAccs msg instAccs = 
+  sendMessage 
+    (Just $ Keyboard.instAccsKeyboard instAccs) 
+    (Messages.showInstAccs msg)
+
+strangeMessage :: Message -> Flow (Response Message)
+strangeMessage msg =
+  sendMessage Nothing (Messages.strangeMessage msg)
+
+helpMessage :: Message -> Flow (Response Message)
+helpMessage msg =
+  sendMessage (Just Keyboard.helpKeyboard) (Messages.helpMessage msg)
+
+accountMenu :: Message -> Flow (Response Message)
+accountMenu msg =
+  sendMessage (Just Keyboard.accountMenuKeyboard) (Messages.accountMenu msg)
+
+start :: Message -> Flow (Response Message)
+start msg = 
+  sendMessage Nothing (Messages.startMsg msg)
+
+stop :: Message -> Flow (Response Message)
+stop msg = 
+  sendMessage Nothing (Messages.stopMsg msg)
+
+todoMsg :: Message -> Flow (Response Message)
+todoMsg msg =
+  sendMessage Nothing (Messages.todoMsg msg)

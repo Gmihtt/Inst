@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: ff321b4d9efebc4c0db12dfdc04382eeb031d176c0a8fb4dab449a63e58a4ed7
+-- hash: 93fdfd82b8e84b918c89fa246de9551b37cc804f9397149d41f99d5962a43cfa
 
 name:           Inst
 version:        0.1.0.0
@@ -28,20 +28,34 @@ library
   exposed-modules:
       App.App
       App.Bot.BotMain
-      App.Bot.Buttons.BaseMenu
+      App.Bot.Buttons.Keyboards
+      App.Bot.Buttons.User.AccountMenu
+      App.Bot.Buttons.User.Help
+      App.Bot.Buttons.User.MainMenu
+      App.Bot.Buttons.User.ShowInstAccounts
+      App.Bot.Execution.Users.Help
+      App.Bot.Execution.Users.Login
+      App.Bot.Execution.Users.MainMenu
+      App.Bot.Execution.Users.ShowAccounts
+      App.Bot.Execution.Users.Statistics
       App.Bot.GetUpdates
-      App.Bot.Login.Login
       App.Bot.Messages.FlowMessages
       App.Bot.Messages.MessagesBody
       App.Bot.ParseUpdates
-      App.Bot.Statistics.Statistics
+      App.Bot.Selecting.Admin.AccountsMenu
+      App.Bot.Selecting.Admin.MessageFromBot
+      App.Bot.Selecting.Admin.SelectingTgUser
+      App.Bot.Selecting.Users.AccountMenu
+      App.Bot.Selecting.Users.API
+      App.Bot.Selecting.Users.HelpMenu
+      App.Bot.Selecting.Users.ListOfAccounts
+      App.Bot.Selecting.Users.MainMenu
+      App.Bot.Selecting.Users.MessageFromUser
       App.Scripts.Auth.API
       App.Scripts.Socket.API
       App.Scripts.Socket.App
       App.Scripts.Socket.Connection
       App.Scripts.Statistics.API
-      App.SelectingLogic.CallBackCases
-      App.SelectingLogic.UsualCases
       Common.Config
       Common.Environment
       Common.Error
@@ -52,8 +66,8 @@ library
       Common.Exception.TelegramError
       Common.Exception.ThreadsError
       Common.Flow
+      Common.FlowEnv
       Common.Json
-      Common.Transforms
       MongoDB.Queries
       MongoDB.Transforms.InstAccount
       MongoDB.Transforms.TgUser
@@ -83,9 +97,8 @@ library
       Types.Domain.Manager
       Types.Domain.Socket
       Types.Domain.Statistic
-      Types.Domain.Status.LoginStatus
-      Types.Domain.Status.ScriptStatus
-      Types.Domain.Status.UserStatus
+      Types.Domain.Status.TgUsersStatus
+      Types.Domain.Status.TgUserStatus
       Types.Domain.Stream
       Types.Domain.TgUpdates
       Types.Domain.TgUser
@@ -106,6 +119,7 @@ library
     , directory
     , filepath
     , hedis
+    , hslogger
     , http-client
     , http-client-tls
     , http-media
@@ -147,6 +161,7 @@ executable Inst-exe
     , directory
     , filepath
     , hedis
+    , hslogger
     , http-client
     , http-client-tls
     , http-media
@@ -189,6 +204,7 @@ test-suite Inst-test
     , directory
     , filepath
     , hedis
+    , hslogger
     , hspec
     , hspec-wai
     , hspec-wai-json

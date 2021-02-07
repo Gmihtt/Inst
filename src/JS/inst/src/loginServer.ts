@@ -29,6 +29,7 @@ server.on('connection', function connection(socket){
         const userData: LoginRequest = JSON.parse(message.toString());
         try {
             const loginInfo: LoginResponse = await login(userData.username, userData.password);
+            console.log(JSON.stringify(loginInfo));
             socket.send(JSON.stringify(loginInfo));
         } catch(e) {
             let errorInfo: LoginResponse = {
@@ -36,6 +37,7 @@ server.on('connection', function connection(socket){
                 username: userData.username,
                 errorMessage: "Failure to start browser: " + e.message,
             }
+            socket.send(JSON.stringify(errorInfo));
             socket.send(Buffer.from(JSON.stringify(errorInfo)));
         }
     })

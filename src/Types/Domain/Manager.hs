@@ -29,11 +29,11 @@ deleteTask taskId manager = Map.delete taskId (tasks manager)
   
 initManager :: Socket.Socket -> (Socket.Socket -> IO Stream.Stream) -> IO (Manager a)
 initManager socket getSocket = do
-  stream <- getSocket socket
-  manager <- Map.empty
+  s <- getSocket socket
+  m <- Map.empty
   pure $ Manager
-    { tasks = manager,
-      stream = stream
+    { tasks = m,
+      stream = s
     }
 
 sendMsg :: ByteString -> Manager a -> IO ()

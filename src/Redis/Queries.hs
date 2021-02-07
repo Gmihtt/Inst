@@ -3,25 +3,24 @@ module Redis.Queries (getValue, putValue) where
 import qualified Common.Environment as Environment
 import Common.Error (throwRedisErr)
 import Common.Flow (Flow)
-import qualified Common.Transforms as Common
+import Common.Json (FromJSON, ToJSON, encodeBs, decodeBs)
 import Control.Monad (void)
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Trans.Reader (ask)
-import Data.ByteString (ByteString)
 import Data.Either (fromRight)
 import qualified Database.Redis as Redis
 
-getValue :: Show a => a -> Flow (Maybe String)
+getValue :: (ToJSON a, FromJSON b) => a -> Flow (Maybe b)
 getValue key = do
   env <- ask
   let conn = Environment.conn env
-  res <- liftIO . Redis.runRedis conn . Redis.get $ Common.packBs key
-  let value = Common.unpackBs <$> fromRight Nothing res
-  pure value
+  res <- liftIO . Redis.runRedis conn . Redis.get $ encodeBs key
+  let value = fromRight Nothing res
+  pure $ decodeBs =<< value
 
-putValue :: (Show a, Show b) => a -> b -> Flow ()
+putValue :: (ToJSON a, ToJSON b) => a -> b -> Flow ()
 putValue key val = do
   env <- ask
   let conn = Environment.conn env
-  status <- liftIO . Redis.runRedis conn $ Redis.set (Common.packBs key) (Common.packBs val)
+  status <- liftIO . Redis.runRedis conn $ Redis.set (encodeBs key) (encodeBs val)
   liftIO $ either (throwRedisErr . show) pure (void status)

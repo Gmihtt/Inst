@@ -49,6 +49,7 @@ dependencies:
 - ctrie
 - network
 - containers
+- hslogger
 
 library:
   source-dirs: src

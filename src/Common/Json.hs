@@ -9,6 +9,8 @@ module Common.Json
     toJson,
     parseJsonDrop,
     parseJson,
+    encodeBs,
+    decodeBs,
   )
 where
 
@@ -26,8 +28,11 @@ import Data.Aeson
     parseJSON,
     toJSON,
   )
+import qualified Data.Aeson as Aeson
 import Data.Aeson.Types (Parser)
 import GHC.Generics (Generic (Rep))
+import qualified Data.ByteString.Lazy as LB
+import qualified Data.ByteString as B
 
 toJsonDrop :: forall a. (Generic a, GToJSON Zero (Rep a)) => Int -> a -> Value
 toJsonDrop prefix =
@@ -45,3 +50,9 @@ parseJsonDrop prefix = genericParseJSON defaultOptions {fieldLabelModifier = dro
 
 parseJson :: forall a. (Generic a, GFromJSON Zero (Rep a)) => Value -> Parser a
 parseJson = parseJsonDrop 0
+
+encodeBs :: ToJSON a => a -> B.ByteString
+encodeBs = LB.toStrict . Aeson.encode
+
+decodeBs :: FromJSON a => B.ByteString -> Maybe a
+decodeBs = Aeson.decode . LB.fromStrict 

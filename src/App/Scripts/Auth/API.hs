@@ -3,7 +3,7 @@ module App.Scripts.Auth.API where
 import qualified App.Scripts.Socket.API as API
 import qualified App.Scripts.Socket.Connection as Connection
 import qualified Common.Environment as Environment
-import Common.Error (throwSocketErr)
+import Common.Error (throwSocketErr, printDebug)
 import Common.Flow (Flow)
 import Control.Concurrent (threadDelay)
 import Control.Concurrent.MVar (newEmptyMVar, putMVar, takeMVar)
@@ -21,7 +21,7 @@ auth username password = do
   env <- ask
   let authManager = Environment.authManager env
   let req = ScriptsAuth.mkRequest username password
-  liftIO $ print req
+  liftIO $ printDebug req
   liftIO $ sendAndReceiveMsg username authManager req
 
 authConnection :: Socket.Socket -> IO Manager.AuthManager
