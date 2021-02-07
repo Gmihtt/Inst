@@ -29,16 +29,18 @@ server.on('connection', function connection(socket){
         const userData: LoginRequest = JSON.parse(message.toString());
         try {
             const loginInfo: LoginResponse = await login(userData.username, userData.password);
-            console.log(JSON.stringify(loginInfo));
-            socket.send(JSON.stringify(loginInfo));
+            const loginJSON = JSON.stringify(loginInfo);
+            console.log(`Login: Data sent: ${loginJSON}`);
+            socket.send(Buffer.from(loginJSON));
         } catch(e) {
             let errorInfo: LoginResponse = {
                 status: false,
                 username: userData.username,
                 errorMessage: "Failure to start browser: " + e.message,
             }
-            socket.send(JSON.stringify(errorInfo));
-            socket.send(Buffer.from(JSON.stringify(errorInfo)));
+            const errorJSON = JSON.stringify(errorInfo);
+            console.log(`Login: Error sent: ${errorJSON}`);
+            socket.send(Buffer.from(errorJSON));
         }
     })
 });
