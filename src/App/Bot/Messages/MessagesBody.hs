@@ -1,33 +1,42 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module App.Bot.Messages.MessagesBody
-  ( baseMenu,
+  ( mainMenu,
     login,
+    password,
     success,
     failAuth,
     emptyUser,
     repeatLogging,
     oldMsg,
     stat,
-    emptyStat,
+    showInstAccs,
+    strangeMessage,
+    helpMessage,
+    accountMenu,
+    startMsg,
+    stopMsg,
+    todoMsg,
   )
 where
 
 import Data.Text (Text, pack)
 import Telegram.Types.Domain.Message (Message, mkMessage)
 
-baseMenu :: Message -> Message
-baseMenu =
+mainMenu :: Message -> Message
+mainMenu =
   mkMessage $
-    "Это базовое меню, с его помощью вы можете авторизоваться, "
-      <> "оплатить подписку, запустить или остановить анализ вашего инстаграм аккаунта, "
-      <> "а так же вывести статистику"
+    "Это базовое меню, вы можете перейти к выбору перейти выбрать инстаграмм аккаунты или попросить помощь"
 
 login :: Message -> Message
 login =
   mkMessage $
-    "Пожалуйста отключите двухступенчатую аутентификацию и введите логин инстаграм аккаунта\n"
-      <> "В первой строке введите логин, во второй пароль"
+    "Пожалуйста отключите двухступенчатую аутентификацию и введите логин от инстаграм аккаунта"
+
+password :: Message -> Message
+password =
+  mkMessage $
+    "Введите пароль"
 
 success :: Message -> Message
 success =
@@ -53,6 +62,30 @@ stat :: Message -> Int -> Message
 stat msg num =
   mkMessage ("Статистика по вашему инстаграм аккаунту : " <> (pack $ show num)) msg
 
-emptyStat :: Message -> Message
-emptyStat =
-  mkMessage "Вы не указали ещё не один истаграм аккаунт"
+showInstAccs :: Message -> Message
+showInstAccs =
+  mkMessage "Это список зарегестрированных аккаунтов, вы можете выбрать любой из них или добавить новый"
+
+strangeMessage :: Message -> Message
+strangeMessage =
+  mkMessage "К сожалению, я не понимаю что вы от меня хотите :("
+
+helpMessage :: Message -> Message
+helpMessage =
+  mkMessage "Если у вас возникли какие-то проблемы, обратитесь к @durahan"
+
+accountMenu :: Message -> Message
+accountMenu =
+  mkMessage "Меню вашего аккаунта"
+
+startMsg :: Message -> Message
+startMsg =
+  mkMessage "Начал собирать статистику"
+
+stopMsg :: Message -> Message
+stopMsg =
+  mkMessage "Ок, останавливаюсь"
+
+todoMsg :: Message -> Message
+todoMsg =
+  mkMessage "эта функция ещё не реализована"

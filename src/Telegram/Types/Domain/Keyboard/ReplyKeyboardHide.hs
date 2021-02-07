@@ -8,7 +8,6 @@ import Common.Json
     parseJson,
     toJson,
   )
-import Data.Text (Text)
 import GHC.Generics (Generic)
 
 data ReplyKeyboardHide

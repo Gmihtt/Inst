@@ -6,7 +6,7 @@ pwd
 screen -d -m npm run login
 screen -d -m npm run start
 
-sleep 1s
+sleep 5s
 
 cd $workingDir
 stack run

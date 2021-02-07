@@ -44,9 +44,21 @@ export async function getFollowers(id: string): Promise<StatsResponse> {
         await page.waitForTimeout(TIMEOUT);
 
         let responseObject: any = await page.evaluate(async () => {
-            const response: Response = await fetch(`https://www.instagram.com/accounts/activity/?__a=1&include_reel=true`);
-            return response.json();
+            try {
+                const response: Response = await fetch(`https://www.instagram.com/accounts/activity/?__a=1&include_reel=true`);
+                return response.json();
+            } catch (e){
+                return null;
+            }
         });
+
+        if (responseObject === null){
+            return {
+                status: false,
+                inst_id: id,
+                errorMessage: 'Error while fetching followers',
+            }
+        }
 
         let usersArray = responseObject.graphql.user.edge_follow_requests.edges;
 

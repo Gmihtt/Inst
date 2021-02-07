@@ -5,8 +5,6 @@ module App.Bot.GetUpdates
   )
 where
 
-import Telegram.API.Methods.CallTelegram (callTelegram)
-import qualified Telegram.API.Routes as API
 import qualified Common.Environment as Environment
 import Common.Error (throwTelegramErr, throwTgErr)
 import Common.Flow (Flow)
@@ -17,9 +15,11 @@ import Control.Monad.Trans.Reader (ask, runReaderT)
 import Data.Maybe (fromMaybe)
 import Data.Text (Text, pack)
 import Network.HTTP.Client (Manager)
-import Types.Domain.TgUpdates (ListOfUpdates)
+import Telegram.API.Methods.CallTelegram (callTelegram)
+import qualified Telegram.API.Routes as API
 import qualified Telegram.Types.Communication.Response as Response
 import qualified Telegram.Types.Domain.Update as Update
+import Types.Domain.TgUpdates (ListOfUpdates)
 
 execute :: Maybe Integer -> Environment.Environment -> IO ListOfUpdates
 execute updateId env = do

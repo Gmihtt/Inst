@@ -20,28 +20,28 @@ empty =
     }
 
 addUser :: Text -> Statistic -> Statistic
-addUser user stat@(Statistic users lastUsers)
-  | Set.member user users = stat
+addUser user stat@(Statistic stat_users stat_lastUsers)
+  | Set.member user stat_users = stat
   | otherwise =
     Statistic
-      { users = Set.insert user users,
+      { users = Set.insert user stat_users,
         lastUsers = fixLastUsers |> user
       }
   where
     fixLastUsers =
-      if Seq.length lastUsers == 1000
-        then Seq.deleteAt 999 lastUsers
-        else lastUsers
+      if Seq.length stat_lastUsers == 1000
+        then Seq.deleteAt 999 stat_lastUsers
+        else stat_lastUsers
 
 getSize :: Statistic -> Int
-getSize (Statistic users _) = Set.size users
+getSize (Statistic stat_users _) = Set.size stat_users
 
 isMember :: Text -> Statistic -> Bool
-isMember user stat@(Statistic users _) = Set.member user users
+isMember user (Statistic stat_users _) = Set.member user stat_users
 
 initWithLastUsers :: [Text] -> Statistic
-initWithLastUsers users =
+initWithLastUsers stat_users =
   Statistic
-    { users = Set.fromList users,
-      lastUsers = Seq.fromList users
+    { users = Set.fromList stat_users,
+      lastUsers = Seq.fromList stat_users
     }

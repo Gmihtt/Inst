@@ -63,7 +63,7 @@ instance FromJSON Message where
   parseJSON = parseJson
 
 mkMessage :: Text -> Message -> Message
-mkMessage text msg =
+mkMessage msg_text msg =
   msg
-    { text = Just text
+    { text = Just msg_text
     }
