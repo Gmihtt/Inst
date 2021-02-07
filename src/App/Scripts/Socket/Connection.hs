@@ -1,6 +1,6 @@
-module App.Scripts.Socket.Connection 
-  (runConnection,
-  ) 
+module App.Scripts.Socket.Connection
+  ( runConnection,
+  )
 where
 
 import qualified App.Scripts.Socket.API as API
@@ -15,6 +15,7 @@ import qualified Types.Domain.Manager as Manager
 import qualified Types.Domain.Socket as Socket
 
 type TaskIdGetter = ByteString -> IO Text
+
 type TaskGetter a = ByteString -> Maybe a -> IO a
 
 runConnection ::

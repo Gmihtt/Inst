@@ -2,7 +2,6 @@ module Types.Domain.Stream where
 
 import qualified Control.Concurrent.Chan as Chan
 import Data.ByteString.Lazy (ByteString)
-import qualified Network.WebSockets as WS
 
 data Stream
   = Stream
@@ -12,12 +11,12 @@ data Stream
 
 initStream :: IO Stream
 initStream = do
-  fromServerToScript <- Chan.newChan
-  fromScriptToServer <- Chan.newChan
+  a <- Chan.newChan
+  b <- Chan.newChan
   pure $
     Stream
-      { fromServerToScript = fromServerToScript,
-        fromScriptToServer = fromScriptToServer
+      { fromServerToScript = a,
+        fromScriptToServer = b
       }
 
 sendMsgToScript :: ByteString -> Stream -> IO ()

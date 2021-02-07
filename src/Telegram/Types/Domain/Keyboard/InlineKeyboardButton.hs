@@ -3,6 +3,7 @@
 module Telegram.Types.Domain.Keyboard.InlineKeyboardButton
   ( InlineKeyboardButton (..),
     mkInlineKeyboardButton,
+    mkButton,
   )
 where
 
@@ -39,6 +40,17 @@ mkInlineKeyboardButton keyboard_text keyboard_url callback =
     { text = keyboard_text,
       url = keyboard_url,
       callback_data = callback,
+      switch_inline_query = Nothing,
+      switch_inline_query_current_chat = Nothing,
+      callback_game = Nothing
+    }
+
+mkButton :: Text -> InlineKeyboardButton
+mkButton t =
+  InlineKeyboardButton
+    { text = t,
+      url = Nothing,
+      callback_data = Just t,
       switch_inline_query = Nothing,
       switch_inline_query_current_chat = Nothing,
       callback_game = Nothing

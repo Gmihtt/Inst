@@ -1,11 +1,10 @@
-module App.Scripts.Socket.API 
-  (run,
-  ) 
+module App.Scripts.Socket.API
+  ( run,
+  )
 where
 
 import qualified App.Scripts.Socket.App as Socket
 import Control.Concurrent (forkIO)
-import Data.ByteString.Lazy (ByteString)
 import qualified Network.WebSockets as WS
 import qualified Types.Domain.Socket as Socket
 import qualified Types.Domain.Stream as Stream
@@ -16,5 +15,5 @@ run socket = do
   let port = Socket.port socket
   let path = Socket.path socket
   stream <- Stream.initStream
-  forkIO $ WS.runClient host port path (Socket.app stream)
+  _ <- forkIO $ WS.runClient host port path (Socket.app stream)
   pure stream

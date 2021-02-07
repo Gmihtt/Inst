@@ -4,8 +4,8 @@ import qualified Control.Concurrent.Map as Map
 import Data.ByteString.Lazy (ByteString)
 import Data.Text (Text)
 import qualified Types.Communication.Scripts.Auth as Auth
-import qualified Types.Domain.Statistic as Statistic
 import qualified Types.Domain.Socket as Socket
+import qualified Types.Domain.Statistic as Statistic
 import qualified Types.Domain.Stream as Stream
 
 type AuthManager = Manager Auth.Response
@@ -26,15 +26,16 @@ findTask taskId manager = Map.lookup taskId (tasks manager)
 
 deleteTask :: Text -> Manager a -> IO Bool
 deleteTask taskId manager = Map.delete taskId (tasks manager)
-  
+
 initManager :: Socket.Socket -> (Socket.Socket -> IO Stream.Stream) -> IO (Manager a)
 initManager socket getSocket = do
-  stream <- getSocket socket
-  manager <- Map.empty
-  pure $ Manager
-    { tasks = manager,
-      stream = stream
-    }
+  s <- getSocket socket
+  m <- Map.empty
+  pure $
+    Manager
+      { tasks = m,
+        stream = s
+      }
 
 sendMsg :: ByteString -> Manager a -> IO ()
 sendMsg msg manager = Stream.sendMsgToScript msg (stream manager)
