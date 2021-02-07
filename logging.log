@@ -1,0 +1,2 @@
+2021-02-07 20:06:13 UTC NOTICE BotLogger.Main: Start Log
+2021-02-07 20:06:22 UTC DEBUG BotLogger.Main: Request {inst_id = "13979230118", action = Start, timeout = Just 20000}

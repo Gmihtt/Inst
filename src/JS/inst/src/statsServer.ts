@@ -14,7 +14,7 @@ async function getAndSendFollowersCount(socket: any, id: string, timeout: number
     try {
         const usersInfo: StatsResponse = await getFollowers(id);
         const userJSON: string = JSON.stringify(usersInfo);
-        console.log(`Stats: Data sent: ${userJSON}`)
+        console.log(`Stats: Data sent: ${userJSON.slice(0, 80)}`);
         socket.send(Buffer.from(userJSON));
     } catch (e) {
         const errorJSON: string = JSON.stringify(e.message);

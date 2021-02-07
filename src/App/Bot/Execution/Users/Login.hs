@@ -9,6 +9,7 @@ where
 import qualified App.Bot.Messages.FlowMessages as Message
 import qualified App.Scripts.Auth.API as ScriptsAuth
 import Common.Flow (Flow)
+import Common.Error (printDebug)
 import qualified Common.FlowEnv as Common
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import qualified Data.List as List
@@ -61,8 +62,9 @@ password msg userId accLogin accPassword = do
 runScript :: Text -> Text -> Flow (Maybe (Text, Bool))
 runScript accLogin accPassword = do
   res <- ScriptsAuth.auth accLogin accPassword
+  liftIO $ printDebug res
   let mbInstId = Auth.response_inst_id res
-  let mbPrivate = Auth.response_private res
+  let mbPrivate = Auth.response_is_private res
   pure $ mkRes mbInstId mbPrivate
   where
     mkRes mbInstId mbPrivate = do
