@@ -120,4 +120,3 @@ async function getIdAndPrivacy(page: puppeteer.Page, username: string): Promise<
         is_private: responseObject.graphql.user.is_private,
     };
 }
-

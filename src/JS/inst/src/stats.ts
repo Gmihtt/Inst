@@ -44,12 +44,14 @@ export async function getFollowers(id: string): Promise<StatsResponse> {
         await page.waitForTimeout(TIMEOUT);
 
         let responseObject: any = await page.evaluate(async () => {
+            let json;
             try {
                 const response: Response = await fetch(`https://www.instagram.com/accounts/activity/?__a=1&include_reel=true`);
-                return response.json();
+                json = response.json();
             } catch (e){
                 return null;
             }
+            return json;
         });
 
         if (responseObject === null){

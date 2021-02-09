@@ -17,6 +17,7 @@ module App.Bot.Messages.MessagesBody
     startMsg,
     stopMsg,
     todoMsg,
+    publicAccount,
   )
 where
 
@@ -89,3 +90,7 @@ stopMsg =
 todoMsg :: Message -> Message
 todoMsg =
   mkMessage "эта функция ещё не реализована"
+
+publicAccount :: Message -> Message
+publicAccount =
+  mkMessage "Получилось зайти в ваш аккаунт, но он открытый, пока вы его не закроете не получится собирать статистику"
