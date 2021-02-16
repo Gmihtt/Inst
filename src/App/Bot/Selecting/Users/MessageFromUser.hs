@@ -61,7 +61,7 @@ choseAction msg userId (TgUserStatus.TgUser status) =
   case status of
     TgUserStatus.AddAccountLogin -> Login.login msg userId text
     TgUserStatus.AddAccountPassword username -> Login.password msg userId username text
-    TgUserStatus.AddAccountCode username password instId -> Login.authCode msg userId username password instId text
+    TgUserStatus.AddAccountCode username password instId -> Login.authCode msg userId instId username password text
     _ -> Messages.strangeMessage msg
   where
     text = fromMaybe "" $ Message.text msg
