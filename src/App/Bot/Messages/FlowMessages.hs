@@ -16,6 +16,8 @@ module App.Bot.Messages.FlowMessages
     stop,
     todoMsg,
     publicAccount,
+    authCode,
+    incorrectAuthCode
   )
 where
 
@@ -96,3 +98,11 @@ todoMsg msg =
 publicAccount :: Message -> Flow (Response Message)
 publicAccount msg =
   sendMessage Nothing (Messages.publicAccount msg)
+
+authCode :: Message -> Flow (Response Message)
+authCode msg =
+  sendMessage Nothing (Messages.authCode msg)
+
+incorrectAuthCode :: Message -> Flow (Response Message)
+incorrectAuthCode msg =
+  sendMessage Nothing (Messages.incorrectAuthCode msg)

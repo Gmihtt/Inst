@@ -4,6 +4,7 @@ module Common.FlowEnv where
 
 import qualified App.Bot.Messages.FlowMessages as Message
 import qualified Common.Environment as Environment
+import Common.Error
 import Common.Flow (Flow)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Control.Monad.Trans.Reader (ask)
@@ -17,8 +18,15 @@ import qualified Types.Domain.InstAccount as InstAccount
 import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
 import qualified Types.Domain.Status.TgUsersStatus as TgUsersStatus
 
+data TelegramUserStatus = 
+  TelegramUserStatus {
+    tgUserId :: Int,
+    userStatus :: TgUserStatus.TgUserStatus
+  } deriving (Show)
+
 updateUserStatus :: Int -> TgUserStatus.TgUserStatus -> Flow Bool
 updateUserStatus userId status = do
+  liftIO . printDebug $ TelegramUserStatus userId status
   env <- ask
   let tgUsersStatus = Environment.tgUsersStatus env
   let uId = pack $ show userId

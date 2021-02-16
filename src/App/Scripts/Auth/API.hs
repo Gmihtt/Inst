@@ -16,11 +16,19 @@ import qualified Types.Communication.Scripts.Auth as ScriptsAuth
 import qualified Types.Domain.Manager as Manager
 import qualified Types.Domain.Socket as Socket
 
-auth :: Text -> Text -> Flow ScriptsAuth.Response
-auth username password = do
+authLogin :: Text -> Text -> Flow ScriptsAuth.Response
+authLogin username password = do
   env <- ask
   let authManager = Environment.authManager env
-  let req = ScriptsAuth.mkRequest username password
+  let req = ScriptsAuth.mkRequestLogin username password
+  liftIO $ printDebug req
+  liftIO $ sendAndReceiveMsg username authManager req
+
+doubleAuth :: Text -> Text -> Flow ScriptsAuth.Response
+doubleAuth username code = do
+  env <- ask
+  let authManager = Environment.authManager env
+  let req = ScriptsAuth.mkRequestDoubleAuth username code
   liftIO $ printDebug req
   liftIO $ sendAndReceiveMsg username authManager req
 

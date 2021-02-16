@@ -1,0 +1,7 @@
+token : 1416982745:AAGCiyC1EGOpD8GEqVPhbCLL_ptwRP4fvWU
+mongo_db : "instagram"
+mongo_collection : "accounts"
+auth_socket_port : "5012"
+auth_socket_host : "localhost"
+stat_socket_port : "5013"
+stat_socket_host : "localhost"

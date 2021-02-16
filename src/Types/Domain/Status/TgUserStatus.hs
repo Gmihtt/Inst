@@ -4,7 +4,9 @@ import Data.Text (Text)
 
 data TgUserStatus = TgUser UserStatus | TgAdmin AdminStatus deriving (Show)
 
-type AccLogin = Text
+type Username = Text
+
+type Password = Text
 
 type InstId = Text
 
@@ -13,7 +15,8 @@ data UserStatus
   | Help
   | ListOfAccounts
   | AddAccountLogin
-  | AddAccountPassword AccLogin
+  | AddAccountPassword Username
+  | AddAccountCode Username Password InstId
   | AccountMenu InstId
   deriving (Show)
 

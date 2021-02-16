@@ -6,7 +6,10 @@ import qualified App.Bot.Execution.Users.Login as Login
 import qualified App.Bot.Messages.FlowMessages as Messages
 import Common.Flow (Flow)
 import qualified Common.FlowEnv as Common
+import qualified Data.Text as T
+import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Maybe (fromMaybe)
+import qualified MongoDB.Queries as Mongo
 import qualified Redis.Queries as Redis
 import Telegram.API.Methods.SendMessage (sendMessage)
 import Telegram.Types.Communication.Response (Response (..))
@@ -22,10 +25,16 @@ messageFromUser msg = do
 
 checkStatus :: Message.Message -> Int -> Flow (Response Message.Message)
 checkStatus msg userId = do
-  let text = fromMaybe "" (Message.text msg)
+  let text = T.words $ fromMaybe "" (Message.text msg)
   case text of
-    "/start" -> setMainMenu
-    "/help" -> setHelpMenu
+    ["/start"] -> setMainMenu
+    ["/help"] -> setHelpMenu
+    ["/delete", login] -> do
+      liftIO $ print login
+      let tg_id = T.pack $ show userId
+      Mongo.deleteInstAccount tg_id login "accounts"
+      Common.putInstAccs userId
+      setMainMenu
     _ -> do
       status <- Common.getUserStatus userId
       maybe setMainMenu (choseAction msg userId) status
@@ -51,7 +60,8 @@ choseAction msg userId (TgUserStatus.TgAdmin status) =
 choseAction msg userId (TgUserStatus.TgUser status) =
   case status of
     TgUserStatus.AddAccountLogin -> Login.login msg userId text
-    TgUserStatus.AddAccountPassword accLogin -> Login.password msg userId accLogin text
+    TgUserStatus.AddAccountPassword username -> Login.password msg userId username text
+    TgUserStatus.AddAccountCode username password instId -> Login.authCode msg userId username password instId text
     _ -> Messages.strangeMessage msg
   where
     text = fromMaybe "" $ Message.text msg
