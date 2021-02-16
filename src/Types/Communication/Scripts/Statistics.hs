@@ -16,6 +16,7 @@ import GHC.Generics (Generic)
 data Action
   = Start
   | Stop
+  | Logout
   deriving (Show, Eq, Generic)
 
 instance ToJSON Action where
@@ -45,6 +46,14 @@ mkStopReq inst_id =
   Request
     { inst_id = inst_id,
       action = Stop,
+      timeout = Just 20000
+    }
+
+mkLogoutReq :: Text -> Request
+mkLogoutReq inst_id =
+  Request
+    { inst_id = inst_id,
+      action = Logout,
       timeout = Just 20000
     }
 

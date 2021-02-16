@@ -7,12 +7,14 @@ module Common.Error
     throwTgErr,
     throwSocketErr,
     throwThreadsError,
+    throwLogicError,
     printDebug,
     printError,
   )
 where
 
 import Common.Exception.ConfigError as Error
+import Common.Exception.LogicError as Error
 import Common.Exception.MongoError as Error
 import Common.Exception.RedisError as Error
 import Common.Exception.SocketError as Error (SocketError (..))
@@ -31,6 +33,7 @@ data Error
   | Mongo Error.MongoError
   | Socket Error.SocketError
   | Threads Error.ThreadsError
+  | Logic Error.LogicError
   deriving (Show)
 
 instance Exception Error
@@ -54,6 +57,9 @@ throwSocketErr err = throwError . Socket $ Error.SocketError err
 
 throwThreadsError :: String -> IO a
 throwThreadsError err = throwError . Threads $ Error.ThreadsError err
+
+throwLogicError :: String -> IO a
+throwLogicError err = throwError . Logic $ Error.LogicError err
 
 throwTgErr :: Text -> IO a
 throwTgErr = throwTelegramErr Nothing

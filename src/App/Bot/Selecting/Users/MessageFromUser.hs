@@ -6,9 +6,9 @@ import qualified App.Bot.Execution.Users.Login as Login
 import qualified App.Bot.Messages.FlowMessages as Messages
 import Common.Flow (Flow)
 import qualified Common.FlowEnv as Common
-import qualified Data.Text as T
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Maybe (fromMaybe)
+import qualified Data.Text as T
 import qualified MongoDB.Queries as Mongo
 import qualified Redis.Queries as Redis
 import Telegram.API.Methods.SendMessage (sendMessage)

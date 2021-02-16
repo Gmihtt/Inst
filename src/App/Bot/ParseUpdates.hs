@@ -47,6 +47,7 @@ checkUserStatus cb msg = do
     Just (TgUserStatus.TgUser TgUserStatus.Help) -> UserAPI.helpMenu cb msg
     Just (TgUserStatus.TgUser TgUserStatus.ListOfAccounts) -> UserAPI.listOfAccounts cb msg
     Just (TgUserStatus.TgUser (TgUserStatus.AccountMenu instAcc)) -> UserAPI.accountMenu cb msg instAcc
+    Just (TgUserStatus.TgUser (TgUserStatus.Logout instAcc)) -> UserAPI.logout cb msg instAcc
     Just _ -> Messages.strangeMessage msg
   where
     userId = User.id $ CallbackQuery.callback_from cb

@@ -18,11 +18,12 @@ import qualified Types.Domain.InstAccount as InstAccount
 import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
 import qualified Types.Domain.Status.TgUsersStatus as TgUsersStatus
 
-data TelegramUserStatus = 
-  TelegramUserStatus {
-    tgUserId :: Int,
-    userStatus :: TgUserStatus.TgUserStatus
-  } deriving (Show)
+data TelegramUserStatus
+  = TelegramUserStatus
+      { tgUserId :: Int,
+        userStatus :: TgUserStatus.TgUserStatus
+      }
+  deriving (Show)
 
 updateUserStatus :: Int -> TgUserStatus.TgUserStatus -> Flow Bool
 updateUserStatus userId status = do

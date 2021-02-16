@@ -17,7 +17,9 @@ module App.Bot.Messages.FlowMessages
     todoMsg,
     publicAccount,
     authCode,
-    incorrectAuthCode
+    incorrectAuthCode,
+    confirmLogout,
+    logout,
   )
 where
 
@@ -106,3 +108,11 @@ authCode msg =
 incorrectAuthCode :: Message -> Flow (Response Message)
 incorrectAuthCode msg =
   sendMessage Nothing (Messages.incorrectAuthCode msg)
+
+confirmLogout :: Message -> Flow (Response Message)
+confirmLogout msg =
+  sendMessage (Just Keyboard.confirmLogout) (Messages.confirmLogout msg)
+
+logout :: Message -> Flow (Response Message)
+logout msg =
+  sendMessage Nothing (Messages.logout msg)

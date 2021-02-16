@@ -12,6 +12,8 @@ import qualified Control.Concurrent.Map as Map
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Trans.Reader (ask)
 import Data.Text (Text)
+import qualified Data.Text as T
+import qualified MongoDB.Queries as Mongo
 import qualified MongoDB.Queries as QMongo
 import qualified Redis.Queries as Redis
 import Telegram.Types.Communication.Response (Response (..))
@@ -43,9 +45,6 @@ stat msg userId instId = do
   let manager = Environment.statisticsManager env
   mbStat <- liftIO $ Manager.findTask instId manager
   Messages.sendStat msg $ maybe 0 Statistic.getSize mbStat
-
-logout :: Message.Message -> Flow (Response Message.Message)
-logout = Messages.todoMsg
 
 subscription :: Message.Message -> Flow (Response Message.Message)
 subscription = Messages.todoMsg

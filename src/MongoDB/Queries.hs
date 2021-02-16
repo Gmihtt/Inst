@@ -5,15 +5,15 @@ module MongoDB.Queries where
 
 import qualified Common.Environment as Environment
 import Common.Flow (Flow)
-import Control.Monad.IO.Class (MonadIO)
+import Control.Monad.IO.Class (MonadIO (liftIO))
 import Control.Monad.Trans.Reader (ReaderT, ask)
 import qualified Data.List as List
 import Data.Text (Text)
 import qualified Database.MongoDB as Mongo
 import Database.MongoDB ((!?), (=:))
-import MongoDB.Transforms.InstAccount (mkInstAccsByDocs, mkDocsByInstAccs)
-import qualified Types.Domain.InstAccount as InstAccount
+import MongoDB.Transforms.InstAccount (mkDocsByInstAccs, mkInstAccsByDocs)
 import qualified MongoDB.Transforms.TgUser as Transforms
+import qualified Types.Domain.InstAccount as InstAccount
 import qualified Types.Domain.TgUser as TgUser
 import Prelude hiding (id)
 
@@ -49,17 +49,22 @@ findInstAccountByLogin tg_id login collection = do
   instAccs <- findInstAccsByTgId tg_id collection
   pure $ List.find ((login ==) . InstAccount.login) instAccs
 
+findInstAccountByInstId :: Text -> Text -> Mongo.Collection -> Flow (Maybe InstAccount.InstAccount)
+findInstAccountByInstId tg_id instId collection = do
+  instAccs <- findInstAccsByTgId tg_id collection
+  pure $ List.find ((instId ==) . InstAccount.id) instAccs
+
 deleteInstAccount :: Text -> Text -> Mongo.Collection -> Flow ()
 deleteInstAccount tg_id login collection = do
   instAccs <- findInstAccsByTgId tg_id collection
   let newTgUser = Transforms.mkDocByTgUser $ TgUser.mkTgUser tg_id (deleteInstAcc instAccs)
   updateInstAccs tg_id newTgUser collection
   where
-    delete [] = []
+    deleteInstAcc [] = []
     deleteInstAcc (instAcc : accs) =
-      if InstAccount.login instAcc == login 
+      if InstAccount.login instAcc == login
         then accs
         else instAcc : deleteInstAcc accs
-        
+
 deleteDB :: Mongo.Collection -> Flow ()
 deleteDB collection = callDB (Mongo.delete (Mongo.select [] collection))

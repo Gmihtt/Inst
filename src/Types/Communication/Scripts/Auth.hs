@@ -37,7 +37,6 @@ mkRequestLogin username password =
       request_body = password
     }
 
-
 mkRequestDoubleAuth :: Text -> Text -> Request
 mkRequestDoubleAuth username password =
   Request

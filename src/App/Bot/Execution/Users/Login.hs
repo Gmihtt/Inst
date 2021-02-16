@@ -9,8 +9,8 @@ where
 
 import qualified App.Bot.Messages.FlowMessages as Message
 import qualified App.Scripts.Auth.API as ScriptsAuth
-import Common.Flow (Flow)
 import Common.Error (printDebug)
+import Common.Flow (Flow)
 import qualified Common.FlowEnv as Common
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import qualified Data.List as List
@@ -66,13 +66,13 @@ password msg userId accLogin accPassword = do
       instAccs <- Common.getInstAccs userId
       Message.showInstAccs msg (map InstAccount.login instAccs)
 
-authCode :: 
-  Message.Message -> 
-  Int -> 
-  Text -> 
-  Text -> 
-  Text -> 
-  Text -> 
+authCode ::
+  Message.Message ->
+  Int ->
+  Text ->
+  Text ->
+  Text ->
+  Text ->
   Flow (Response Message.Message)
 authCode msg userId instId accLogin accPassword accCode = do
   res <- ScriptsAuth.doubleAuth accLogin accCode

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 93fdfd82b8e84b918c89fa246de9551b37cc804f9397149d41f99d5962a43cfa
+-- hash: 777b47d0d8b8dfc4e4c942c6e69ea19a3d6b52bcb33ead51450231a5f6622082
 
 name:           Inst
 version:        0.1.0.0
@@ -30,11 +30,13 @@ library
       App.Bot.BotMain
       App.Bot.Buttons.Keyboards
       App.Bot.Buttons.User.AccountMenu
+      App.Bot.Buttons.User.ConfirmLogout
       App.Bot.Buttons.User.Help
       App.Bot.Buttons.User.MainMenu
       App.Bot.Buttons.User.ShowInstAccounts
       App.Bot.Execution.Users.Help
       App.Bot.Execution.Users.Login
+      App.Bot.Execution.Users.Logout
       App.Bot.Execution.Users.MainMenu
       App.Bot.Execution.Users.ShowAccounts
       App.Bot.Execution.Users.Statistics
@@ -49,6 +51,7 @@ library
       App.Bot.Selecting.Users.API
       App.Bot.Selecting.Users.HelpMenu
       App.Bot.Selecting.Users.ListOfAccounts
+      App.Bot.Selecting.Users.Logout
       App.Bot.Selecting.Users.MainMenu
       App.Bot.Selecting.Users.MessageFromUser
       App.Scripts.Auth.API
@@ -60,6 +63,7 @@ library
       Common.Environment
       Common.Error
       Common.Exception.ConfigError
+      Common.Exception.LogicError
       Common.Exception.MongoError
       Common.Exception.RedisError
       Common.Exception.SocketError

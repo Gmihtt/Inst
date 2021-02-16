@@ -20,6 +20,8 @@ module App.Bot.Messages.MessagesBody
     publicAccount,
     authCode,
     incorrectAuthCode,
+    confirmLogout,
+    logout,
   )
 where
 
@@ -34,7 +36,7 @@ mainMenu =
 login :: Message -> Message
 login =
   mkMessage $
-    "Пожалуйста отключите двухступенчатую аутентификацию и введите логин от инстаграм аккаунта"
+    "Введите логин от инстаграм аккаунта"
 
 password :: Message -> Message
 password =
@@ -103,4 +105,12 @@ incorrectAuthCode =
 
 publicAccount :: Message -> Message
 publicAccount =
-  mkMessage "Получилось зайти в ваш аккаунт, но он открытый, пока вы его не закроете не получится собирать статистику"
+  mkMessage "Ваш аккаунт открытый, пока вы его не закроете не получится собирать статистику"
+
+confirmLogout :: Message -> Message
+confirmLogout =
+  mkMessage "Подвертидте выход"
+
+logout :: Message -> Message
+logout =
+  mkMessage "Вы успешно вышли из аккаунта"

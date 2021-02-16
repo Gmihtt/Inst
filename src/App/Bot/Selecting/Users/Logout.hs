@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module App.Bot.Selecting.Users.AccountMenu where
+module App.Bot.Selecting.Users.Logout where
 
 import qualified App.Bot.Execution.Users.Logout as Logout
 import qualified App.Bot.Execution.Users.Statistics as Statistics
@@ -17,15 +17,12 @@ import Telegram.Types.Domain.Message (Message)
 import qualified Telegram.Types.Domain.Message as Message
 import qualified Telegram.Types.Domain.User as User
 
-accountMenu :: CallbackQuery.CallbackQuery -> Message -> Text -> Flow (Response Message)
-accountMenu callBack msg instAcc =
+logout :: CallbackQuery.CallbackQuery -> Message -> Text -> Flow (Response Message)
+logout callBack msg instId = do
+  liftIO $ print $ CallbackQuery.callback_data callBack
   case CallbackQuery.callback_data callBack of
-    "Start" -> Statistics.start msg userId instAcc
-    "Stop" -> Statistics.stop msg userId instAcc
-    "Subscription" -> Statistics.subscription msg
-    "Statistics" -> Statistics.stat msg userId instAcc
-    "Logout" -> Logout.confirmLogout msg userId instAcc
-    "Back" -> Statistics.back msg userId
+    "Yes" -> Logout.logout msg userId instId
+    "No" -> Logout.backAccountMenu msg userId instId
     _ -> Messages.strangeMessage msg
   where
     userId = User.id $ CallbackQuery.callback_from callBack
