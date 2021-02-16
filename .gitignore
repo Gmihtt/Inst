@@ -3,6 +3,7 @@ files/
 var/
 src/Temp.hs
 hie.yaml
+configs/
 Configs/
 .idea
 *.log

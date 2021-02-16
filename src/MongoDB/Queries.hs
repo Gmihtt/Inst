@@ -11,8 +11,10 @@ import qualified Data.List as List
 import Data.Text (Text)
 import qualified Database.MongoDB as Mongo
 import Database.MongoDB ((!?), (=:))
-import MongoDB.Transforms.InstAccount (mkInstAccsByDocs)
+import MongoDB.Transforms.InstAccount (mkInstAccsByDocs, mkDocsByInstAccs)
 import qualified Types.Domain.InstAccount as InstAccount
+import qualified MongoDB.Transforms.TgUser as Transforms
+import qualified Types.Domain.TgUser as TgUser
 import Prelude hiding (id)
 
 callDB :: MonadIO m => Mongo.Action (ReaderT Environment.Environment m) b -> ReaderT Environment.Environment m b
@@ -47,5 +49,17 @@ findInstAccountByLogin tg_id login collection = do
   instAccs <- findInstAccsByTgId tg_id collection
   pure $ List.find ((login ==) . InstAccount.login) instAccs
 
+deleteInstAccount :: Text -> Text -> Mongo.Collection -> Flow ()
+deleteInstAccount tg_id login collection = do
+  instAccs <- findInstAccsByTgId tg_id collection
+  let newTgUser = Transforms.mkDocByTgUser $ TgUser.mkTgUser tg_id (deleteInstAcc instAccs)
+  updateInstAccs tg_id newTgUser collection
+  where
+    delete [] = []
+    deleteInstAcc (instAcc : accs) =
+      if InstAccount.login instAcc == login 
+        then accs
+        else instAcc : deleteInstAcc accs
+        
 deleteDB :: Mongo.Collection -> Flow ()
 deleteDB collection = callDB (Mongo.delete (Mongo.select [] collection))

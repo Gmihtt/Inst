@@ -18,6 +18,8 @@ module App.Bot.Messages.MessagesBody
     stopMsg,
     todoMsg,
     publicAccount,
+    authCode,
+    incorrectAuthCode,
   )
 where
 
@@ -90,6 +92,14 @@ stopMsg =
 todoMsg :: Message -> Message
 todoMsg =
   mkMessage "эта функция ещё не реализована"
+
+authCode :: Message -> Message
+authCode =
+  mkMessage "У вас включена двухступенчатая аутентификация, введите код"
+
+incorrectAuthCode :: Message -> Message
+incorrectAuthCode =
+  mkMessage "Вы прислали неверный код, попробуйте ещё раз"
 
 publicAccount :: Message -> Message
 publicAccount =
