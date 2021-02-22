@@ -4,7 +4,6 @@ module App.Scripts.Socket.Connection
 where
 
 import qualified App.Scripts.Socket.API as API
-import Common.Error (throwSocketErr)
 import Control.Concurrent (forkIO)
 import Control.Monad (forever)
 import Control.Monad.IO.Class (liftIO)

@@ -66,5 +66,9 @@ deleteInstAccount tg_id login collection = do
         then accs
         else instAcc : deleteInstAcc accs
 
+deleteTgUser :: Text -> Mongo.Collection -> Flow ()
+deleteTgUser tg_id collection = do
+  callDB $ Mongo.deleteOne (Mongo.select ["id" =: tg_id] collection)
+
 deleteDB :: Mongo.Collection -> Flow ()
 deleteDB collection = callDB (Mongo.delete (Mongo.select [] collection))

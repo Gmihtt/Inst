@@ -7,7 +7,7 @@ import qualified App.Bot.Selecting.Users.API as UserAPI
 import qualified Common.Environment as Environment
 import Common.Error (throwTgErr)
 import Common.Flow (Flow)
-import qualified Common.FlowEnv as Common
+import qualified Common.TelegramUserStatus as Common
 import Control.Concurrent (forkIO)
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Trans.Reader (runReaderT)
@@ -28,13 +28,52 @@ execute updates env = do
 
 parseUpdate :: Update -> Flow ()
 parseUpdate update = do
-  case mbCallBack of
-    Nothing -> getMsg mbMsg >>= UserAPI.messageFromUser
-    Just cb -> maybe (getMsg mbMsg >>= Messages.oldMsg) (checkUserStatus cb) (CallbackQuery.callback_message cb)
-  pure ()
+  checkEditMsg
   where
-    mbCallBack = Update.callback_query update
-    mbMsg = Update.message update
+    checkEditMsg =
+      case Update.edited_message update of
+        Nothing -> checkChannelPost
+        Just _ -> pure ()
+    checkChannelPost =
+      case Update.channel_post update of
+        Nothing -> checkEditedChannelPost
+        Just _ -> pure ()
+    checkEditedChannelPost =
+      case Update.edited_channel_post update of
+        Nothing -> checkShippingQuery
+        Just _ -> pure ()
+    checkShippingQuery =
+      case Update.shipping_query update of
+        Nothing -> checkPreCheckoutQuery
+        Just _ -> pure ()
+    checkPreCheckoutQuery =
+      case Update.pre_checkout_query update of
+        Nothing -> checkPoll
+        Just _ -> pure ()
+    checkPoll =
+      case Update.poll update of
+        Nothing -> checkPollAnswer
+        Just _ -> pure ()
+    checkPollAnswer =
+      case Update.poll_answer update of
+        Nothing -> checkInlineQuery
+        Just _ -> pure ()
+    checkInlineQuery =
+      case Update.inline_query update of
+        Nothing -> checkChosenInlineResult
+        Just _ -> pure ()
+    checkChosenInlineResult =
+      case Update.chosen_inline_result update of
+        Nothing -> checkCallBack
+        Just _ -> pure ()
+    checkCallBack = do
+      case Update.callback_query update of
+        Nothing -> getMsg >>= UserAPI.messageFromUser
+        Just cb -> maybe (getMsg >>= Messages.oldMsg) (checkUserStatus cb) (CallbackQuery.callback_message cb)
+      pure ()
+    getMsg = do
+      let mbMsg = Update.message update
+      liftIO $ maybe (throwTgErr "Function: parseUpdate. In 'update' field 'message' is Nothing") pure mbMsg
 
 checkUserStatus :: CallbackQuery.CallbackQuery -> Message -> Flow (Response Message)
 checkUserStatus cb msg = do
@@ -51,6 +90,3 @@ checkUserStatus cb msg = do
     Just _ -> Messages.strangeMessage msg
   where
     userId = User.id $ CallbackQuery.callback_from cb
-
-getMsg :: Maybe Message -> Flow Message
-getMsg mbMsg = liftIO $ maybe (throwTgErr "Function: parseUpdate. In 'update' field 'message' is Nothing") pure mbMsg

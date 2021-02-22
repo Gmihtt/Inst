@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Common.FlowEnv where
+module Common.Redis where
 
 import qualified App.Bot.Messages.FlowMessages as Message
 import qualified Common.Environment as Environment
@@ -18,28 +18,6 @@ import qualified Types.Domain.InstAccount as InstAccount
 import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
 import qualified Types.Domain.Status.TgUsersStatus as TgUsersStatus
 
-data TelegramUserStatus
-  = TelegramUserStatus
-      { tgUserId :: Int,
-        userStatus :: TgUserStatus.TgUserStatus
-      }
-  deriving (Show)
-
-updateUserStatus :: Int -> TgUserStatus.TgUserStatus -> Flow Bool
-updateUserStatus userId status = do
-  liftIO . printDebug $ TelegramUserStatus userId status
-  env <- ask
-  let tgUsersStatus = Environment.tgUsersStatus env
-  let uId = pack $ show userId
-  liftIO $ TgUsersStatus.updateUserStatus uId status tgUsersStatus
-
-getUserStatus :: Int -> Flow (Maybe TgUserStatus.TgUserStatus)
-getUserStatus userId = do
-  env <- ask
-  let tgUsersStatus = Environment.tgUsersStatus env
-  let uId = pack $ show userId
-  liftIO $ TgUsersStatus.getUserStatus uId tgUsersStatus
-
 getInstAccs :: Int -> Flow [InstAccount.InstAccount]
 getInstAccs userId = do
   mbInstAccs <- Redis.getValue userId
@@ -50,3 +28,8 @@ putInstAccs userId = do
   let uId = T.pack $ show userId
   instAccs <- Mongo.findInstAccsByTgId uId "accounts"
   Redis.putValue userId instAccs
+
+dropInstAccs :: Int -> Flow ()
+dropInstAccs userId = do
+  let uId = T.pack $ show userId
+  Redis.deleteValue userId

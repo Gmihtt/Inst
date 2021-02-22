@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 777b47d0d8b8dfc4e4c942c6e69ea19a3d6b52bcb33ead51450231a5f6622082
+-- hash: c1aaf30a3269b26cf51a8279d7bc5c735b166b46a536ae105a2f988567e65aba
 
 name:           Inst
 version:        0.1.0.0
@@ -70,8 +70,9 @@ library
       Common.Exception.TelegramError
       Common.Exception.ThreadsError
       Common.Flow
-      Common.FlowEnv
       Common.Json
+      Common.Redis
+      Common.TelegramUserStatus
       MongoDB.Queries
       MongoDB.Transforms.InstAccount
       MongoDB.Transforms.TgUser

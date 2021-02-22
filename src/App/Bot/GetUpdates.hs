@@ -6,7 +6,7 @@ module App.Bot.GetUpdates
 where
 
 import qualified Common.Environment as Environment
-import Common.Error (throwTelegramErr, throwTgErr)
+import Common.Error (printError, throwTelegramErr, throwTgErr)
 import Common.Flow (Flow)
 import Control.Concurrent (forkIO)
 import Control.Concurrent.Chan (Chan, newChan, writeList2Chan)
@@ -42,16 +42,17 @@ getUpdates updateId listOfUpdates = do
     getMax list = Just $ last list + 1
     second = 1000000
 
-getBody :: Response.Response a -> Flow a
+getBody :: Show a => Response.Response a -> Flow a
 getBody response =
   liftIO $
     if Response.ok response
       then
         maybe
-          (throwTgErr "Function: getBody. When try to get 'result' of 'response'")
+          (liftIO (printError response) >> throwTgErr "Function: getBody. When try to get 'result' of 'response'")
           pure
           (Response.result response)
-      else
+      else do
+        liftIO (printError response)
         throwTelegramErr
           (Response.error_code response)
           (fromMaybe "Function: getBody. When try to get 'description' of 'response'" $ Response.description response)

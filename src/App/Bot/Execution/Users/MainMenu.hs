@@ -4,7 +4,8 @@ module App.Bot.Execution.Users.MainMenu where
 
 import qualified App.Bot.Messages.FlowMessages as Message
 import Common.Flow (Flow)
-import qualified Common.FlowEnv as Common
+import qualified Common.Redis as Common
+import qualified Common.TelegramUserStatus as Common
 import qualified Data.Text as T
 import qualified MongoDB.Queries as Mongo
 import qualified Redis.Queries as Redis

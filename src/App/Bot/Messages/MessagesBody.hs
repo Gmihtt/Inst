@@ -114,3 +114,7 @@ confirmLogout =
 logout :: Message -> Message
 logout =
   mkMessage "Вы успешно вышли из аккаунта"
+
+editMsg :: Message -> Message
+editMsg =
+  mkMessage "Я вижу, что вы отредактировали сообщение, но"

@@ -1,4 +1,4 @@
-module Redis.Queries (getValue, putValue) where
+module Redis.Queries (getValue, putValue, deleteValue) where
 
 import qualified Common.Environment as Environment
 import Common.Error (throwRedisErr)
@@ -24,3 +24,10 @@ putValue key val = do
   let conn = Environment.conn env
   status <- liftIO . Redis.runRedis conn $ Redis.set (encodeBs key) (encodeBs val)
   liftIO $ either (throwRedisErr . show) pure (void status)
+
+deleteValue :: ToJSON a => a -> Flow ()
+deleteValue key = do
+  env <- ask
+  let conn = Environment.conn env
+  liftIO . Redis.runRedis conn . Redis.del $ [encodeBs key]
+  pure ()

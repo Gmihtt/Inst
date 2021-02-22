@@ -65,7 +65,8 @@ throwTgErr :: Text -> IO a
 throwTgErr = throwTelegramErr Nothing
 
 throwTelegramErr :: Maybe Int -> Text -> IO a
-throwTelegramErr mbCode desc =
+throwTelegramErr mbCode desc = do
+  printError desc
   throwIO . Telegram $
     TelegramError
       { code = fromMaybe 0 mbCode,
