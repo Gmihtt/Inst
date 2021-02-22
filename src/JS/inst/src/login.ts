@@ -127,7 +127,7 @@ export class Login {
                 $('button:contains("Подтвердить")').addClass('followerGettingApp');
             });
             await this.page.click('.followerGettingApp');
-
+            await this.page.waitForTimeout(1000);
             await this.page.waitForSelector('[href="/"]');
             await this.browser.close();
             await this.copyUserFolderIntoCookiesDir(this.instId as string);
@@ -141,7 +141,7 @@ export class Login {
             return {
                 status: false,
                 username: username,
-                error_message: e.message + 'Check ${this.dirNumber}-doubleAuth.png',
+                error_message: e.message + `Check ${this.dirNumber}-doubleAuth.png`,
             }
         }
         finally {
