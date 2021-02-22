@@ -79,6 +79,13 @@ export class Login {
             ({inst_id, is_private, is_double} = await this.LoginAndGetUserData(username, password));
             // destructuring assignment doesn't allow "this."
             this.instId = inst_id;
+            if (await this.isUserLogined()){
+                return {
+                    status: false,
+                    username: username,
+                    error_message: `User with this inst_id already exist: inst_id: ${this.instId}`,
+                }
+            }
             return {
                 status: true,
                 username: username,
@@ -103,6 +110,12 @@ export class Login {
             }
         }
     }
+
+    public async isUserLogined(): Promise<any>{
+        return await fs.pathExists(path.resolve(__dirname, `cookies/${this.instId}`));
+    }
+
+
     // I need username only for creating response object. Maybe I should get rid of this.
     public async doubleAuth(username: string, code: string): Promise<LoginResponse> {
         try {
