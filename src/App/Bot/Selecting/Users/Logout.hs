@@ -21,8 +21,8 @@ logout :: CallbackQuery.CallbackQuery -> Message -> Text -> Flow (Response Messa
 logout callBack msg instId = do
   liftIO $ print $ CallbackQuery.callback_data callBack
   case CallbackQuery.callback_data callBack of
-    "Yes" -> Logout.logout msg userId instId
-    "No" -> Logout.backAccountMenu msg userId instId
+    "Yes" -> Logout.logout msg user instId
+    "No" -> Logout.backAccountMenu msg user instId
     _ -> Messages.strangeMessage msg
   where
-    userId = User.id $ CallbackQuery.callback_from callBack
+    user = CallbackQuery.callback_from callBack

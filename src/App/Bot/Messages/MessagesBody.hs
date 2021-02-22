@@ -101,7 +101,7 @@ authCode =
 
 incorrectAuthCode :: Message -> Message
 incorrectAuthCode =
-  mkMessage "Вы прислали неверный код, попробуйте ещё раз"
+  mkMessage "Либо вы прислали неверный код, либо попробуйте зарегестироваться позже"
 
 publicAccount :: Message -> Message
 publicAccount =

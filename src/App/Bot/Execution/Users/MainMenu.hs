@@ -14,17 +14,18 @@ import qualified Telegram.Types.Domain.Message as Message
 import qualified Types.Domain.InstAccount as InstAccount
 import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
 import qualified Types.Domain.Status.TgUsersStatus as TgUsersStatus
+import qualified Telegram.Types.Domain.User as User
 import Prelude hiding (id)
 
-accounts :: Message.Message -> Int -> Flow (Response Message.Message)
-accounts msg userId = do
+accounts :: Message.Message -> User.User -> Flow (Response Message.Message)
+accounts msg user = do
   let status = TgUserStatus.TgUser TgUserStatus.ListOfAccounts
-  Common.updateUserStatus userId status
-  instAccs <- Common.getInstAccs userId
+  Common.updateUserStatus user status
+  instAccs <- Common.getInstAccs (User.id user)
   Message.showInstAccs msg (map InstAccount.login instAccs)
 
-help :: Message.Message -> Int -> Flow (Response Message.Message)
-help msg userId = do
+help :: Message.Message -> User.User -> Flow (Response Message.Message)
+help msg user = do
   let status = TgUserStatus.TgUser TgUserStatus.Help
-  Common.updateUserStatus userId status
+  Common.updateUserStatus user status
   Message.helpMessage msg

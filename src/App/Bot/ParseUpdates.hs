@@ -80,7 +80,7 @@ checkUserStatus cb msg = do
   mbStatus <- Common.getUserStatus userId
   case mbStatus of
     Nothing -> do
-      Common.updateUserStatus userId (TgUserStatus.TgUser TgUserStatus.MainMenu)
+      Common.updateUserStatus user (TgUserStatus.TgUser TgUserStatus.MainMenu)
       UserAPI.mainMenu cb msg
     Just (TgUserStatus.TgUser TgUserStatus.MainMenu) -> UserAPI.mainMenu cb msg
     Just (TgUserStatus.TgUser TgUserStatus.Help) -> UserAPI.helpMenu cb msg
@@ -89,4 +89,5 @@ checkUserStatus cb msg = do
     Just (TgUserStatus.TgUser (TgUserStatus.Logout instAcc)) -> UserAPI.logout cb msg instAcc
     Just _ -> Messages.strangeMessage msg
   where
-    userId = User.id $ CallbackQuery.callback_from cb
+    userId = User.id user
+    user = CallbackQuery.callback_from cb

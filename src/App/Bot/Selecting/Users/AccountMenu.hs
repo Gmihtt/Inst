@@ -20,12 +20,12 @@ import qualified Telegram.Types.Domain.User as User
 accountMenu :: CallbackQuery.CallbackQuery -> Message -> Text -> Flow (Response Message)
 accountMenu callBack msg instAcc =
   case CallbackQuery.callback_data callBack of
-    "Start" -> Statistics.start msg userId instAcc
-    "Stop" -> Statistics.stop msg userId instAcc
+    "Start" -> Statistics.start msg instAcc
+    "Stop" -> Statistics.stop msg instAcc
     "Subscription" -> Statistics.subscription msg
-    "Statistics" -> Statistics.stat msg userId instAcc
-    "Logout" -> Logout.confirmLogout msg userId instAcc
-    "Back" -> Statistics.back msg userId
+    "Statistics" -> Statistics.stat msg instAcc
+    "Logout" -> Logout.confirmLogout msg user instAcc
+    "Back" -> Statistics.back msg user
     _ -> Messages.strangeMessage msg
   where
-    userId = User.id $ CallbackQuery.callback_from callBack
+    user = CallbackQuery.callback_from callBack

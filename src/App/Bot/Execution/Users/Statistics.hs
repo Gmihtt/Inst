@@ -24,23 +24,24 @@ import qualified Types.Domain.Manager as Manager
 import qualified Types.Domain.Statistic as Statistic
 import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
 import qualified Types.Domain.Status.TgUsersStatus as TgUsersStatus
+import qualified Telegram.Types.Domain.User as User
 
-start :: Message.Message -> Int -> Text -> Flow (Response Message.Message)
-start msg userId instId = do
+start :: Message.Message -> Text -> Flow (Response Message.Message)
+start msg instId = do
   env <- ask
   let statManager = Environment.statisticsManager env
   liftIO $ API.sendMsg statManager (ScriptsStat.mkStartReq instId)
   Messages.start msg
 
-stop :: Message.Message -> Int -> Text -> Flow (Response Message.Message)
-stop msg userId instId = do
+stop :: Message.Message -> Text -> Flow (Response Message.Message)
+stop msg instId = do
   env <- ask
   let statManager = Environment.statisticsManager env
   liftIO $ API.sendMsg statManager (ScriptsStat.mkStopReq instId)
   Messages.stop msg
 
-stat :: Message.Message -> Int -> Text -> Flow (Response Message.Message)
-stat msg userId instId = do
+stat :: Message.Message -> Text -> Flow (Response Message.Message)
+stat msg instId = do
   env <- ask
   let manager = Environment.statisticsManager env
   mbStat <- liftIO $ Manager.findTask instId manager
@@ -49,9 +50,9 @@ stat msg userId instId = do
 subscription :: Message.Message -> Flow (Response Message.Message)
 subscription = Messages.todoMsg
 
-back :: Message.Message -> Int -> Flow (Response Message.Message)
-back msg userId = do
+back :: Message.Message -> User.User -> Flow (Response Message.Message)
+back msg user = do
   let status = TgUserStatus.TgUser TgUserStatus.ListOfAccounts
-  Common.updateUserStatus userId status
-  instAccs <- Common.getInstAccs userId
+  Common.updateUserStatus user status
+  instAccs <- Common.getInstAccs (User.id user)
   Messages.showInstAccs msg (map InstAccount.login instAccs)

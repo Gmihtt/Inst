@@ -11,23 +11,24 @@ import qualified Telegram.Types.Domain.Message as Message
 import qualified Types.Domain.InstAccount as InstAccount
 import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
 import qualified Types.Domain.Status.TgUsersStatus as TgUsersStatus
+import qualified Telegram.Types.Domain.User as User
 import Prelude hiding (id)
 
-selectedAcc :: Message.Message -> Int -> InstAccount.InstAccount -> Flow (Response Message.Message)
-selectedAcc msg userId instAcc = do
+selectedAcc :: Message.Message -> User.User -> InstAccount.InstAccount -> Flow (Response Message.Message)
+selectedAcc msg user instAcc = do
   let inst_id = InstAccount.id instAcc
   let status = TgUserStatus.TgUser $ TgUserStatus.AccountMenu inst_id
-  Common.updateUserStatus userId status
+  Common.updateUserStatus user status
   Message.accountMenu msg
 
-addAccount :: Message.Message -> Int -> Flow (Response Message.Message)
-addAccount msg userId = do
+addAccount :: Message.Message -> User.User -> Flow (Response Message.Message)
+addAccount msg user = do
   let status = TgUserStatus.TgUser TgUserStatus.AddAccountLogin
-  Common.updateUserStatus userId status
+  Common.updateUserStatus user status
   Message.loginMsg msg
 
-back :: Message.Message -> Int -> Flow (Response Message.Message)
-back msg userId = do
+back :: Message.Message -> User.User -> Flow (Response Message.Message)
+back msg user = do
   let status = TgUserStatus.TgUser TgUserStatus.MainMenu
-  Common.updateUserStatus userId status
+  Common.updateUserStatus user status
   Message.mainMenu msg

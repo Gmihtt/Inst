@@ -29,24 +29,25 @@ import qualified Types.Communication.Scripts.Auth as Auth
 import qualified Types.Domain.InstAccount as InstAccount
 import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
 import qualified Types.Domain.Status.TgUsersStatus as TgUsersStatus
+import qualified Telegram.Types.Domain.User as User
 import qualified Types.Domain.TgUser as TgUser
 import Prelude hiding (id)
 
-login :: Message.Message -> Int -> Text -> Flow (Response Message.Message)
-login msg userId accLogin = do
-  instAccs <- Common.getInstAccs userId
+login :: Message.Message -> User.User -> Text -> Flow (Response Message.Message)
+login msg user accLogin = do
+  instAccs <- Common.getInstAccs (User.id user)
   let res = List.find ((accLogin ==) . InstAccount.login) instAccs
   case res of
     Just _ -> Message.repeatLoggingMsg msg
     Nothing -> do
       let status = TgUserStatus.TgUser $ TgUserStatus.AddAccountPassword accLogin
-      Common.updateUserStatus userId status
+      Common.updateUserStatus user status
       Message.passwordMsg msg
 
-password :: Message.Message -> Int -> Text -> Text -> Flow (Response Message.Message)
-password msg userId accLogin accPassword = do
+password :: Message.Message -> User.User -> Text -> Text -> Flow (Response Message.Message)
+password msg user accLogin accPassword = do
   mbRes <- runScript accLogin accPassword
-  maybe (errorCase msg userId) (successCase accLogin) mbRes
+  maybe (errorCase msg user) (successCase accLogin) mbRes
   where
     successCase accLogin (instId, private, doubleAuth) = do
       if private
@@ -55,36 +56,41 @@ password msg userId accLogin accPassword = do
       if doubleAuth
         then do
           let status = TgUserStatus.TgUser $ TgUserStatus.AddAccountCode accLogin accPassword instId
-          Common.updateUserStatus userId status
+          Common.updateUserStatus user status
           Message.authCode msg
         else do
-          saveAccAndUser instId accLogin accPassword userId
+          saveAccAndUser instId accLogin accPassword user
           Message.accountMenu msg
-    errorCase msg userId = do
+    errorCase msg user = do
       let status = TgUserStatus.TgUser TgUserStatus.ListOfAccounts
-      Common.updateUserStatus userId status
+      Common.updateUserStatus user status
       Message.failAuthMsg msg
       instAccs <- Common.getInstAccs userId
       Message.showInstAccs msg (map InstAccount.login instAccs)
+    userId = User.id user
 
 authCode ::
   Message.Message ->
-  Int ->
+  User.User ->
   Text ->
   Text ->
   Text ->
   Text ->
   Flow (Response Message.Message)
-authCode msg userId instId accLogin accPassword accCode = do
+authCode msg user instId accLogin accPassword accCode = do
   res <- ScriptsAuth.doubleAuth accLogin accCode
   liftIO $ printDebug res
   if Auth.response_status res
     then do
       Message.successAuthMsg msg
-      saveAccAndUser instId accLogin accPassword userId
+      saveAccAndUser instId accLogin accPassword user
       Message.accountMenu msg
     else do
       Message.incorrectAuthCode msg
+      let status = TgUserStatus.TgUser TgUserStatus.ListOfAccounts
+      Common.updateUserStatus user status
+      instAccs <- Common.getInstAccs (User.id user)
+      Message.showInstAccs msg (map InstAccount.login instAccs)
 
 runScript :: Text -> Text -> Flow (Maybe (Text, Bool, Bool))
 runScript accLogin accPassword = do
@@ -101,8 +107,9 @@ runScript accLogin accPassword = do
       doubleAuth <- mbDoubleAuth
       pure (instId, private, doubleAuth)
 
-saveAccAndUser :: Text -> Text -> Text -> Int -> Flow Bool
-saveAccAndUser instId accLogin accPassword userId = do
+saveAccAndUser :: Text -> Text -> Text -> User.User -> Flow Bool
+saveAccAndUser instId accLogin accPassword user = do
+  let userId = User.id user
   instAccs <- Common.getInstAccs userId
   let newInstAcc = InstAccount.mkInstAccount instId accLogin accPassword False
   let uId = T.pack $ show userId
@@ -110,4 +117,4 @@ saveAccAndUser instId accLogin accPassword userId = do
   Mongo.updateInstAccs uId (Transforms.mkDocByTgUser tgUser) "accounts"
   let status = TgUserStatus.TgUser $ TgUserStatus.AccountMenu instId
   Common.putInstAccs userId
-  Common.updateUserStatus userId status
+  Common.updateUserStatus user status

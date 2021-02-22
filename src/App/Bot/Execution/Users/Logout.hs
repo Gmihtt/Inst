@@ -25,18 +25,21 @@ import qualified Types.Domain.Manager as Manager
 import qualified Types.Domain.Statistic as Statistic
 import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
 import qualified Types.Domain.Status.TgUsersStatus as TgUsersStatus
+import qualified Telegram.Types.Domain.User as User
 
-confirmLogout :: Message.Message -> Int -> Text -> Flow (Response Message.Message)
-confirmLogout msg userId login = do
+confirmLogout :: Message.Message -> User.User -> Text -> Flow (Response Message.Message)
+confirmLogout msg user login = do
   let status = TgUserStatus.TgUser $ TgUserStatus.Logout login
-  Common.updateUserStatus userId status
+  Common.updateUserStatus user status
   Messages.confirmLogout msg
 
-logout :: Message.Message -> Int -> Text -> Flow (Response Message.Message)
-logout msg userId instId = do
+logout :: Message.Message -> User.User -> Text -> Flow (Response Message.Message)
+logout msg user instId = do
   env <- ask
   let statManager = Environment.statisticsManager env
   liftIO $ API.sendMsg statManager (ScriptsStat.mkLogoutReq instId)
+  liftIO $ Manager.deleteTask instId statManager
+  let userId = User.id user
   let tg_id = T.pack $ show userId
   instAcc <-
     Mongo.findInstAccountByInstId tg_id instId "accounts"
@@ -44,23 +47,23 @@ logout msg userId instId = do
   Mongo.deleteInstAccount tg_id (InstAccount.login instAcc) "accounts"
   Common.putInstAccs userId
   Messages.logout msg
-  backListOfAccounts msg userId
+  backListOfAccounts msg user
   where
     errorMsg =
-      "Logout.findInstAccountByInstId fail with tg_id : "
-        ++ show userId
+      "Logout.findInstAccountByInstId fail with tg : "
+        ++ show user
         ++ " instId: "
         ++ show instId
 
-backListOfAccounts :: Message.Message -> Int -> Flow (Response Message.Message)
-backListOfAccounts msg userId = do
+backListOfAccounts :: Message.Message -> User.User -> Flow (Response Message.Message)
+backListOfAccounts msg user = do
   let status = TgUserStatus.TgUser TgUserStatus.ListOfAccounts
-  Common.updateUserStatus userId status
-  instAccs <- Common.getInstAccs userId
+  Common.updateUserStatus user status
+  instAccs <- Common.getInstAccs (User.id user)
   Messages.showInstAccs msg (map InstAccount.login instAccs)
 
-backAccountMenu :: Message.Message -> Int -> Text -> Flow (Response Message.Message)
-backAccountMenu msg userId instId = do
+backAccountMenu :: Message.Message -> User.User -> Text -> Flow (Response Message.Message)
+backAccountMenu msg user instId = do
   let status = TgUserStatus.TgUser $ TgUserStatus.AccountMenu instId
-  Common.updateUserStatus userId status
+  Common.updateUserStatus user status
   Messages.accountMenu msg

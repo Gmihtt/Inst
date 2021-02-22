@@ -27,27 +27,28 @@ messageFromUser :: Message.Message -> Flow (Response Message.Message)
 messageFromUser msg = do
   case Message.from msg of
     Nothing -> Messages.msgForEmptyUser msg
-    Just user -> checkStatus msg (User.id user)
+    Just user -> checkStatus msg user
 
-checkStatus :: Message.Message -> Int -> Flow (Response Message.Message)
-checkStatus msg userId = do
+checkStatus :: Message.Message -> User.User -> Flow (Response Message.Message)
+checkStatus msg user = do
   let text = fromMaybe "" (Message.text msg)
+  Common.printUserAction user Nothing (Just text)
   case text of
     "/start" -> setMainMenu
     "/help" -> setHelpMenu
     "/reboot" -> reboot
     _ -> do
       status <- Common.getUserStatus userId
-      maybe setMainMenu (choseAction msg userId) status
+      maybe setMainMenu (choseAction msg user) status
   where
     setHelpMenu = do
       Common.updateUserStatus
-        userId
+        user
         (TgUserStatus.TgUser TgUserStatus.Help)
       Messages.helpMessage msg
     setMainMenu = do
       Common.updateUserStatus
-        userId
+        user
         (TgUserStatus.TgUser TgUserStatus.MainMenu)
       Messages.mainMenu msg
     reboot = do
@@ -59,19 +60,27 @@ checkStatus msg userId = do
       Common.dropInstAccs userId
       Mongo.deleteTgUser uId "accounts"
       setMainMenu
+    userId = User.id user
 
-choseAction :: Message.Message -> Int -> TgUserStatus.TgUserStatus -> Flow (Response Message.Message)
+choseAction :: Message.Message -> User.User -> TgUserStatus.TgUserStatus -> Flow (Response Message.Message)
 choseAction msg userId (TgUserStatus.TgAdmin status) =
   case status of
     TgUserStatus.SelectTgUser -> undefined
     TgUserStatus.MessageFromBot -> undefined
     TgUserStatus.ShowInstAccounts -> undefined
     TgUserStatus.AccountInfo -> undefined
-choseAction msg userId (TgUserStatus.TgUser status) =
+choseAction msg user (TgUserStatus.TgUser status) =
   case status of
-    TgUserStatus.AddAccountLogin -> Login.login msg userId text
-    TgUserStatus.AddAccountPassword username -> Login.password msg userId username text
-    TgUserStatus.AddAccountCode username password instId -> Login.authCode msg userId instId username password text
+    TgUserStatus.AddAccountLogin -> Login.login msg user text
+    TgUserStatus.AddAccountPassword username -> do
+      if T.length text > 5
+        then Login.password msg user username text
+        else do
+          Common.updateUserStatus
+            user
+            (TgUserStatus.TgUser TgUserStatus.MainMenu)
+          Messages.failAuthMsg msg
+    TgUserStatus.AddAccountCode username password instId -> Login.authCode msg user instId username password text
     _ -> Messages.strangeMessage msg
   where
     text = fromMaybe "" $ Message.text msg

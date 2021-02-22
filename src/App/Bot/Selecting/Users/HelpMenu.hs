@@ -15,7 +15,7 @@ import qualified Telegram.Types.Domain.User as User
 helpMenu :: CallbackQuery.CallbackQuery -> Message -> Flow (Response Message)
 helpMenu callBack msg =
   case CallbackQuery.callback_data callBack of
-    "Back" -> Help.back msg userId
+    "Back" -> Help.back msg user
     _ -> Messages.strangeMessage msg
   where
-    userId = User.id $ CallbackQuery.callback_from callBack
+    user = CallbackQuery.callback_from callBack

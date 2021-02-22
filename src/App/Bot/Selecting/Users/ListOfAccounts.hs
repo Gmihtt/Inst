@@ -17,11 +17,12 @@ import qualified Telegram.Types.Domain.User as User
 listOfAccounts :: CallbackQuery.CallbackQuery -> Message -> Flow (Response Message)
 listOfAccounts callBack msg =
   case CallbackQuery.callback_data callBack of
-    "Add" -> ShowAccounts.addAccount msg userId
-    "Back" -> ShowAccounts.back msg userId
+    "Add" -> ShowAccounts.addAccount msg user
+    "Back" -> ShowAccounts.back msg user
     username -> do
       let uId = T.pack $ show userId
       mbInstAcc <- Mongo.findInstAccountByLogin uId username "accounts"
-      maybe (Messages.strangeMessage msg) (ShowAccounts.selectedAcc msg userId) mbInstAcc
+      maybe (Messages.strangeMessage msg) (ShowAccounts.selectedAcc msg user) mbInstAcc
   where
-    userId = User.id $ CallbackQuery.callback_from callBack
+    user = CallbackQuery.callback_from callBack
+    userId = User.id user
