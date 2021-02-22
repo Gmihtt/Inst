@@ -79,7 +79,7 @@ export class Login {
             ({inst_id, is_private, is_double} = await this.LoginAndGetUserData(username, password));
             // destructuring assignment doesn't allow "this."
             this.instId = inst_id;
-            if (await this.isUserLogined()){
+            if (await this.isUserLogged()){
                 return {
                     status: false,
                     username: username,
@@ -111,8 +111,15 @@ export class Login {
         }
     }
 
-    public async isUserLogined(): Promise<any>{
-        return await fs.pathExists(path.resolve(__dirname, `cookies/${this.instId}`));
+    public async isUserLogged(): Promise<boolean>{
+        //return await fs.pathExists(path.resolve(__dirname, `cookies/${this.instId}`));
+        try {
+            await fs.access(path.resolve(__dirname, `cookies/${this.instId}`));
+            return true;
+        }
+        catch {
+            return false;
+        }
     }
 
 
