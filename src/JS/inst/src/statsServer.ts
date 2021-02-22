@@ -17,8 +17,12 @@ async function getAndSendFollowersCount(socket: any, id: string, timeout: number
     try {
         const usersInfo: StatsResponse = await getFollowers(id);
         const userJSON: string = JSON.stringify(usersInfo);
-        console.log(`Stats sent: ${userJSON.slice(0, 80)}`);
-        socket.send(Buffer.from(userJSON));
+        if (activeFollowerGetters.has(id)) {
+            console.log(`Stats sent: ${userJSON.slice(0, 150)}`);
+            socket.send(Buffer.from(userJSON));
+        } else {
+            console.log(`Stats didn't send: followers were counted but user isn't in set ${id}`);
+        }
     } catch (e) {
         const errorJSON: string = JSON.stringify(e.message);
         console.log(`Stats sent: ${errorJSON}`);
