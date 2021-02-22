@@ -1,6 +1,7 @@
 'use strict';
 
 import ws = require('ws');
+
 const fs = require('fs-extra');
 import path = require('path');
 
@@ -44,7 +45,7 @@ server.on('connection', function connection(socket) {
 
         switch (request.action) {
             case 'Start':
-                if (activeFollowerGetters.has(request.inst_id)){
+                if (activeFollowerGetters.has(request.inst_id)) {
                     break;
                 }
                 activeFollowerGetters.add(request.inst_id);
@@ -58,8 +59,9 @@ server.on('connection', function connection(socket) {
                 activeFollowerGetters.delete(request.inst_id);
                 break;
             case 'Logout':
-                try{
-                    if (await fs.pathExists(path.resolve(__dirname, path.resolve(__dirname, `cookies/${request.inst_id}`)))){
+                try {
+                    activeFollowerGetters.delete(request.inst_id);
+                    if (await fs.pathExists(path.resolve(__dirname, path.resolve(__dirname, `cookies/${request.inst_id}`)))) {
                         await fs.remove(path.resolve(__dirname, path.resolve(__dirname, `cookies/${request.inst_id}`)));
                         let okResponse: StatsResponse = {
                             status: true,
@@ -78,8 +80,7 @@ server.on('connection', function connection(socket) {
                         console.log(`Stats sent: ${errorJSON}`);
                         socket.send(Buffer.from(errorJSON));
                     }
-                }
-                catch (e){
+                } catch (e) {
                     let errorObj: StatsResponse = {
                         status: false,
                         inst_id: request.inst_id,

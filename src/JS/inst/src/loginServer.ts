@@ -21,13 +21,13 @@ const server = new ws.Server({
 
 let doubleAuthLogins = new Map();
 
-
 server.on('connection', function connection(socket) {
     console.log('Login: connection established');
 
     socket.onclose = function () {
         console.log('Login: connection finished');
     }
+
     socket.on('message', async function incoming(message: Buffer) {
         console.log(`Login: ${message.toString()}`);
         const userData: LoginRequest = JSON.parse(message.toString());
