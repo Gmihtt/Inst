@@ -3,7 +3,7 @@ version: "3"
 services:
   server:
 
-    image: danieldostanich/instv6
+    image: danieldostanich/instv9
 
     stdin_open: true 
     tty: true        
@@ -19,6 +19,9 @@ services:
   mongo:
 
     image: mongo:latest
+    
+    stdin_open: true 
+    tty: true       
 
     environment:
             MONGO_INITDB_DATABASE: accounts
@@ -27,6 +30,9 @@ services:
       - 27017:27017
 
   redis:
+  
+    stdin_open: true 
+    tty: true       
 
     image: redis:latest
 

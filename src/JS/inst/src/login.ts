@@ -38,7 +38,7 @@ let dirNumberMutex = new Mutex();
 let dirCounter: number = 0;
 
 export class Login {
-    private browser: puppeteer.Browser;
+    private readonly browser: puppeteer.Browser;
     private readonly page: puppeteer.Page;
     private readonly dirNumber: number;
     private instId: string | null = null;
@@ -107,27 +107,14 @@ export class Login {
     public async doubleAuth(username: string, code: string): Promise<LoginResponse> {
         try {
             await this.page.type('[name=verificationCode]', code);
-            // Multiple solutions:
-            //First
-            //await this.page.click('[type=button]');
-            //Second
-            /*await this.page.$$eval('[type=button]', (buttons: Array<Element>) =>{
-                buttons.filter(button => {
-                    return Array.from(button.childNodes).filter((node: Node) => {
-                        return node.textContent === 'Confirm';
-                    }).length > 0;
-                })[0].setAttribute('class','followerGettingApp');
-            });
-            await this.page.click('.followerGettingApp');
-            */
-            //Third
+
             await this.page.addScriptTag({path: require.resolve('jquery')});
             await this.page.evaluate(() => {
                 $('button:contains("Confirm")').addClass('followerGettingApp');
                 $('button:contains("Подтвердить")').addClass('followerGettingApp');
             });
             await this.page.click('.followerGettingApp');
-            //Pretty shitty design. There's might be a bug.
+
             await this.page.waitForSelector('[href="/"]');
             await this.browser.close();
             await this.copyUserFolderIntoCookiesDir(this.instId as string);
@@ -158,8 +145,6 @@ export class Login {
     }
 
     private async LoginAndGetUserData(username: string, password: string) {
-
-
         await this.page.goto('https://www.instagram.com/accounts/login/');
 
         await this.fillInputsAndSubmit(username, password);
@@ -186,8 +171,8 @@ export class Login {
         await this.page.click('[type=submit]');
         await this.page.waitForTimeout(7000);
         if (await this.page.$('[role="alert"]') != null) {
-
-            throw new Error(`Instagram exception: probably wrong password. Check `);
+            await screenError(`${this.dirNumber}-alert.png`, this.page);
+            throw new Error(`Instagram exception: probably wrong password. Check ${this.dirNumber}-alert.png`);
         }
     }
 
@@ -208,7 +193,5 @@ export class Login {
             is_private: responseObject.graphql.user.is_private,
         };
     }
-
-
 }
 
