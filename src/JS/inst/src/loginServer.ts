@@ -71,6 +71,7 @@ server.on('connection', function connection(socket) {
                     console.log(`Login doubleAuth sent: ${errorJSON}`);
                     socket.send(Buffer.from(errorJSON));
                 }
+                doubleAuthLogins.delete(userData.username);
                 break;
         }
     })

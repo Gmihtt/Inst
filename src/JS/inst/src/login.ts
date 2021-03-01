@@ -72,28 +72,48 @@ export class Login {
 
 
     public async login(username: string, password: string): Promise<LoginResponse> {
-        let inst_id: string | null = null;
         let is_double: boolean = false;
+        let wasError: boolean = false;
         try {
-            let is_private: boolean;
-            ({inst_id, is_private, is_double} = await this.LoginAndGetUserData(username, password));
-            // destructuring assignment doesn't allow "this."
-            this.instId = inst_id;
-            if (await this.isUserLogged()){
+            await this.page.goto('https://www.instagram.com/accounts/login/');
+
+            let userIdAndPrivacy = await this.getIdAndPrivacy(username);
+
+            this.instId = userIdAndPrivacy.inst_id;
+            if (await this.isUserLoggedInBot()) {
+                wasError = true;
                 return {
                     status: false,
                     username: username,
                     error_message: `User with this inst_id already exist: inst_id: ${this.instId}`,
                 }
             }
+
+            await this.fillInputsAndSubmit(username, password);
+
+            is_double = await this.isDoubleAuth();
+
+            if (!is_double && !(await this.isUserLoggedInInst())) {
+                await screenError(`${this.dirNumber}-afterLogin.png`, this.page);
+                return {
+                    status: false,
+                    username: username,
+                    error_message: `User wasn't logged in: ${username}, ${this.instId}. Check ${this.dirNumber}-afterLogin.png`,
+                }
+            }
+
+            await this.finishLogin();
+            await this.page.waitForTimeout(2000);
+
             return {
                 status: true,
                 username: username,
                 inst_id: this.instId,
                 is_double_auth: is_double,
-                is_private: is_private,
+                is_private: userIdAndPrivacy.is_private,
             }
         } catch (e) {
+            wasError = true;
             await screenError(`${this.dirNumber}-login.png`, this.page);
             return {
                 status: false,
@@ -101,23 +121,38 @@ export class Login {
                 error_message: `${e.message}, Check ${this.dirNumber}-login.png`,
             }
         } finally {
-            if (!is_double) {
+
+            if (!is_double && !wasError) {
+                await this.finishLogin();
+            }
+            if (!is_double || wasError) {
                 await this.browser.close();
-                if (this.instId != null) {
-                    await this.copyUserFolderIntoCookiesDir(this.instId);
-                }
+            }
+            if (!is_double && !wasError) {
+                await this.copyUserFolderIntoCookiesDir(this.instId as string);
+            }
+            if (!is_double || wasError) {
                 await this.removeUserDirFolder();
             }
         }
     }
 
-    public async isUserLogged(): Promise<boolean>{
-        //return await fs.pathExists(path.resolve(__dirname, `cookies/${this.instId}`));
+    private async isUserLoggedInBot(): Promise<boolean> {
         try {
             await fs.access(path.resolve(__dirname, `cookies/${this.instId}`));
             return true;
+        } catch {
+            return false;
         }
-        catch {
+    }
+
+    private async isUserLoggedInInst(): Promise<boolean> {
+        try {
+            let response: boolean = await this.page.evaluate(async () => {
+                return (await fetch(`https://www.instagram.com/accounts/activity/?__a=1`)).redirected;
+            });
+            return !response;
+        } catch {
             return false;
         }
     }
@@ -127,15 +162,24 @@ export class Login {
     public async doubleAuth(username: string, code: string): Promise<LoginResponse> {
         try {
             await this.page.type('[name=verificationCode]', code);
-
             await this.page.addScriptTag({path: require.resolve('jquery')});
             await this.page.evaluate(() => {
                 $('button:contains("Confirm")').addClass('followerGettingApp');
                 $('button:contains("Подтвердить")').addClass('followerGettingApp');
             });
             await this.page.click('.followerGettingApp');
-            await this.page.waitForTimeout(1000);
-            await this.page.waitForSelector('[href="/"]');
+            await this.page.waitForTimeout(8000);
+            if (!(await this.isUserLoggedInInst())) {
+                await screenError(`${this.dirNumber}-afterLogin.png`, this.page);
+                await this.browser.close();
+                return {
+                    status: false,
+                    username: username,
+                    error_message: `User wasn't logged in: ${username}, ${this.instId}. Check ${this.dirNumber}-afterLogin.png`,
+                }
+            }
+            await this.finishLogin();
+            await this.page.waitForTimeout(3000);
             await this.browser.close();
             await this.copyUserFolderIntoCookiesDir(this.instId as string);
             return {
@@ -150,8 +194,7 @@ export class Login {
                 username: username,
                 error_message: e.message + `Check ${this.dirNumber}-doubleAuth.png`,
             }
-        }
-        finally {
+        } finally {
             await this.removeUserDirFolder();
         }
     }
@@ -164,23 +207,20 @@ export class Login {
         await fs.remove(path.resolve(__dirname, `loginDirs/userDir${this.dirNumber}`));
     }
 
-    private async LoginAndGetUserData(username: string, password: string) {
-        await this.page.goto('https://www.instagram.com/accounts/login/');
-
-        await this.fillInputsAndSubmit(username, password);
-
-        let userIdAndPrivacy = await this.getIdAndPrivacy(username);
-
-        return {
-            inst_id: userIdAndPrivacy.inst_id,
-            is_private: userIdAndPrivacy.is_private,
-            is_double: await this.isDoubleAuth(),
-        }
-
-    }
-
     private async isDoubleAuth() {
         return await this.page.$('#verificationCodeDescription') != null;
+    }
+
+
+    private async finishLogin() {
+        await this.page.addScriptTag({path: require.resolve('jquery')});
+        await this.page.evaluate(() => {
+            $('button:contains("Save Info")').addClass('saveInfoButton');
+            //$('button:contains("Подтвердить")').addClass('followerGettingApp');
+        });
+        if (await this.page.$('.saveInfoButton') != null) {
+            await this.page.click('.saveInfoButton');
+        }
     }
 
 
@@ -190,9 +230,11 @@ export class Login {
         await this.page.type('[name=password]', password);
         await this.page.click('[type=submit]');
         await this.page.waitForTimeout(7000);
+        if ((await this.page.$$('button[disabled=""]')).length != 0) {
+            throw new Error(`Instagram exception: button is inactive`);
+        }
         if (await this.page.$('[role="alert"]') != null) {
-            await screenError(`${this.dirNumber}-alert.png`, this.page);
-            throw new Error(`Instagram exception: probably wrong password. Check ${this.dirNumber}-alert.png`);
+            throw new Error(`Instagram exception: probably wrong password`);
         }
     }
 
