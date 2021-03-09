@@ -7,3 +7,4 @@ configs/
 Configs/
 .idea
 *.log
+configs/config.yaml
