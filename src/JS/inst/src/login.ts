@@ -1,10 +1,9 @@
 import puppeteer = require('puppeteer');
 import path = require('path');
 import {Mutex} from "async-mutex";
-
 import fs from "fs-extra";
 
-import {screenError} from './errorsScreener';
+import {screenError, copyUserDirIntoCookiesDir, isUserLoggedInBot} from './file';
 
 export interface LoginRequest {
     type: string; // Login | DoubleAuth
@@ -80,7 +79,7 @@ export class Login {
             let userIdAndPrivacy = await this.getIdAndPrivacy(username);
 
             this.instId = userIdAndPrivacy.inst_id;
-            if (await this.isUserLoggedInBot()) {
+            if (await isUserLoggedInBot(this.instId)) {
                 wasError = true;
                 return {
                     status: false,
@@ -122,27 +121,21 @@ export class Login {
             }
         } finally {
 
-            if (!is_double && !wasError) {
+            let correctFinishing: boolean = !is_double && !wasError;
+            let justFinishing: boolean = !is_double || wasError;
+
+            if (correctFinishing) {
                 await this.finishLogin();
             }
-            if (!is_double || wasError) {
+            if (justFinishing) {
                 await this.browser.close();
             }
-            if (!is_double && !wasError) {
-                await this.copyUserFolderIntoCookiesDir(this.instId as string);
+            if (correctFinishing) {
+                await copyUserDirIntoCookiesDir(this.dirNumber, this.instId as string);
             }
-            if (!is_double || wasError) {
-                await this.removeUserDirFolder();
+            if (justFinishing) {
+                await this.removeUserDir();
             }
-        }
-    }
-
-    private async isUserLoggedInBot(): Promise<boolean> {
-        try {
-            await fs.access(path.resolve(__dirname, `cookies/${this.instId}`));
-            return true;
-        } catch {
-            return false;
         }
     }
 
@@ -181,7 +174,7 @@ export class Login {
             await this.finishLogin();
             await this.page.waitForTimeout(3000);
             await this.browser.close();
-            await this.copyUserFolderIntoCookiesDir(this.instId as string);
+            await copyUserDirIntoCookiesDir(this.dirNumber, this.instId as string);
             return {
                 status: true,
                 username: username,
@@ -195,15 +188,12 @@ export class Login {
                 error_message: e.message + `Check ${this.dirNumber}-doubleAuth.png`,
             }
         } finally {
-            await this.removeUserDirFolder();
+            await this.removeUserDir();
         }
     }
 
-    private async copyUserFolderIntoCookiesDir(id: string) {
-        await fs.copy(path.resolve(__dirname, `loginDirs/userDir${this.dirNumber}`), path.resolve(__dirname, `cookies/${id}`));
-    }
 
-    private async removeUserDirFolder() {
+    private async removeUserDir() {
         await fs.remove(path.resolve(__dirname, `loginDirs/userDir${this.dirNumber}`));
     }
 
