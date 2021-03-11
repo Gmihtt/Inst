@@ -1,3 +1,5 @@
+{-# LANGUAGE RecordWildCards #-}
+
 module Common.Error
   ( Error (..),
     throwConfigErr,
@@ -65,12 +67,12 @@ throwTgErr :: Text -> IO a
 throwTgErr = throwTelegramErr Nothing
 
 throwTelegramErr :: Maybe Int -> Text -> IO a
-throwTelegramErr mbCode desc = do
-  printError desc
+throwTelegramErr mbCode description = do
+  printError description
   throwIO . Telegram $
     TelegramError
       { code = fromMaybe 0 mbCode,
-        description = desc
+        ..
       }
 
 printDebug :: Show a => a -> IO ()

@@ -14,8 +14,6 @@ import Control.Monad.Trans.Reader (ask)
 import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
 import qualified MongoDB.Queries as Mongo
-import qualified Redis.Queries as Redis
-import Telegram.API.Methods.SendMessage (sendMessage)
 import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.Message as Message
 import qualified Telegram.Types.Domain.User as User
@@ -63,7 +61,7 @@ checkStatus msg user = do
     userId = User.id user
 
 choseAction :: Message.Message -> User.User -> TgUserStatus.TgUserStatus -> Flow (Response Message.Message)
-choseAction msg userId (TgUserStatus.TgAdmin status) =
+choseAction _ _ (TgUserStatus.TgAdmin status) =
   case status of
     TgUserStatus.SelectTgUser -> undefined
     TgUserStatus.MessageFromBot -> undefined

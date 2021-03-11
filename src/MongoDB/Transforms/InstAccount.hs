@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module MongoDB.Transforms.InstAccount
   ( mkDocByInstAcc,
@@ -33,17 +34,11 @@ mkDocsByInstAccs = map mkDocByInstAcc
 
 mkInstAccByDoc :: Document -> Maybe InstAccount
 mkInstAccByDoc doc = do
-  inst_id <- doc !? "id"
-  inst_login <- doc !? "login"
-  inst_password <- doc !? "password"
-  inst_subscription <- doc !? "subscription"
-  pure
-    InstAccount
-      { id = inst_id,
-        login = inst_login,
-        password = inst_password,
-        subscription = inst_subscription
-      }
+  id <- doc !? "id"
+  login <- doc !? "login"
+  password <- doc !? "password"
+  subscription <- doc !? "subscription"
+  pure InstAccount {..}
 
 mkInstAccsByDocs :: [Document] -> [InstAccount]
 mkInstAccsByDocs = mapMaybe mkInstAccByDoc

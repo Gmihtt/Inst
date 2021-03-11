@@ -1,23 +1,17 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Common.TelegramUserStatus where
 
-import qualified App.Bot.Messages.FlowMessages as Message
 import qualified Common.Environment as Environment
 import Common.Error
 import Common.Flow (Flow)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Control.Monad.Trans.Reader (ask)
 import Data.Text (Text, pack)
-import qualified Data.Text as T
-import qualified MongoDB.Queries as Mongo
-import qualified Redis.Queries as Redis
-import Telegram.Types.Communication.Response (Response (..))
-import qualified Telegram.Types.Domain.Message as Message
-import qualified Types.Domain.InstAccount as InstAccount
+import qualified Telegram.Types.Domain.User as User
 import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
 import qualified Types.Domain.Status.TgUsersStatus as TgUsersStatus
-import qualified Telegram.Types.Domain.User as User
 
 data TelegramUserStatus
   = TelegramUserStatus
@@ -43,5 +37,5 @@ getUserStatus userId = do
   liftIO $ TgUsersStatus.getUserStatus uId tgUsersStatus
 
 printUserAction :: User.User -> Maybe TgUserStatus.TgUserStatus -> Maybe Text -> Flow ()
-printUserAction user mbStatus mbMsg =
-  liftIO . printDebug $ TelegramUserStatus user mbStatus mbMsg
+printUserAction user userStatus msgByUser =
+  liftIO . printDebug $ TelegramUserStatus {..}

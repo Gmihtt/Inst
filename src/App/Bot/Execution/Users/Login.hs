@@ -15,21 +15,16 @@ import qualified Common.Redis as Common
 import qualified Common.TelegramUserStatus as Common
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import qualified Data.List as List
-import Data.Maybe (fromMaybe, maybe)
-import Data.String (lines)
 import Data.Text (Text)
 import qualified Data.Text as T
 import qualified MongoDB.Queries as Mongo
-import qualified MongoDB.Transforms.InstAccount as Transforms
 import qualified MongoDB.Transforms.TgUser as Transforms
-import qualified Redis.Queries as Redis
 import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.Message as Message
+import qualified Telegram.Types.Domain.User as User
 import qualified Types.Communication.Scripts.Auth as Auth
 import qualified Types.Domain.InstAccount as InstAccount
 import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
-import qualified Types.Domain.Status.TgUsersStatus as TgUsersStatus
-import qualified Telegram.Types.Domain.User as User
 import qualified Types.Domain.TgUser as TgUser
 import Prelude hiding (id)
 
@@ -47,9 +42,9 @@ login msg user accLogin = do
 password :: Message.Message -> User.User -> Text -> Text -> Flow (Response Message.Message)
 password msg user accLogin accPassword = do
   mbRes <- runScript accLogin accPassword
-  maybe (errorCase msg user) (successCase accLogin) mbRes
+  maybe errorCase successCase mbRes
   where
-    successCase accLogin (instId, private, doubleAuth) = do
+    successCase (instId, private, doubleAuth) = do
       if private
         then Message.successAuthMsg msg
         else Message.publicAccount msg
@@ -61,7 +56,7 @@ password msg user accLogin accPassword = do
         else do
           saveAccAndUser instId accLogin accPassword user
           Message.accountMenu msg
-    errorCase msg user = do
+    errorCase = do
       let status = TgUserStatus.TgUser TgUserStatus.ListOfAccounts
       Common.updateUserStatus user status
       Message.failAuthMsg msg

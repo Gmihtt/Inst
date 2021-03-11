@@ -18,10 +18,10 @@ instAccsKeyboard :: [Text] -> InlineKeyboardMarkup
 instAccsKeyboard instAccs =
   mkInlineKeyboardMarkup mkKeyboard
   where
-    mkKeyboard = fun (map mkButton instAccs) [] ++ [[mkButton "Add", mkButton "Back"]]
+    mkKeyboard = groupByThree (map mkButton instAccs) [] ++ [[mkButton "Add", mkButton "Back"]]
 
-fun :: [a] -> [a] -> [[a]]
-fun [] buf = [buf]
-fun (x : xs) buf
-  | length buf >= 3 = buf : fun xs [x]
-  | otherwise = fun xs (x : buf)
+groupByThree :: [a] -> [a] -> [[a]]
+groupByThree [] buf = [buf]
+groupByThree (x : xs) buf
+  | length buf >= 3 = buf : groupByThree xs [x]
+  | otherwise = groupByThree xs (x : buf)

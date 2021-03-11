@@ -6,9 +6,7 @@ import qualified App.Scripts.Statistics.API as ScriptsStatistics
 import qualified Common.Config as Config
 import Common.Environment (mkEnv)
 import Common.Error (Error (..))
-import Control.Concurrent (forkIO)
-import Control.Exception (Exception, SomeException, catch)
-import Control.Monad.Trans.Except (runExceptT)
+import Control.Exception (catch)
 import qualified Database.MongoDB as MongoDB
 import qualified Database.Redis as Redis
 import Network.HTTP.Client (newManager)
@@ -16,9 +14,7 @@ import Network.HTTP.Client.TLS (tlsManagerSettings)
 import System.Log.Formatter (simpleLogFormatter)
 import System.Log.Handler (LogHandler (setFormatter))
 import qualified System.Log.Handler.Simple as Logger
-import qualified System.Log.Handler.Syslog as Logger
 import qualified System.Log.Logger as Logger
-import qualified System.Process as System
 import qualified Types.Domain.Status.TgUsersStatus as TgUsersStatus
 
 setCommonFormatter :: LogHandler a => a -> a

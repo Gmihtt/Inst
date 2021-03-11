@@ -7,11 +7,9 @@ import qualified App.Bot.Messages.FlowMessages as Messages
 import Common.Flow (Flow)
 import qualified Data.Text as T
 import qualified MongoDB.Queries as Mongo
-import Telegram.API.Methods.SendMessage (sendMessage)
 import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.CallbackQuery as CallbackQuery
 import Telegram.Types.Domain.Message (Message)
-import qualified Telegram.Types.Domain.Message as Message
 import qualified Telegram.Types.Domain.User as User
 
 listOfAccounts :: CallbackQuery.CallbackQuery -> Message -> Flow (Response Message)

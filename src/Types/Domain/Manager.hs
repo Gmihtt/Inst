@@ -1,3 +1,5 @@
+{-# LANGUAGE RecordWildCards #-}
+
 module Types.Domain.Manager where
 
 import qualified Control.Concurrent.Map as Map
@@ -29,13 +31,9 @@ deleteTask taskId manager = Map.delete taskId (tasks manager)
 
 initManager :: Socket.Socket -> (Socket.Socket -> IO Stream.Stream) -> IO (Manager a)
 initManager socket getSocket = do
-  s <- getSocket socket
-  m <- Map.empty
-  pure $
-    Manager
-      { tasks = m,
-        stream = s
-      }
+  stream <- getSocket socket
+  tasks <- Map.empty
+  pure Manager {..}
 
 sendMsg :: ByteString -> Manager a -> IO ()
 sendMsg msg manager = Stream.sendMsgToScript msg (stream manager)

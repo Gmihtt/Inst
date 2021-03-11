@@ -5,13 +5,13 @@ module MongoDB.Queries where
 
 import qualified Common.Environment as Environment
 import Common.Flow (Flow)
-import Control.Monad.IO.Class (MonadIO (liftIO))
+import Control.Monad.IO.Class (MonadIO)
 import Control.Monad.Trans.Reader (ReaderT, ask)
 import qualified Data.List as List
 import Data.Text (Text)
 import qualified Database.MongoDB as Mongo
 import Database.MongoDB ((!?), (=:))
-import MongoDB.Transforms.InstAccount (mkDocsByInstAccs, mkInstAccsByDocs)
+import MongoDB.Transforms.InstAccount (mkInstAccsByDocs)
 import qualified MongoDB.Transforms.TgUser as Transforms
 import qualified Types.Domain.InstAccount as InstAccount
 import qualified Types.Domain.TgUser as TgUser

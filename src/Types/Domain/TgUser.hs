@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Types.Domain.TgUser
   ( TgUser (..),
@@ -26,10 +27,7 @@ data TgUser
 
 mkTgUser :: Text -> [InstAccount] -> TgUser
 mkTgUser id inst_accounts =
-  TgUser
-    { id = id,
-      inst_accounts = inst_accounts
-    }
+  TgUser {..}
 
 instance ToJSON TgUser where
   toJSON = toJson

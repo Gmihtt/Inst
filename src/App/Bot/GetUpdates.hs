@@ -13,8 +13,6 @@ import Control.Concurrent.Chan (Chan, newChan, writeList2Chan)
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Trans.Reader (ask, runReaderT)
 import Data.Maybe (fromMaybe)
-import Data.Text (Text, pack)
-import Network.HTTP.Client (Manager)
 import Telegram.API.Methods.CallTelegram (callTelegram)
 import qualified Telegram.API.Routes as API
 import qualified Telegram.Types.Communication.Response as Response
@@ -40,7 +38,6 @@ getUpdates updateId listOfUpdates = do
     getMax :: [Integer] -> Maybe Integer
     getMax [] = updateId
     getMax list = Just $ last list + 1
-    second = 1000000
 
 getBody :: Show a => Response.Response a -> Flow a
 getBody response =

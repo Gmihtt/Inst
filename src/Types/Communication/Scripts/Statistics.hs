@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Types.Communication.Scripts.Statistics where
 
@@ -36,25 +37,25 @@ data Request
 mkStartReq :: Text -> Request
 mkStartReq inst_id =
   Request
-    { inst_id = inst_id,
-      action = Start,
-      timeout = Just 20000
+    { action = Start,
+      timeout = Just 20000,
+      ..
     }
 
 mkStopReq :: Text -> Request
 mkStopReq inst_id =
   Request
-    { inst_id = inst_id,
-      action = Stop,
-      timeout = Just 20000
+    { action = Stop,
+      timeout = Just 20000,
+      ..
     }
 
 mkLogoutReq :: Text -> Request
 mkLogoutReq inst_id =
   Request
-    { inst_id = inst_id,
-      action = Logout,
-      timeout = Just 20000
+    { action = Logout,
+      timeout = Just 20000,
+      ..
     }
 
 instance ToJSON Request where

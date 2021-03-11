@@ -9,23 +9,18 @@ import Common.Error (throwLogicError)
 import Common.Flow (Flow)
 import qualified Common.Redis as Common
 import qualified Common.TelegramUserStatus as Common
-import qualified Control.Concurrent.Map as Map
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Trans.Reader (ask)
 import Data.Text (Text)
 import qualified Data.Text as T
 import qualified MongoDB.Queries as Mongo
-import qualified MongoDB.Queries as QMongo
-import qualified Redis.Queries as Redis
 import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.Message as Message
+import qualified Telegram.Types.Domain.User as User
 import qualified Types.Communication.Scripts.Statistics as ScriptsStat
 import qualified Types.Domain.InstAccount as InstAccount
 import qualified Types.Domain.Manager as Manager
-import qualified Types.Domain.Statistic as Statistic
 import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
-import qualified Types.Domain.Status.TgUsersStatus as TgUsersStatus
-import qualified Telegram.Types.Domain.User as User
 
 confirmLogout :: Message.Message -> User.User -> Text -> Flow (Response Message.Message)
 confirmLogout msg user login = do

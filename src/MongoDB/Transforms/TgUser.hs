@@ -2,11 +2,9 @@
 
 module MongoDB.Transforms.TgUser where
 
-import Data.Text (pack)
 import Database.MongoDB
   ( (=:),
     Document,
-    Field,
     Value (..),
   )
 import MongoDB.Transforms.InstAccount

@@ -1,3 +1,5 @@
+{-# LANGUAGE RecordWildCards #-}
+
 module Common.Environment
   ( Environment (..),
     mkEnv,
@@ -37,16 +39,5 @@ mkEnv ::
   TgUsersStatus.TgUsersStatus ->
   String ->
   Environment
-mkEnv e_manager e_token e_pipe e_conn e_mongoDB e_collection e_authThreads e_statThreads e_tgUsersStatus e_logName =
-  Environment
-    { manager = e_manager,
-      token = e_token,
-      pipe = e_pipe,
-      conn = e_conn,
-      mongoDB = e_mongoDB,
-      collection = e_collection,
-      authManager = e_authThreads,
-      statisticsManager = e_statThreads,
-      tgUsersStatus = e_tgUsersStatus,
-      logName = e_logName
-    }
+mkEnv manager token pipe conn mongoDB collection authManager statisticsManager tgUsersStatus logName =
+  Environment {..}
