@@ -11,7 +11,6 @@ where
 import Common.Json
   ( FromJSON (..),
     ToJSON (..),
-    Value,
     parseJson,
     toJson,
   )

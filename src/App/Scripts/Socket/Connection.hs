@@ -6,8 +6,6 @@ where
 import qualified App.Scripts.Socket.API as API
 import Control.Concurrent (forkIO)
 import Control.Monad (forever)
-import Control.Monad.IO.Class (liftIO)
-import Data.Aeson (FromJSON, ToJSON, decode, encode)
 import Data.ByteString.Lazy (ByteString)
 import Data.Text (Text)
 import qualified Types.Domain.Manager as Manager
