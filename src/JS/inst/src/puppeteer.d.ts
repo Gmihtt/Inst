@@ -1,5 +1,5 @@
 declare module "puppeteer" {
-    import {Serializable} from "puppeteer/lib/cjs/puppeteer/common/EvalTypes";
+    //import {Serializable} from "puppeteer/lib/cjs/puppeteer/common/EvalTypes";
 
     interface Browser {
         newPage(): Promise<Page>;
@@ -14,7 +14,7 @@ declare module "puppeteer" {
 
         waitForTimeout(milliseconds: number): Promise<any>;
 
-        evaluate(func: any, ...args: any): Promise<Serializable>
+        evaluate(func: any, ...args: any): Promise<any>
 
         $(selector: string): Promise<any>;
 

@@ -5,8 +5,7 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "start": "node ./build/statsServer.js",
-    "login": "node ./build/loginServer.js",
+    "start": "node ./build/main.js",
     "compile": "npx tsc"
   },
   "author": "Daniel Dostanich <dostanichdaniel@gmail.com>",
