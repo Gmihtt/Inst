@@ -2,8 +2,9 @@ import puppeteer = require('puppeteer');
 import path = require('path');
 import {Mutex} from "async-mutex";
 import fs from "fs-extra";
+import * as Proxy from "./proxyTester";
 
-import {screenError, copyUserDirIntoCookiesDir, isUserLoggedInBot} from './file';
+import * as File from './file';
 
 export interface LoginRequest {
     type: string; // Login | DoubleAuth
@@ -47,13 +48,20 @@ export class Login {
         await dirNumberMutex.acquire();
         let dirNumber = dirCounter++;
         dirNumberMutex.release();
+
+        let args = [
+            '--no-sandbox',
+            '--lang=en-GB'
+        ];
+
+        if (Proxy.isProxy){
+            args.push(`--proxy-server=${Proxy.proxyServer}`);
+        }
+
         let browser = await puppeteer.launch({
             headless: false,
             userDataDir: path.resolve(__dirname, `loginDirs/userDir${dirNumber}`),
-            args: [
-                '--no-sandbox',
-                '--lang=en-GB'
-            ]
+            args: args,
         });
         let page = await browser.newPage();
         return {
@@ -79,7 +87,7 @@ export class Login {
             let userIdAndPrivacy = await this.getIdAndPrivacy(username);
 
             this.instId = userIdAndPrivacy.inst_id;
-            if (await isUserLoggedInBot(this.instId)) {
+            if (await File.isUserLoggedInBot(this.instId)) {
                 wasError = true;
                 return {
                     status: false,
@@ -93,7 +101,7 @@ export class Login {
             is_double = await this.isDoubleAuth();
 
             if (!is_double && !(await this.isUserLoggedInInst())) {
-                await screenError(`${this.dirNumber}-afterLogin.png`, this.page);
+                await File.screenError(`${this.dirNumber}-afterLogin.png`, this.page);
                 return {
                     status: false,
                     username: username,
@@ -113,7 +121,7 @@ export class Login {
             }
         } catch (e) {
             wasError = true;
-            await screenError(`${this.dirNumber}-login.png`, this.page);
+            await File.screenError(`${this.dirNumber}-login.png`, this.page);
             return {
                 status: false,
                 username: username,
@@ -131,7 +139,7 @@ export class Login {
                 await this.browser.close();
             }
             if (correctFinishing) {
-                await copyUserDirIntoCookiesDir(this.dirNumber, this.instId as string);
+                await File.copyUserDirIntoCookiesDir(this.dirNumber, this.instId as string);
             }
             if (justFinishing) {
                 await this.removeUserDir();
@@ -163,7 +171,7 @@ export class Login {
             await this.page.click('.followerGettingApp');
             await this.page.waitForTimeout(8000);
             if (!(await this.isUserLoggedInInst())) {
-                await screenError(`${this.dirNumber}-afterLogin.png`, this.page);
+                await File.screenError(`${this.dirNumber}-afterLogin.png`, this.page);
                 await this.browser.close();
                 return {
                     status: false,
@@ -174,13 +182,13 @@ export class Login {
             await this.finishLogin();
             await this.page.waitForTimeout(3000);
             await this.browser.close();
-            await copyUserDirIntoCookiesDir(this.dirNumber, this.instId as string);
+            await File.copyUserDirIntoCookiesDir(this.dirNumber, this.instId as string);
             return {
                 status: true,
                 username: username,
             }
         } catch (e) {
-            await screenError(`${this.dirNumber}-doubleAuth.png`, this.page);
+            await File.screenError(`${this.dirNumber}-doubleAuth.png`, this.page);
             await this.browser.close();
             return {
                 status: false,
