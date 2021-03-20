@@ -3,6 +3,7 @@
 
 module Types.Domain.InstAccount
   ( InstAccount (..),
+    InstAccounts,
     AccountStatus (..),
     mkInstAccount,
     mkAccountStatus,
@@ -18,6 +19,8 @@ import Common.Json
 import Data.Text (Text)
 import GHC.Generics (Generic)
 import Prelude hiding (id)
+
+type InstAccounts = [InstAccount]
 
 data InstAccount
   = InstAccount

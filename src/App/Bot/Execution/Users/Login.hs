@@ -17,8 +17,7 @@ import Control.Monad.IO.Class (MonadIO (liftIO))
 import qualified Data.List as List
 import Data.Text (Text)
 import qualified Data.Text as T
-import qualified MongoDB.Queries as Mongo
-import qualified MongoDB.Transforms.TgUser as Transforms
+import qualified MongoDB.Queries.Accounts as Mongo
 import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.Message as Message
 import qualified Telegram.Types.Domain.User as User
@@ -109,7 +108,7 @@ saveAccAndUser instId accLogin accPassword user = do
   let newInstAcc = InstAccount.mkInstAccount instId accLogin accPassword False
   let uId = T.pack $ show userId
   let tgUser = TgUser.mkTgUser uId (newInstAcc : instAccs)
-  Mongo.updateInstAccs uId (Transforms.mkDocByTgUser tgUser) "accounts"
+  Mongo.updateInstAccs uId tgUser
   let status = TgUserStatus.TgUser $ TgUserStatus.AccountMenu instId
   Common.putInstAccs userId
   Common.updateUserStatus user status

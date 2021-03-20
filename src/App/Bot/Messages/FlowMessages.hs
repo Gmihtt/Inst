@@ -20,6 +20,8 @@ module App.Bot.Messages.FlowMessages
     incorrectAuthCode,
     confirmLogout,
     logout,
+    lastCountUsersNotFound,
+    continueStat,
   )
 where
 
@@ -111,7 +113,15 @@ incorrectAuthCode msg =
 
 confirmLogout :: Message -> Flow (Response Message)
 confirmLogout msg =
-  sendMessage (Just Keyboard.confirmLogout) (Messages.confirmLogout msg)
+  sendMessage (Just Keyboard.confirm) (Messages.confirmLogout msg)
+
+continueStat :: Message -> Flow (Response Message)
+continueStat msg =
+  sendMessage (Just Keyboard.confirm) (Messages.continueStat msg)
+
+lastCountUsersNotFound :: Message -> Flow (Response Message)
+lastCountUsersNotFound msg =
+  sendMessage Nothing (Messages.lastCountUsersNotFound msg)
 
 logout :: Message -> Flow (Response Message)
 logout msg =

@@ -18,6 +18,7 @@ data UserStatus
   | AddAccountPassword Username
   | AddAccountCode Username Password InstId
   | AccountMenu InstId
+  | WaitStart InstId
   | Logout InstId
   deriving (Show)
 

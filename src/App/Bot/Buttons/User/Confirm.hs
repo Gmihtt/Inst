@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module App.Bot.Buttons.User.ConfirmLogout
-  ( confirmLogout,
+module App.Bot.Buttons.User.Confirm
+  ( confirm,
   )
 where
 
@@ -13,8 +13,8 @@ import Telegram.Types.Domain.Keyboard.InlineKeyboardMarkup
     mkInlineKeyboardMarkup,
   )
 
-confirmLogout :: InlineKeyboardMarkup
-confirmLogout =
+confirm :: InlineKeyboardMarkup
+confirm =
   mkInlineKeyboardMarkup
     [ [mkButton "Yes", mkButton "No"]
     ]

@@ -22,6 +22,8 @@ module App.Bot.Messages.MessagesBody
     incorrectAuthCode,
     confirmLogout,
     logout,
+    continueStat,
+    lastCountUsersNotFound,
   )
 where
 
@@ -30,17 +32,17 @@ import Telegram.Types.Domain.Message (Message, mkMessage)
 
 mainMenu :: Message -> Message
 mainMenu =
-  mkMessage $
+  mkMessage
     "Это базовое меню, вы можете перейти к выбору перейти выбрать инстаграмм аккаунты или попросить помощь"
 
 login :: Message -> Message
 login =
-  mkMessage $
+  mkMessage
     "Введите логин от инстаграм аккаунта"
 
 password :: Message -> Message
 password =
-  mkMessage $
+  mkMessage
     "Введите пароль"
 
 success :: Message -> Message
@@ -65,7 +67,7 @@ oldMsg =
 
 stat :: Message -> Int -> Message
 stat msg num =
-  mkMessage ("Статистика по вашему инстаграм аккаунту : " <> (pack $ show num)) msg
+  mkMessage ("Статистика по вашему инстаграм аккаунту : " <> pack (show num)) msg
 
 showInstAccs :: Message -> Message
 showInstAccs =
@@ -110,6 +112,14 @@ publicAccount =
 confirmLogout :: Message -> Message
 confirmLogout =
   mkMessage "Подвертидте выход"
+
+continueStat :: Message -> Message
+continueStat =
+  mkMessage "Вы желаете продолжить предыдущий сбор статистики или начать новый?"
+
+lastCountUsersNotFound :: Message -> Message
+lastCountUsersNotFound =
+  mkMessage "Не удалось найти данные о вашем прошлом сборе статистики"
 
 logout :: Message -> Message
 logout =

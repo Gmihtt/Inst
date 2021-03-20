@@ -2,6 +2,7 @@
 
 module App.Bot.Execution.Users.Logout where
 
+import qualified App.Bot.Execution.Users.Statistics as BotStatistics
 import qualified App.Bot.Messages.FlowMessages as Messages
 import qualified App.Scripts.Statistics.API as API
 import qualified Common.Environment as Environment
@@ -13,7 +14,7 @@ import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Trans.Reader (ask)
 import Data.Text (Text)
 import qualified Data.Text as T
-import qualified MongoDB.Queries as Mongo
+import qualified MongoDB.Queries.Accounts as Mongo
 import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.Message as Message
 import qualified Telegram.Types.Domain.User as User
@@ -33,13 +34,14 @@ logout msg user instId = do
   env <- ask
   let statManager = Environment.statisticsManager env
   liftIO $ API.sendMsg statManager (ScriptsStat.mkLogoutReq instId)
+  BotStatistics.saveStat instId
   liftIO $ Manager.deleteTask instId statManager
   let userId = User.id user
   let tg_id = T.pack $ show userId
   instAcc <-
-    Mongo.findInstAccountByInstId tg_id instId "accounts"
+    Mongo.findInstAccountByInstId tg_id instId
       >>= maybe (liftIO $ throwLogicError errorMsg) pure
-  Mongo.deleteInstAccount tg_id (InstAccount.login instAcc) "accounts"
+  Mongo.deleteInstAccount tg_id (InstAccount.login instAcc)
   Common.putInstAccs userId
   Messages.logout msg
   backListOfAccounts msg user

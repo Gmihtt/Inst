@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c1aaf30a3269b26cf51a8279d7bc5c735b166b46a536ae105a2f988567e65aba
+-- hash: d3ea213e9d44e9ba15da3416f052305e9fbcb44f20912d4170bc384f992574a4
 
 name:           Inst
 version:        0.1.0.0
@@ -30,7 +30,7 @@ library
       App.Bot.BotMain
       App.Bot.Buttons.Keyboards
       App.Bot.Buttons.User.AccountMenu
-      App.Bot.Buttons.User.ConfirmLogout
+      App.Bot.Buttons.User.Confirm
       App.Bot.Buttons.User.Help
       App.Bot.Buttons.User.MainMenu
       App.Bot.Buttons.User.ShowInstAccounts
@@ -49,9 +49,9 @@ library
       App.Bot.Selecting.Admin.SelectingTgUser
       App.Bot.Selecting.Users.AccountMenu
       App.Bot.Selecting.Users.API
+      App.Bot.Selecting.Users.Confirm
       App.Bot.Selecting.Users.HelpMenu
       App.Bot.Selecting.Users.ListOfAccounts
-      App.Bot.Selecting.Users.Logout
       App.Bot.Selecting.Users.MainMenu
       App.Bot.Selecting.Users.MessageFromUser
       App.Scripts.Auth.API
@@ -73,8 +73,11 @@ library
       Common.Json
       Common.Redis
       Common.TelegramUserStatus
-      MongoDB.Queries
+      MongoDB.Queries.Accounts
+      MongoDB.Queries.Common
+      MongoDB.Queries.Statistics
       MongoDB.Transforms.InstAccount
+      MongoDB.Transforms.InstStatistics
       MongoDB.Transforms.TgUser
       Redis.Queries
       Telegram.API.Methods.CallTelegram
@@ -99,6 +102,7 @@ library
       Types.Communication.Scripts.Auth
       Types.Communication.Scripts.Statistics
       Types.Domain.InstAccount
+      Types.Domain.InstStatistics
       Types.Domain.Manager
       Types.Domain.Socket
       Types.Domain.Statistic

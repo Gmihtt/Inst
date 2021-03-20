@@ -15,17 +15,17 @@ import Common.Json
   )
 import Data.Text (Text)
 import GHC.Generics (Generic)
-import Types.Domain.InstAccount (InstAccount)
+import Types.Domain.InstAccount (InstAccounts)
 import Prelude hiding (id)
 
 data TgUser
   = TgUser
       { id :: Text,
-        inst_accounts :: [InstAccount]
+        inst_accounts :: InstAccounts
       }
   deriving (Show, Eq, Generic)
 
-mkTgUser :: Text -> [InstAccount] -> TgUser
+mkTgUser :: Text -> InstAccounts -> TgUser
 mkTgUser id inst_accounts =
   TgUser {..}
 

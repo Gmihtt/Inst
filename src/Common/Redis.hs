@@ -4,7 +4,7 @@ module Common.Redis where
 
 import Common.Flow (Flow)
 import qualified Data.Text as T
-import qualified MongoDB.Queries as Mongo
+import qualified MongoDB.Queries.Accounts as Mongo
 import qualified Redis.Queries as Redis
 import qualified Types.Domain.InstAccount as InstAccount
 
@@ -16,7 +16,7 @@ getInstAccs userId = do
 putInstAccs :: Int -> Flow ()
 putInstAccs userId = do
   let uId = T.pack $ show userId
-  instAccs <- Mongo.findInstAccsByTgId uId "accounts"
+  instAccs <- Mongo.findInstAccsByTgId uId
   Redis.putValue userId instAccs
 
 dropInstAccs :: Int -> Flow ()

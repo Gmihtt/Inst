@@ -14,10 +14,10 @@ import Telegram.Types.Domain.Message (Message)
 accountMenu :: CallbackQuery.CallbackQuery -> Message -> Text -> Flow (Response Message)
 accountMenu callBack msg instAcc =
   case CallbackQuery.callback_data callBack of
-    "Start" -> Statistics.start msg instAcc
+    "Start" -> Statistics.checkStart msg instAcc
     "Stop" -> Statistics.stop msg instAcc
     "Subscription" -> Statistics.subscription msg
-    "Statistics" -> Statistics.stat msg instAcc
+    "Statistics" -> Statistics.getStatistic msg instAcc
     "Logout" -> Logout.confirmLogout msg user instAcc
     "Back" -> Statistics.back msg user
     _ -> Messages.strangeMessage msg

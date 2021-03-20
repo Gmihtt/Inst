@@ -13,7 +13,7 @@ import Control.Monad.IO.Class (MonadIO (liftIO))
 import Control.Monad.Trans.Reader (ask)
 import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
-import qualified MongoDB.Queries as Mongo
+import qualified MongoDB.Queries.Accounts as Mongo
 import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.Message as Message
 import qualified Telegram.Types.Domain.User as User
@@ -53,10 +53,10 @@ checkStatus msg user = do
       env <- ask
       let statManager = Environment.statisticsManager env
       let uId = T.pack $ show userId
-      instAccs <- Mongo.findInstAccsByTgId uId "accounts"
+      instAccs <- Mongo.findInstAccsByTgId uId
       liftIO $ mapM (API.sendMsg statManager . ScriptsStat.mkLogoutReq . InstAccount.id) instAccs
       Common.dropInstAccs userId
-      Mongo.deleteTgUser uId "accounts"
+      Mongo.deleteTgUser uId
       setMainMenu
     userId = User.id user
 
