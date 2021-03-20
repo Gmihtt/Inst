@@ -1,3 +1,6 @@
 proxy:
   isEnabled: true
-  url: "http://104.43.230.151:3128"
+  url: "http://193.8.56.119:9183"
+  isAuth: false
+  username: "nmvrpple-DE-rotate"
+  password: "9cf8udu7x26b"

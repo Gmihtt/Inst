@@ -4,7 +4,13 @@ declare module "puppeteer" {
     interface Browser {
         newPage(): Promise<Page>;
 
-        close(): Promise<any>
+        pages() : Promise<Array<Page>>;
+
+        close(): Promise<any>;
+    }
+    interface Credentials {
+        username: string;
+        password: string;
     }
 
     interface Page {
@@ -25,6 +31,8 @@ declare module "puppeteer" {
         addScriptTag(options: any): Promise<any>;
 
         type(selector: string, text: string): Promise<any>;
+
+        authenticate(credentials: Credentials): Promise<void>;
 
         click(selector: string): Promise<any>;
 

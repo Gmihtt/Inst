@@ -45,7 +45,11 @@ export async function getFollowers(id: string): Promise<StatsResponse> {
         args: args,
     });
 
-    const page: puppeteer.Page = await browser.newPage();
+    if (Proxy.isProxy && Proxy.isAuth) {
+        await Proxy.authenticate(browser);
+    }
+
+    const page: puppeteer.Page = (await browser.pages())[0];
 
     try {
         await page.goto('https://www.instagram.com/');

@@ -7,14 +7,29 @@ const path = require('path');
 
 export let isProxy: boolean = false;
 export let proxyServer: string = "";
+export let isAuth: boolean = false;
+export let proxyUsername: string = "";
+export let proxyPassword: string = "";
 
 interface ProxyData {
     isEnabled: boolean;
     url: string;
+    isAuth: boolean;
+    username: string;
+    password: string;
 }
 
 interface ConfigFile {
     proxy: ProxyData
+}
+
+export async function authenticate(browser: puppeteer.Browser): Promise<void> {
+    const page = await browser.newPage();
+    await page.authenticate({
+        username: proxyUsername,
+        password: proxyPassword,
+    });
+    await page.waitForTimeout(10000);
 }
 
 export async function checkProxyAndSetVar(): Promise<void> {
@@ -26,16 +41,28 @@ export async function checkProxyAndSetVar(): Promise<void> {
             return;
         }
 
+        if (config.proxy.isAuth) {
+            isAuth = true;
+            proxyUsername = config.proxy.username;
+            proxyPassword = config.proxy.password;
+        }
+
         browser = await puppeteer.launch({
             userDataDir: path.resolve(__dirname, `loginDirs/userDirTest`),
             ignoreHTTPSErrors: true,
+            headless: false,
             args: [
                 '--no-sandbox',
                 `--proxy-server=${config.proxy.url}`,
                 '--lang=en-GB'
             ]
         });
-        const page: puppeteer.Page = await browser.newPage();
+
+        if (isAuth) {
+            await authenticate(browser);
+        }
+
+        const page: puppeteer.Page = (await browser.pages())[0];
 
         let responseObject: any = await page.evaluate(async () => {
             try {
@@ -60,7 +87,7 @@ export async function checkProxyAndSetVar(): Promise<void> {
     } catch (e) {
         throw e;
     } finally {
-        if (browser != null){
+        if (browser != null) {
             await browser.close();
             await fs.remove(path.resolve(__dirname, `loginDirs/userDirTest`));
         }

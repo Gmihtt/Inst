@@ -63,7 +63,12 @@ export class Login {
             userDataDir: path.resolve(__dirname, `loginDirs/userDir${dirNumber}`),
             args: args,
         });
-        let page = await browser.newPage();
+
+        if (Proxy.isProxy && Proxy.isAuth) {
+            await Proxy.authenticate(browser);
+        }
+
+        let page = (await browser.pages())[0];
         return {
             browser: browser,
             page: page,
