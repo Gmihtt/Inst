@@ -1,11 +1,9 @@
-'use strict';
-
 import ws = require('ws');
 
 const fs = require('fs-extra');
 import path = require('path');
 
-import {acquireMutex, isUserLoggedInBot, releaseMutex} from "./file";
+import * as File from "./file";
 
 import {getFollowers, StatsRequest, StatsResponse} from "./stats";
 
@@ -15,9 +13,9 @@ let activeFollowerGetters: Set<string> = new Set();
 async function getAndSendFollowersCount(socket: any, id: string, timeout: number) {
 
     try {
-        await acquireMutex(id);
+        await File.acquireMutex(id);
         const usersInfo: StatsResponse = await getFollowers(id);
-        releaseMutex(id);
+        File.releaseMutex(id);
         const userJSON: string = JSON.stringify(usersInfo);
         if (activeFollowerGetters.has(id)) {
             console.log(`Stats sent: ${userJSON.slice(0, 150)}`);
@@ -69,10 +67,11 @@ export function runStatsServer(server: ws.Server) {
                 case 'Logout':
                     try {
                         activeFollowerGetters.delete(request.inst_id);
-                        if (await isUserLoggedInBot(request.inst_id)) {
-                            await acquireMutex(request.inst_id);
+                        //Говно решение. Возможна ситуация когда посередине что нибудь вклиниться
+                        if (await File.isUserLoggedInBot(request.inst_id)) {
+                            await File.acquireMutex(request.inst_id);
                             await fs.remove(path.resolve(__dirname, path.resolve(__dirname, `cookies/${request.inst_id}`)));
-                            releaseMutex(request.inst_id);
+                            File.releaseMutex(request.inst_id);
                             let okResponse: StatsResponse = {
                                 status: true,
                                 inst_id: request.inst_id,

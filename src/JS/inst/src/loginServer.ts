@@ -1,5 +1,3 @@
-'use strict'
-
 import ws = require('ws');
 import fs = require('fs-extra');
 import path = require('path');
