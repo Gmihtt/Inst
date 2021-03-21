@@ -4,7 +4,10 @@ import * as Proxy from './proxyTester';
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 // @ts-ignore
 puppeteerEx.use(StealthPlugin());
-
+// @ts-ignore
+puppeteerEx.use(require('puppeteer-extra-plugin-block-resources')({
+    blockedTypes: new Set(['image', 'media', 'font'])
+}))
 
 
 export async function createBrowser(dirPath: string): Promise<puppeteer.Browser>{
@@ -19,7 +22,7 @@ export async function createBrowser(dirPath: string): Promise<puppeteer.Browser>
 
     // @ts-ignore
     let browser = await puppeteerEx.launch({
-        headless: true,
+        headless: false,
         userDataDir: dirPath,
         args: args,
     });
