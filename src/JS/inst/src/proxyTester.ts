@@ -13,6 +13,7 @@ export let proxyPassword: string = "";
 
 interface ProxyData {
     isEnabled: boolean;
+    isExternal: boolean;
     url: string;
     isAuth: boolean;
     username: string;
@@ -41,24 +42,32 @@ export async function checkProxyAndSetVar(): Promise<void> {
             return;
         }
 
-        if (config.proxy.isAuth) {
-            isAuth = true;
-            proxyUsername = config.proxy.username;
-            proxyPassword = config.proxy.password;
+        let args = [
+            '--no-sandbox',
+            '--lang=en-GB',
+        ];
+
+        if (!config.proxy.isExternal) {
+            isProxy = true;
+            proxyServer = config.proxy.url;
+
+            if (config.proxy.isAuth) {
+                isAuth = true;
+                proxyUsername = config.proxy.username;
+                proxyPassword = config.proxy.password;
+            }
+
+            args.push(`--proxy-server=${config.proxy.url}`);
         }
 
         browser = await puppeteer.launch({
             userDataDir: path.resolve(__dirname, `loginDirs/userDirTest`),
             ignoreHTTPSErrors: true,
             headless: false,
-            args: [
-                '--no-sandbox',
-                `--proxy-server=${config.proxy.url}`,
-                '--lang=en-GB'
-            ]
+            args: args,
         });
 
-        if (isAuth) {
+        if (isProxy && isAuth) {
             await authenticate(browser);
         }
 
@@ -81,9 +90,6 @@ export async function checkProxyAndSetVar(): Promise<void> {
             // noinspection ExceptionCaughtLocallyJS
             throw new Error("Proxy is in Russia");
         }
-
-        isProxy = true;
-        proxyServer = config.proxy.url;
     } catch (e) {
         throw e;
     } finally {
