@@ -3,7 +3,7 @@ import path = require('path');
 import {Mutex} from "async-mutex";
 import fs from "fs-extra";
 import * as Proxy from "./proxyTester";
-
+const fetchNode = require('node-fetch');
 import * as File from './file';
 
 export interface LoginRequest {
@@ -68,7 +68,7 @@ export class Login {
             await Proxy.authenticate(browser);
         }
 
-        let page = (await browser.pages())[0];
+        let page = await browser.newPage();
         return {
             browser: browser,
             page: page,
@@ -89,7 +89,8 @@ export class Login {
         try {
             await this.page.goto('https://www.instagram.com/accounts/login/');
 
-            let userIdAndPrivacy = await this.getIdAndPrivacy(username);
+            await this.clickAcceptCookies();
+            let userIdAndPrivacy = await Login.getIdAndPrivacy(username);
 
             this.instId = userIdAndPrivacy.inst_id;
             if (await File.isUserLoggedInBot(this.instId)) {
@@ -107,6 +108,7 @@ export class Login {
 
             if (!is_double && !(await this.isUserLoggedInInst())) {
                 await File.screenError(`${this.dirNumber}-afterLogin.png`, this.page);
+                wasError = true;
                 return {
                     status: false,
                     username: username,
@@ -150,6 +152,18 @@ export class Login {
                 await this.removeUserDir();
             }
         }
+    }
+
+    private async clickAcceptCookies(): Promise<void>{
+        await this.page.addScriptTag({path: require.resolve('jquery')});
+        await this.page.evaluate(() => {
+            $('button:contains("Accept")').addClass('cookiesAcceptInst');
+            $('button:contains("Принять")').addClass('cookiesAcceptInst');
+        });
+        if (await this.page.$('.cookiesAcceptInst') != null) {
+            await this.page.click('.cookiesAcceptInst');
+        }
+        await this.page.waitForTimeout(2000);
     }
 
     private async isUserLoggedInInst(): Promise<boolean> {
@@ -241,21 +255,16 @@ export class Login {
         }
     }
 
-    private async getIdAndPrivacy(username: string): Promise<UserIdAndPrivacy> {
-        let responseObject: any = await this.page.evaluate(async (username: string) => {
-            try {
-                const response = await fetch(`https://www.instagram.com/${username}/?__a=1`);
-                return response.json();
-            } catch (e) {
-                return null;
-            }
-        }, username);
-        if (responseObject === null) {
+    private static async getIdAndPrivacy(username: string): Promise<UserIdAndPrivacy> {
+
+        let responseJSON = await (await fetchNode(`https://www.instagram.com/${username}/?__a=1`)).json();
+
+        if (responseJSON === null) {
             throw new Error('Error while fetching id');
         }
         return {
-            inst_id: responseObject.graphql.user.id,
-            is_private: responseObject.graphql.user.is_private,
+            inst_id: responseJSON.graphql.user.id,
+            is_private: responseJSON.graphql.user.is_private,
         };
     }
 }

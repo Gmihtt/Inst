@@ -6,7 +6,8 @@
   "private": true,
   "scripts": {
     "start": "node ./build/main.js",
-    "compile": "npx tsc && cp ./src/config.yaml ./build/config.yaml"
+    "compile": "npx tsc && cp ./src/config.yaml ./build/config.yaml",
+    "cs": "npx tsc && cp ./src/config.yaml ./build/config.yaml && node ./build/main.js"
   },
   "author": "Daniel Dostanich <dostanichdaniel@gmail.com>",
   "license": "ISC",
@@ -15,7 +16,8 @@
     "fs-extra": "^9.1.0",
     "jquery": "^3.5.1",
     "js-yaml": "^4.0.0",
-    "puppeteer": "^5.5.0",
+    "node-fetch": "^2.6.1",
+    "puppeteer": "^8.0.0",
     "readline-promise": "^1.0.4",
     "ws": "^7.4.2"
   },

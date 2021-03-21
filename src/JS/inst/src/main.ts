@@ -1,5 +1,4 @@
 import ws = require('ws');
-
 import {runLoginServer} from "./loginServer";
 import {runStatsServer} from "./statsServer";
 import * as Proxy from "./proxyTester";
@@ -15,6 +14,7 @@ import path = require('path');
 })().then(Proxy.checkProxyAndSetVar).then(
     () => {
         console.log("Proxy OK");
+
         const loginServer = new ws.Server({
             port: 5012,
         });
