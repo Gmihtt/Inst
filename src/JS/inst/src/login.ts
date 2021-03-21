@@ -1,8 +1,8 @@
 import puppeteer = require('puppeteer');
 import path = require('path');
 import {Mutex} from "async-mutex";
+import {createBrowser} from "./browserCreation";
 import fs from "fs-extra";
-import * as Proxy from "./proxyTester";
 const fetchNode = require('node-fetch');
 import * as File from './file';
 
@@ -49,24 +49,7 @@ export class Login {
         let dirNumber = dirCounter++;
         dirNumberMutex.release();
 
-        let args = [
-            '--no-sandbox',
-            '--lang=en-GB'
-        ];
-
-        if (Proxy.isProxy){
-            args.push(`--proxy-server=${Proxy.proxyServer}`);
-        }
-
-        let browser = await puppeteer.launch({
-            headless: false,
-            userDataDir: path.resolve(__dirname, `loginDirs/userDir${dirNumber}`),
-            args: args,
-        });
-
-        if (Proxy.isProxy && Proxy.isAuth) {
-            await Proxy.authenticate(browser);
-        }
+        let browser: puppeteer.Browser = await createBrowser(path.resolve(__dirname, `loginDirs/userDir${dirNumber}`));
 
         let page = await browser.newPage();
         return {

@@ -4,6 +4,7 @@ const yaml = require('js-yaml');
 const fs = require('fs-extra');
 const path = require('path');
 
+import {createBrowser} from "./browserCreation";
 
 export let isProxy: boolean = false;
 export let proxyServer: string = "";
@@ -42,11 +43,6 @@ export async function checkProxyAndSetVar(): Promise<void> {
             return;
         }
 
-        let args = [
-            '--no-sandbox',
-            '--lang=en-GB',
-        ];
-
         if (!config.proxy.isExternal) {
             isProxy = true;
             proxyServer = config.proxy.url;
@@ -57,19 +53,9 @@ export async function checkProxyAndSetVar(): Promise<void> {
                 proxyPassword = config.proxy.password;
             }
 
-            args.push(`--proxy-server=${config.proxy.url}`);
         }
 
-        browser = await puppeteer.launch({
-            userDataDir: path.resolve(__dirname, `loginDirs/userDirTest`),
-            ignoreHTTPSErrors: true,
-            headless: false,
-            args: args,
-        });
-
-        if (isProxy && isAuth) {
-            await authenticate(browser);
-        }
+        browser = await createBrowser(path.resolve(__dirname, `loginDirs/userDirTest`));
 
         const page: puppeteer.Page = (await browser.pages())[0];
 

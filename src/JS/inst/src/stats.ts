@@ -1,6 +1,6 @@
 import puppeteer = require('puppeteer');
 import path = require('path');
-import * as Proxy from "./proxyTester";
+import {createBrowser} from "./browserCreation";
 
 const fs = require('fs-extra');
 
@@ -30,24 +30,7 @@ export async function getFollowers(id: string): Promise<StatsResponse> {
         }
     }
 
-    let args = [
-        '--no-sandbox',
-        '--lang=en-GB'
-    ];
-
-    if (Proxy.isProxy){
-        args.push(`--proxy-server=${Proxy.proxyServer}`);
-    }
-
-    const browser: puppeteer.Browser = await puppeteer.launch({
-        headless: true,
-        userDataDir: path.resolve(__dirname, path.resolve(__dirname, `cookies/${id}`)),
-        args: args,
-    });
-
-    if (Proxy.isProxy && Proxy.isAuth) {
-        await Proxy.authenticate(browser);
-    }
+    let browser: puppeteer.Browser = await createBrowser(path.resolve(__dirname, path.resolve(__dirname, `cookies/${id}`)));
 
     const page: puppeteer.Page = (await browser.pages())[0];
 
