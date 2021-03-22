@@ -1,6 +1,6 @@
 import puppeteer = require('puppeteer');
 import path = require('path');
-import * as Proxy from "./proxyTester";
+import {createBrowser} from "./browserCreation";
 
 const fs = require('fs-extra');
 
@@ -30,22 +30,9 @@ export async function getFollowers(id: string): Promise<StatsResponse> {
         }
     }
 
-    let args = [
-        '--no-sandbox',
-        '--lang=en-GB'
-    ];
+    let browser: puppeteer.Browser = await createBrowser(path.resolve(__dirname, path.resolve(__dirname, `cookies/${id}`)));
 
-    if (Proxy.isProxy){
-        args.push(`--proxy-server=${Proxy.proxyServer}`);
-    }
-
-    const browser: puppeteer.Browser = await puppeteer.launch({
-        headless: true,
-        userDataDir: path.resolve(__dirname, path.resolve(__dirname, `cookies/${id}`)),
-        args: args,
-    });
-
-    const page: puppeteer.Page = await browser.newPage();
+    const page: puppeteer.Page = (await browser.pages())[0];
 
     try {
         await page.goto('https://www.instagram.com/');

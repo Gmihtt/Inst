@@ -1,17 +1,7 @@
 import ws = require('ws');
-import fs = require('fs-extra');
-import path = require('path');
 
 import {Login, LoginRequest, LoginResponse} from "./login";
 
-
-//Cleaning working dir before launch and ensure that cookies exist
-(async () => {
-    await fs.remove(path.resolve(__dirname, 'loginDirs'));
-    await fs.mkdirp(path.resolve(__dirname, 'loginDirs'));
-    await fs.mkdirp(path.resolve(__dirname, 'cookies'));
-    await fs.mkdirp(path.resolve(__dirname, 'errors'));
-})();
 
 
 
