@@ -88,6 +88,7 @@ checkUserStatus cb msg = do
     Just (TgUserStatus.TgUser (TgUserStatus.AccountMenu instId)) -> UserAPI.accountMenu cb msg instId
     Just (TgUserStatus.TgUser (TgUserStatus.Logout instId)) -> UserAPI.logout cb msg instId
     Just (TgUserStatus.TgUser (TgUserStatus.WaitStart instId)) -> UserAPI.start cb msg instId
+    Just (TgUserStatus.TgUser (TgUserStatus.ChoseStatistics instId)) -> UserAPI.statistics cb msg instId
     Just _ -> Messages.strangeMessage msg
   where
     userId = User.id user

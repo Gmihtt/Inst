@@ -2,7 +2,7 @@
 
 module App.Bot.Execution.Users.Logout where
 
-import qualified App.Bot.Execution.Users.Statistics as BotStatistics
+import qualified App.Bot.Execution.Users.Statistics.Save as Save
 import qualified App.Bot.Messages.FlowMessages as Messages
 import qualified App.Scripts.Statistics.API as API
 import qualified Common.Environment as Environment
@@ -34,7 +34,7 @@ logout msg user instId = do
   env <- ask
   let statManager = Environment.statisticsManager env
   liftIO $ API.sendMsg statManager (ScriptsStat.mkLogoutReq instId)
-  BotStatistics.saveStat instId
+  Save.execute instId
   liftIO $ Manager.deleteTask instId statManager
   let userId = User.id user
   let tg_id = T.pack $ show userId

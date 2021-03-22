@@ -3,7 +3,7 @@
 module App.Bot.Selecting.Users.Confirm where
 
 import qualified App.Bot.Execution.Users.Logout as Logout
-import qualified App.Bot.Execution.Users.Statistics as Statistics
+import qualified App.Bot.Execution.Users.Statistics.Start as Start
 import qualified App.Bot.Messages.FlowMessages as Messages
 import Common.Flow (Flow)
 import Control.Monad.IO.Class (liftIO)
@@ -26,8 +26,8 @@ start :: CallbackQuery.CallbackQuery -> Message -> Text -> Flow (Response Messag
 start callBack msg instId = do
   liftIO $ print $ CallbackQuery.callback_data callBack
   case CallbackQuery.callback_data callBack of
-    "Yes" -> Statistics.start True msg instId
-    "No" -> Logout.backAccountMenu msg user instId
+    "Yes" -> Start.start True msg user instId
+    "No" -> Start.start False msg user instId
     _ -> Messages.strangeMessage msg
   where
     user = CallbackQuery.callback_from callBack

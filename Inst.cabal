@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d3ea213e9d44e9ba15da3416f052305e9fbcb44f20912d4170bc384f992574a4
+-- hash: 02094e1d0d55816a0716bbfdb6b5c2aa8fe70d089b16b30e27ee562447dc2ffa
 
 name:           Inst
 version:        0.1.0.0
@@ -30,6 +30,7 @@ library
       App.Bot.BotMain
       App.Bot.Buttons.Keyboards
       App.Bot.Buttons.User.AccountMenu
+      App.Bot.Buttons.User.ChoseStatistics
       App.Bot.Buttons.User.Confirm
       App.Bot.Buttons.User.Help
       App.Bot.Buttons.User.MainMenu
@@ -39,7 +40,12 @@ library
       App.Bot.Execution.Users.Logout
       App.Bot.Execution.Users.MainMenu
       App.Bot.Execution.Users.ShowAccounts
-      App.Bot.Execution.Users.Statistics
+      App.Bot.Execution.Users.Statistics.Back
+      App.Bot.Execution.Users.Statistics.GetStatistics
+      App.Bot.Execution.Users.Statistics.Save
+      App.Bot.Execution.Users.Statistics.Start
+      App.Bot.Execution.Users.Statistics.Stop
+      App.Bot.Execution.Users.Statistics.Subscription
       App.Bot.GetUpdates
       App.Bot.Messages.FlowMessages
       App.Bot.Messages.MessagesBody
@@ -54,6 +60,7 @@ library
       App.Bot.Selecting.Users.ListOfAccounts
       App.Bot.Selecting.Users.MainMenu
       App.Bot.Selecting.Users.MessageFromUser
+      App.Bot.Selecting.Users.Statistics
       App.Scripts.Auth.API
       App.Scripts.Socket.API
       App.Scripts.Socket.App

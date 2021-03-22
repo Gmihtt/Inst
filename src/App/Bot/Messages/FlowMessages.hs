@@ -22,6 +22,7 @@ module App.Bot.Messages.FlowMessages
     logout,
     lastCountUsersNotFound,
     continueStat,
+    choseStatistics,
   )
 where
 
@@ -122,6 +123,10 @@ continueStat msg =
 lastCountUsersNotFound :: Message -> Flow (Response Message)
 lastCountUsersNotFound msg =
   sendMessage Nothing (Messages.lastCountUsersNotFound msg)
+
+choseStatistics :: Message -> Flow (Response Message)
+choseStatistics msg =
+  sendMessage (Just Keyboard.choseStatisticsKeyboard) (Messages.choseStatistics msg)
 
 logout :: Message -> Flow (Response Message)
 logout msg =

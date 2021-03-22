@@ -19,6 +19,7 @@ data UserStatus
   | AddAccountCode Username Password InstId
   | AccountMenu InstId
   | WaitStart InstId
+  | ChoseStatistics InstId
   | Logout InstId
   deriving (Show)
 

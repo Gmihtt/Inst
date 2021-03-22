@@ -24,6 +24,7 @@ module App.Bot.Messages.MessagesBody
     logout,
     continueStat,
     lastCountUsersNotFound,
+    choseStatistics,
   )
 where
 
@@ -120,6 +121,10 @@ continueStat =
 lastCountUsersNotFound :: Message -> Message
 lastCountUsersNotFound =
   mkMessage "Не удалось найти данные о вашем прошлом сборе статистики"
+
+choseStatistics :: Message -> Message
+choseStatistics =
+  mkMessage "Выберите какую статистику хотитет получить"
 
 logout :: Message -> Message
 logout =

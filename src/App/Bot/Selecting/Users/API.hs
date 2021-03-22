@@ -6,3 +6,4 @@ import App.Bot.Selecting.Users.HelpMenu as X
 import App.Bot.Selecting.Users.ListOfAccounts as X
 import App.Bot.Selecting.Users.MainMenu as X
 import App.Bot.Selecting.Users.MessageFromUser as X
+import App.Bot.Selecting.Users.Statistics as X

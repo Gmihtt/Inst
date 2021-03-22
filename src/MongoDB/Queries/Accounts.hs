@@ -9,10 +9,8 @@ import qualified Database.MongoDB as Mongo
 import Database.MongoDB ((!?), (=:))
 import MongoDB.Queries.Common (callDB)
 import MongoDB.Transforms.InstAccount (mkInstAccsByDocs)
-import qualified MongoDB.Transforms.InstAccount as Transforms
 import qualified MongoDB.Transforms.TgUser as Transforms
 import qualified Types.Domain.InstAccount as InstAccount
-import qualified Types.Domain.InstStatistics as InstStatistics
 import qualified Types.Domain.TgUser as TgUser
 import Prelude hiding (id)
 
