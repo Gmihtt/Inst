@@ -3,7 +3,7 @@ import path = require('path');
 import {Mutex} from "async-mutex";
 import {createBrowser} from "./browserCreation";
 import fs from "fs-extra";
-const fetchNode = require('node-fetch');
+//const fetchNode = require('node-fetch');
 import * as File from './file';
 
 export interface LoginRequest {
@@ -73,7 +73,7 @@ export class Login {
             await this.page.goto('https://www.instagram.com/accounts/login/');
 
             await this.clickAcceptCookies();
-            let userIdAndPrivacy = await Login.getIdAndPrivacy(username);
+            let userIdAndPrivacy = await this.getIdAndPrivacy(username);
 
             this.instId = userIdAndPrivacy.inst_id;
             if (await File.isUserLoggedInBot(this.instId)) {
@@ -238,16 +238,22 @@ export class Login {
         }
     }
 
-    private static async getIdAndPrivacy(username: string): Promise<UserIdAndPrivacy> {
+    private async getIdAndPrivacy(username: string): Promise<UserIdAndPrivacy> {
 
-        let responseJSON = await (await fetchNode(`https://www.instagram.com/${username}/?__a=1`)).json();
-
-        if (responseJSON === null) {
+        let responseObject: any = await this.page.evaluate(async (username: string) => {
+            try {
+                const response = await fetch(`https://www.instagram.com/${username}/?__a=1`);
+                return response.json();
+            } catch (e) {
+                return null;
+            }
+        }, username);
+        if (responseObject === null) {
             throw new Error('Error while fetching id');
         }
         return {
-            inst_id: responseJSON.graphql.user.id,
-            is_private: responseJSON.graphql.user.is_private,
+            inst_id: responseObject.graphql.user.id,
+            is_private: responseObject.graphql.user.is_private,
         };
     }
 }
