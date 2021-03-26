@@ -73,9 +73,9 @@ export class Login {
             await this.page.goto('https://www.instagram.com/accounts/login/');
 
             await this.clickAcceptCookies();
-            let userIdAndPrivacy = await this.getIdAndPrivacy(username);
+            //let userIdAndPrivacy = await this.getIdAndPrivacy(username);
 
-            this.instId = userIdAndPrivacy.inst_id;
+            /*this.instId = userIdAndPrivacy.inst_id;
             if (await File.isUserLoggedInBot(this.instId)) {
                 wasError = true;
                 return {
@@ -83,31 +83,52 @@ export class Login {
                     username: username,
                     error_message: `User with this inst_id already exist: inst_id: ${this.instId}`,
                 }
-            }
+            }*/
 
             await this.fillInputsAndSubmit(username, password);
 
             is_double = await this.isDoubleAuth();
 
-            if (!is_double && !(await this.isUserLoggedInInst())) {
-                await File.screenError(`${this.dirNumber}-afterLogin.png`, this.page);
-                wasError = true;
-                return {
-                    status: false,
-                    username: username,
-                    error_message: `User wasn't logged in: ${username}, ${this.instId}. Check ${this.dirNumber}-afterLogin.png`,
+            if (!is_double){
+                if (!(await  this.isUserLoggedInInst())){
+                    await File.screenError(`${this.dirNumber}-afterLogin.png`, this.page);
+                    wasError = true;
+                    return {
+                        status: false,
+                        username: username,
+                        error_message: `User wasn't logged in: ${username}, ${this.instId}. Check ${this.dirNumber}-afterLogin.png`,
+                    }
                 }
-            }
 
-            await this.finishLogin();
-            await this.page.waitForTimeout(2000);
+                await this.finishLogin();
+                await this.page.waitForTimeout(2000);
 
-            return {
-                status: true,
-                username: username,
-                inst_id: this.instId,
-                is_double_auth: is_double,
-                is_private: userIdAndPrivacy.is_private,
+                let userIdAndPrivacy = await this.getIdAndPrivacy(username);
+                this.instId = userIdAndPrivacy.inst_id;
+
+
+                if (await File.isUserLoggedInBot(this.instId)) {
+                    wasError = true;
+                    return {
+                        status: false,
+                        username: username,
+                        error_message: `User with this inst_id already exist: inst_id: ${this.instId}`,
+                    }
+                }
+
+                return {
+                    status: true,
+                    username: username,
+                    inst_id: this.instId,
+                    is_double_auth: false,
+                    is_private: userIdAndPrivacy.is_private,
+                }
+            } else {
+                return {
+                    status: true,
+                    username: username,
+                    is_double_auth: true,
+                }
             }
         } catch (e) {
             wasError = true;
@@ -122,9 +143,6 @@ export class Login {
             let correctFinishing: boolean = !is_double && !wasError;
             let justFinishing: boolean = !is_double || wasError;
 
-            if (correctFinishing) {
-                await this.finishLogin();
-            }
             if (justFinishing) {
                 await this.browser.close();
             }
@@ -183,11 +201,23 @@ export class Login {
             }
             await this.finishLogin();
             await this.page.waitForTimeout(3000);
+            let userIdAndPrivacy = await this.getIdAndPrivacy(username);
+            this.instId = userIdAndPrivacy.inst_id;
+            if (await File.isUserLoggedInBot(this.instId)) {
+                return {
+                    status: false,
+                    username: username,
+                    error_message: `User with this inst_id already exist: inst_id: ${this.instId}`,
+                }
+            }
             await this.browser.close();
             await File.copyUserDirIntoCookiesDir(this.dirNumber, this.instId as string);
             return {
                 status: true,
                 username: username,
+                inst_id: this.instId,
+                is_private: userIdAndPrivacy.is_private,
+
             }
         } catch (e) {
             await File.screenError(`${this.dirNumber}-doubleAuth.png`, this.page);
