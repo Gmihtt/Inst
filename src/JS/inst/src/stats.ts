@@ -7,9 +7,22 @@ const fs = require('fs-extra');
 const TIMEOUT: number = 5000;
 
 export interface StatsRequest {
-    inst_id: string;
-    action: string; //Start | Stop
+    action: string; //Start | Stop | UserStatus | GroupStatus | AllStatus
+    inst_id?: string;
     timeout?: number;
+    user_id?: string;
+    group_ids?: Array<string>;
+}
+
+export interface UserInfo {
+    id: string;
+    is_active: boolean;
+}
+
+export interface StatusResponse {
+    type: string; //User | Group | All
+    users: Array<UserInfo>;
+    count_active?: number;
 }
 
 export interface StatsResponse {
@@ -39,7 +52,7 @@ export async function getFollowers(id: string): Promise<StatsResponse> {
         await page.waitForTimeout(TIMEOUT);
 
 
-        if (!(await isUserLoggedInInst(page))){
+        if (!(await isUserLoggedInInst(page))) {
             return {
                 status: false,
                 inst_id: id,
