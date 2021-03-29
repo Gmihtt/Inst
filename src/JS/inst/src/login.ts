@@ -204,6 +204,8 @@ export class Login {
             let userIdAndPrivacy = await this.getIdAndPrivacy(username);
             this.instId = userIdAndPrivacy.inst_id;
             if (await File.isUserLoggedInBot(this.instId)) {
+                await File.screenError(`${this.dirNumber}-afterLogin.png`, this.page);
+                await this.browser.close();
                 return {
                     status: false,
                     username: username,
