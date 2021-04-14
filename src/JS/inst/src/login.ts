@@ -7,7 +7,7 @@ import fs from "fs-extra";
 import * as File from './file';
 
 export interface LoginRequest {
-    type: string; // Login | DoubleAuth
+    type: string; // Login | DoubleAuth | Sus
     username: string;
     body: string;
 }
@@ -18,6 +18,7 @@ export interface LoginResponse {
     is_private?: boolean;
     inst_id?: string;
     is_double_auth?: boolean;
+    is_sus_login?: boolean;
     error_message?: string;
 }
 
@@ -67,81 +68,62 @@ export class Login {
 
 
     public async login(username: string, password: string): Promise<LoginResponse> {
-        let is_double: boolean = false;
+        let isDouble: boolean = false;
+        let isSus: boolean = false;
         let wasError: boolean = false;
         try {
             await this.page.goto('https://www.instagram.com/accounts/login/');
 
             await this.clickAcceptCookies();
-            //let userIdAndPrivacy = await this.getIdAndPrivacy(username);
-
-            /*this.instId = userIdAndPrivacy.inst_id;
-            if (await File.isUserLoggedInBot(this.instId)) {
-                wasError = true;
-                return {
-                    status: false,
-                    username: username,
-                    error_message: `User with this inst_id already exist: inst_id: ${this.instId}`,
-                }
-            }*/
 
             await this.fillInputsAndSubmit(username, password);
 
-            is_double = await this.isDoubleAuth();
+            isDouble = await this.isDoubleAuth();
 
-            if (!is_double){
-                if (!(await  this.isUserLoggedInInst())){
-                    await File.screenError(`${this.dirNumber}-afterLogin.png`, this.page);
-                    wasError = true;
-                    return {
-                        status: false,
-                        username: username,
-                        error_message: `User wasn't logged in: ${username}, ${this.instId}. Check ${this.dirNumber}-afterLogin.png`,
-                    }
-                }
-
-                await this.finishLogin();
-                await this.page.waitForTimeout(2000);
-
-                let userIdAndPrivacy = await this.getIdAndPrivacy(username);
-                this.instId = userIdAndPrivacy.inst_id;
-
-
-                if (await File.isUserLoggedInBot(this.instId)) {
-                    wasError = true;
-                    return {
-                        status: false,
-                        username: username,
-                        error_message: `User with this inst_id already exist: inst_id: ${this.instId}`,
-                    }
-                }
-
-                return {
-                    status: true,
-                    username: username,
-                    inst_id: this.instId,
-                    is_double_auth: false,
-                    is_private: userIdAndPrivacy.is_private,
-                }
-            } else {
+            if (isDouble) {
                 return {
                     status: true,
                     username: username,
                     is_double_auth: true,
                 }
             }
+
+            await this.checkUnusualPlace();
+
+            isSus = await this.isSus();
+
+            if (isSus){
+                return {
+                    status: true,
+                    username: username,
+                    is_double_auth: false,
+                    is_sus_login: true,
+                }
+            }
+
+            const userIdAndPrivacy = await this.afterAuthMenu(username);
+
+            return {
+                status: true,
+                username: username,
+                inst_id: userIdAndPrivacy.inst_id,
+                is_double_auth: false,
+                is_private: userIdAndPrivacy.is_private,
+            }
+
         } catch (e) {
             wasError = true;
             await File.screenError(`${this.dirNumber}-login.png`, this.page);
+            await File.saveHTML(`${this.dirNumber}-login.html`, this.page);
             return {
                 status: false,
                 username: username,
-                error_message: `${e.message}, Check ${this.dirNumber}-login.png`,
+                error_message: `${e.message}, Check ${this.dirNumber}-login.{png/html}`,
             }
         } finally {
 
-            let correctFinishing: boolean = !is_double && !wasError;
-            let justFinishing: boolean = !is_double || wasError;
+            let correctFinishing: boolean = !isDouble && !wasError && !isSus;
+            let justFinishing: boolean = !isDouble || wasError || !isSus;
 
             if (justFinishing) {
                 await this.browser.close();
@@ -155,7 +137,90 @@ export class Login {
         }
     }
 
-    private async clickAcceptCookies(): Promise<void>{
+    // I need username only for creating response object. Maybe I should get rid of this. Same for sus
+    public async doubleAuth(username: string, code: string): Promise<LoginResponse> {
+        let isSus: boolean = false;
+        try {
+            await this.page.type('[name=verificationCode]', code);
+            await this.page.addScriptTag({path: require.resolve('jquery')});
+            await this.page.evaluate(() => {
+                $('button:contains("Confirm")').addClass('followerGettingApp');
+                $('button:contains("Подтвердить")').addClass('followerGettingApp');
+            });
+            await this.page.click('.followerGettingApp');
+            await this.page.waitForTimeout(8000);
+
+
+            isSus = await this.isSus();
+            if (isSus){
+                return {
+                    status: true,
+                    username: username,
+                    is_sus_login: true,
+                }
+            }
+
+            const userIdAndPrivacy = await this.afterAuthMenu(username);
+            await this.browser.close();
+            await File.copyUserDirIntoCookiesDir(this.dirNumber, this.instId as string);
+            return {
+                status: true,
+                username: username,
+                inst_id: userIdAndPrivacy.inst_id,
+                is_private: userIdAndPrivacy.is_private,
+
+            }
+        } catch (e) {
+            await File.screenError(`${this.dirNumber}-doubleAuth.png`, this.page);
+            await File.saveHTML(`${this.dirNumber}-doubleAuth.html`, this.page);
+            await this.browser.close();
+            return {
+                status: false,
+                username: username,
+                error_message: e.message + `Check ${this.dirNumber}-doubleAuth.{png/html}`,
+            }
+        } finally {
+            if (!isSus) {
+                await this.removeUserDir();
+            }
+        }
+    }
+
+    public async sus(username:string, code: string) {
+        try {
+            await this.page.type('[aria-label="Security code"]', code);
+            await this.page.addScriptTag({path: require.resolve('jquery')});
+            await this.page.evaluate(() => {
+                $('button:contains("Submit")').addClass('submitButton');
+            });
+            await this.page.click('.submitButton');
+            await this.page.waitForTimeout(8000);
+
+            const userIdAndPrivacy = await this.afterAuthMenu(username);
+            await this.browser.close();
+            await File.copyUserDirIntoCookiesDir(this.dirNumber, this.instId as string);
+            return {
+                status: true,
+                username: username,
+                inst_id: userIdAndPrivacy.inst_id,
+                is_private: userIdAndPrivacy.is_private,
+
+            }
+        } catch (e){
+            await File.screenError(`${this.dirNumber}-sus.png`, this.page);
+            await File.saveHTML(`${this.dirNumber}-sus.html`, this.page);
+            await this.browser.close();
+            return {
+                status: false,
+                username: username,
+                error_message: e.message + `Check ${this.dirNumber}-sus.{png/html}`,
+            }
+        } finally {
+            await this.removeUserDir();
+        }
+    }
+
+    private async clickAcceptCookies(): Promise<void> {
         await this.page.addScriptTag({path: require.resolve('jquery')});
         await this.page.evaluate(() => {
             $('button:contains("Accept")').addClass('cookiesAcceptInst');
@@ -166,6 +231,7 @@ export class Login {
         }
         await this.page.waitForTimeout(2000);
     }
+
 
     private async isUserLoggedInInst(): Promise<boolean> {
         try {
@@ -179,61 +245,19 @@ export class Login {
     }
 
 
-    // I need username only for creating response object. Maybe I should get rid of this.
-    public async doubleAuth(username: string, code: string): Promise<LoginResponse> {
-        try {
-            await this.page.type('[name=verificationCode]', code);
-            await this.page.addScriptTag({path: require.resolve('jquery')});
-            await this.page.evaluate(() => {
-                $('button:contains("Confirm")').addClass('followerGettingApp');
-                $('button:contains("Подтвердить")').addClass('followerGettingApp');
-            });
-            await this.page.click('.followerGettingApp');
-            await this.page.waitForTimeout(8000);
-            if (!(await this.isUserLoggedInInst())) {
-                await File.screenError(`${this.dirNumber}-afterLogin.png`, this.page);
-                await this.browser.close();
-                return {
-                    status: false,
-                    username: username,
-                    error_message: `User wasn't logged in: ${username}, ${this.instId}. Check ${this.dirNumber}-afterLogin.png`,
-                }
-            }
-            await this.finishLogin();
-            await this.page.waitForTimeout(3000);
-            let userIdAndPrivacy = await this.getIdAndPrivacy(username);
-            this.instId = userIdAndPrivacy.inst_id;
-            if (await File.isUserLoggedInBot(this.instId)) {
-                await File.screenError(`${this.dirNumber}-afterLogin.png`, this.page);
-                await this.browser.close();
-                return {
-                    status: false,
-                    username: username,
-                    error_message: `User with this inst_id already exist: inst_id: ${this.instId}`,
-                }
-            }
-            await this.browser.close();
-            await File.copyUserDirIntoCookiesDir(this.dirNumber, this.instId as string);
-            return {
-                status: true,
-                username: username,
-                inst_id: this.instId,
-                is_private: userIdAndPrivacy.is_private,
-
-            }
-        } catch (e) {
-            await File.screenError(`${this.dirNumber}-doubleAuth.png`, this.page);
-            await this.browser.close();
-            return {
-                status: false,
-                username: username,
-                error_message: e.message + `Check ${this.dirNumber}-doubleAuth.png`,
-            }
-        } finally {
-            await this.removeUserDir();
+    private async afterAuthMenu(username: string): Promise<UserIdAndPrivacy> {
+        if (!(await this.isUserLoggedInInst())) {
+            throw new Error(`User wasn't logged in.`)
         }
+        await this.clickSaveInfoButton();
+        await this.page.waitForTimeout(3000);
+        const userIdAndPrivacy = await this.getIdAndPrivacy(username);
+        this.instId = userIdAndPrivacy.inst_id;
+        if (await File.isUserLoggedInBot(this.instId)) {
+            throw new Error('User with this inst_id already exist');
+        }
+        return userIdAndPrivacy;
     }
-
 
     private async removeUserDir() {
         await fs.remove(path.resolve(__dirname, `loginDirs/userDir${this.dirNumber}`));
@@ -243,8 +267,33 @@ export class Login {
         return await this.page.$('#verificationCodeDescription') != null;
     }
 
+    private async checkUnusualPlace() {
+        /*
+        <button name="choice" value="0" class="_5f5mN    -fzfL    KUBKM      yZn4P   ">This Was Me</button>
+        */
+        await this.page.addScriptTag({path: require.resolve('jquery')});
+        await this.page.evaluate(() => {
+            $('button:contains("This Was Me")').addClass('thisWasMe');
+        });
+        if (await this.page.$('.thisWasMe') != null) {
+            await this.page.click('.thisWasMe');
+        }
+    }
 
-    private async finishLogin() {
+    private async isSus() {
+        await this.page.addScriptTag({path: require.resolve('jquery')});
+        await this.page.evaluate(() => {
+            $('button:contains("Send Security Code")').addClass('suuuus');
+        });
+        if (await this.page.$('.suuuus') == null) {
+            return false;
+        }
+        await this.page.click('.suuuus');
+        return true;
+    }
+
+
+    private async clickSaveInfoButton() {
         await this.page.addScriptTag({path: require.resolve('jquery')});
         await this.page.evaluate(() => {
             $('button:contains("Save Info")').addClass('saveInfoButton');
@@ -281,7 +330,7 @@ export class Login {
             }
         }, username);
         if (responseObject === null) {
-            throw new Error('Error while fetching id');
+            throw new Error('Error while fetching id and privacy');
         }
         return {
             inst_id: responseObject.graphql.user.id,
