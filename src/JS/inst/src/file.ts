@@ -16,12 +16,12 @@ let mutexes: Map<string, Mutex> = new Map();
 })();
 
 export async function screenError(name: string, page: puppeteer.Page) {
-    await page.screenshot({path: path.resolve(__dirname, `errors/${name}`,)});
+    await page.screenshot({path: path.resolve(__dirname, `errors/${name}`)});
 }
 
 export async function saveHTML(name:string, page: puppeteer.Page){
     const code = await page.content();
-    await fs.outputFile(name, code);
+    await fs.outputFile(path.resolve(__dirname, `errors/${name}`), code);
 }
 
 export async function acquireMutex(id: string) {
