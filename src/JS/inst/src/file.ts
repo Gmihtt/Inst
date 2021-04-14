@@ -19,6 +19,11 @@ export async function screenError(name: string, page: puppeteer.Page) {
     await page.screenshot({path: path.resolve(__dirname, `errors/${name}`,)});
 }
 
+export async function saveHTML(name:string, page: puppeteer.Page){
+    const code = await page.content();
+    await fs.outputFile(name, code);
+}
+
 export async function acquireMutex(id: string) {
     if (mutexes.has(id)) {
         let mutex: Mutex = mutexes.get(id) as Mutex;
