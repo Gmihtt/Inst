@@ -30,5 +30,6 @@ export async function createBrowser(dirPath: string): Promise<puppeteer.Browser>
     if (Proxy.isProxy && Proxy.isAuth) {
         await Proxy.authenticate(browser);
     }
+
     return browser;
 }

@@ -18,6 +18,8 @@ declare module "puppeteer" {
 
         screenshot(options: any): Promise<any>;
 
+        content(): Promise<string>;
+
         waitForTimeout(milliseconds: number): Promise<any>;
 
         evaluate(func: any, ...args: any): Promise<any>

@@ -3,9 +3,8 @@ import ws = require('ws');
 import {Login, LoginRequest, LoginResponse} from "./login";
 
 
-
-
 let doubleAuthLogins = new Map();
+let susLogins = new Map();
 
 export function runLoginServer(server: ws.Server) {
     server.on('connection', function connection(socket) {
@@ -19,14 +18,19 @@ export function runLoginServer(server: ws.Server) {
             console.log(`Login: ${message.toString()}`);
             const userData: LoginRequest = JSON.parse(message.toString());
             switch (userData.type) {
-                case 'Login':
+                case 'Login': {
                     try {
                         let browserData = await Login.getBrowserAndPage();
                         let login = new Login(browserData);
+
                         const loginInfo: LoginResponse = await login.login(userData.username, userData.body);
+
                         if (loginInfo.status && loginInfo.is_double_auth) {
                             doubleAuthLogins.set(loginInfo.username, login);
+                        } else if (loginInfo.status && loginInfo.is_sus_login) {
+                            susLogins.set(loginInfo.username, login);
                         }
+
                         const loginJSON = JSON.stringify(loginInfo);
                         console.log(`Login login sent: ${loginJSON}`);
                         socket.send(Buffer.from(loginJSON));
@@ -34,17 +38,23 @@ export function runLoginServer(server: ws.Server) {
                         let errorInfo: LoginResponse = {
                             status: false,
                             username: userData.username,
-                            error_message: "Failure to start browser: " + e.message,
+                            error_message: "Failure to start/close browser or filesystem failure: " + e.message,
                         }
                         const errorJSON = JSON.stringify(errorInfo);
                         console.log(`Login login sent: ${errorJSON}`);
                         socket.send(Buffer.from(errorJSON));
                     }
+                }
                     break;
-                case 'DoubleAuth':
+                case 'DoubleAuth': {
                     if (doubleAuthLogins.has(userData.username)) {
                         let login: Login = doubleAuthLogins.get(userData.username);
                         let doubleAuthInfo = await login.doubleAuth(userData.username, userData.body);
+
+                        if (doubleAuthInfo.status && doubleAuthInfo.is_sus_login) {
+                            susLogins.set(doubleAuthInfo.username, login);
+                        }
+
                         const doubleAuthJSON = JSON.stringify(doubleAuthInfo);
                         console.log(`Login doubleAuth sent: ${doubleAuthJSON}`);
                         socket.send(Buffer.from(doubleAuthJSON));
@@ -59,6 +69,28 @@ export function runLoginServer(server: ws.Server) {
                         socket.send(Buffer.from(errorJSON));
                     }
                     doubleAuthLogins.delete(userData.username);
+                }
+                    break;
+                case 'Sus':{
+                    if (susLogins.has(userData.username)){
+                        let login: Login = susLogins.get(userData.username);
+                        let susInfo = await login.sus(userData.username, userData.body);
+
+                        const result = JSON.stringify(susInfo);
+                        console.log(`Login sus sent: ${result}`);
+                        socket.send(Buffer.from(result));
+                    } else {
+                        let errorInfo: LoginResponse = {
+                            status: false,
+                            username: userData.username,
+                            error_message: `There's no such username in susLogins map -- ${userData.username}`,
+                        }
+                        const errorJSON = JSON.stringify(errorInfo);
+                        console.log(`Login sus sent: ${errorJSON}`);
+                        socket.send(Buffer.from(errorJSON));
+                    }
+                    susLogins.delete(userData.username);
+                }
                     break;
             }
         })
