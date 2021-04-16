@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 02094e1d0d55816a0716bbfdb6b5c2aa8fe70d089b16b30e27ee562447dc2ffa
+-- hash: 63bbf602a86cc0aa6b78160fd18ae7e698ca7107422b2cc452905d6eda0fc720
 
 name:           Inst
 version:        0.1.0.0
@@ -106,8 +106,10 @@ library
       Telegram.Types.Domain.Update
       Telegram.Types.Domain.User
       Telegram.Types.Methods.SendMessage
-      Types.Communication.Scripts.Auth
-      Types.Communication.Scripts.Statistics
+      Types.Communication.Scripts.Auth.Request
+      Types.Communication.Scripts.Auth.Response
+      Types.Communication.Statistics.Request
+      Types.Communication.Statistics.Response
       Types.Domain.InstAccount
       Types.Domain.InstStatistics
       Types.Domain.Manager

@@ -10,12 +10,12 @@ import Control.Monad.Trans.Reader (ask)
 import Data.Text (Text)
 import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.Message as Message
-import qualified Types.Communication.Scripts.Statistics as ScriptsStat
+import qualified Types.Communication.Statistics.Request as RequestStat
 
 execute :: Message.Message -> Text -> Flow (Response Message.Message)
 execute msg instId = do
   env <- ask
   let statManager = Environment.statisticsManager env
-  liftIO $ API.sendMsg statManager (ScriptsStat.mkStopReq instId)
+  liftIO $ API.sendMsg statManager (RequestStat.mkStopReq instId)
   Save.execute instId
   Messages.stop msg

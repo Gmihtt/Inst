@@ -18,13 +18,14 @@ module App.Bot.Messages.MessagesBody
     stopMsg,
     todoMsg,
     publicAccount,
-    authCode,
-    incorrectAuthCode,
+    enterCode,
+    incorrectCode,
     confirmLogout,
     logout,
     continueStat,
     lastCountUsersNotFound,
     choseStatistics,
+    failInstIdOrPrivate,
   )
 where
 
@@ -98,12 +99,12 @@ todoMsg :: Message -> Message
 todoMsg =
   mkMessage "эта функция ещё не реализована"
 
-authCode :: Message -> Message
-authCode =
-  mkMessage "У вас включена двухступенчатая аутентификация, введите код"
+enterCode :: Message -> Message
+enterCode =
+  mkMessage "Вам на почту или телефон должен был прийти код, введите код"
 
-incorrectAuthCode :: Message -> Message
-incorrectAuthCode =
+incorrectCode :: Message -> Message
+incorrectCode =
   mkMessage "Либо вы прислали неверный код, либо попробуйте зарегестироваться позже"
 
 publicAccount :: Message -> Message
@@ -125,6 +126,10 @@ lastCountUsersNotFound =
 choseStatistics :: Message -> Message
 choseStatistics =
   mkMessage "Выберите какую статистику хотитет получить"
+
+failInstIdOrPrivate :: Message -> Message
+failInstIdOrPrivate =
+  mkMessage "Не удалось получить данные вашего инстаграмм аккаунта"
 
 logout :: Message -> Message
 logout =

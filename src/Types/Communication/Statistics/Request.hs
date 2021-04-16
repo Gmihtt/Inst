@@ -1,15 +1,12 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE RecordWildCards #-}
 
-module Types.Communication.Scripts.Statistics where
+module Types.Communication.Statistics.Request where
 
 import Common.Json
   ( FromJSON (..),
     ToJSON (..),
     parseJson,
-    parseJsonDrop,
     toJson,
-    toJsonDrop,
   )
 import Data.Text (Text)
 import GHC.Generics (Generic)
@@ -17,6 +14,9 @@ import GHC.Generics (Generic)
 data Action
   = Start
   | Stop
+  | UserStatus
+  | GroupStatus
+  | AllStatus
   | Logout
   deriving (Show, Eq, Generic)
 
@@ -28,35 +28,11 @@ instance FromJSON Action where
 
 data Request
   = Request
-      { inst_id :: Text,
+      { inst_ids :: Maybe [Text],
         action :: Action,
         timeout :: Maybe Integer
       }
   deriving (Show, Eq, Generic)
-
-mkStartReq :: Text -> Request
-mkStartReq inst_id =
-  Request
-    { action = Start,
-      timeout = Just 20000,
-      ..
-    }
-
-mkStopReq :: Text -> Request
-mkStopReq inst_id =
-  Request
-    { action = Stop,
-      timeout = Just 20000,
-      ..
-    }
-
-mkLogoutReq :: Text -> Request
-mkLogoutReq inst_id =
-  Request
-    { action = Logout,
-      timeout = Just 20000,
-      ..
-    }
 
 instance ToJSON Request where
   toJSON = toJson
@@ -64,17 +40,50 @@ instance ToJSON Request where
 instance FromJSON Request where
   parseJSON = parseJson
 
-data Response
-  = Response
-      { response_inst_id :: Text,
-        response_status :: Bool,
-        response_users :: Maybe [Text],
-        response_errorMessage :: Maybe Text
-      }
-  deriving (Show, Eq, Generic)
+mkStartReq :: Text -> Request
+mkStartReq inst_id =
+  Request
+    { action = Start,
+      timeout = Just 20000,
+      inst_ids = Just [inst_id]
+    }
 
-instance ToJSON Response where
-  toJSON = toJsonDrop 9
+mkStopReq :: Text -> Request
+mkStopReq inst_id =
+  Request
+    { action = Stop,
+      timeout = Just 20000,
+      inst_ids = Just [inst_id]
+    }
 
-instance FromJSON Response where
-  parseJSON = parseJsonDrop 9
+mkLogoutReq :: Text -> Request
+mkLogoutReq inst_id =
+  Request
+    { action = Logout,
+      timeout = Just 20000,
+      inst_ids = Just [inst_id]
+    }
+
+mkUserStatusReq :: Text -> Request
+mkUserStatusReq inst_id =
+  Request
+    { action = UserStatus,
+      timeout = Just 20000,
+      inst_ids = Just [inst_id]
+    }
+
+mkGroupStatusReq :: Text -> Request
+mkGroupStatusReq ids =
+  Request
+    { action = GroupStatus,
+      timeout = Just 20000,
+      inst_ids = Just [ids]
+    }
+
+mkAllStatusReq :: Request
+mkAllStatusReq =
+  Request
+    { action = AllStatus,
+      timeout = Just 20000,
+      inst_ids = Nothing
+    }

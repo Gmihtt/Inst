@@ -19,5 +19,6 @@ choseStatisticsKeyboard =
     [ [mkButton "Current"],
       [mkButton "Day"],
       [mkButton "7 Days"],
-      [mkButton "30 Days"]
+      [mkButton "30 Days"],
+      [mkButton "Back"]
     ]

@@ -18,7 +18,7 @@ import qualified MongoDB.Queries.Accounts as Mongo
 import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.Message as Message
 import qualified Telegram.Types.Domain.User as User
-import qualified Types.Communication.Scripts.Statistics as ScriptsStat
+import qualified Types.Communication.Statistics.Request as RequestStat
 import qualified Types.Domain.InstAccount as InstAccount
 import qualified Types.Domain.Manager as Manager
 import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
@@ -33,7 +33,7 @@ logout :: Message.Message -> User.User -> Text -> Flow (Response Message.Message
 logout msg user instId = do
   env <- ask
   let statManager = Environment.statisticsManager env
-  liftIO $ API.sendMsg statManager (ScriptsStat.mkLogoutReq instId)
+  liftIO $ API.sendMsg statManager (RequestStat.mkLogoutReq instId)
   Save.execute instId
   liftIO $ Manager.deleteTask instId statManager
   let userId = User.id user

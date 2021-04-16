@@ -9,7 +9,8 @@ import Data.Aeson (decode, encode)
 import Data.ByteString.Lazy (ByteString)
 import Data.Maybe (fromMaybe)
 import Data.Text (unpack)
-import qualified Types.Communication.Scripts.Statistics as ScriptsStat
+import qualified Types.Communication.Statistics.Request as RequestStat
+import qualified Types.Communication.Statistics.Response as ResponseStat
 import qualified Types.Domain.Manager as Manager
 import qualified Types.Domain.Socket as Socket
 import qualified Types.Domain.Statistic as Statistic
@@ -19,7 +20,7 @@ statConnection socket = do
   liftIO $ Connection.runConnection socket getUsername mkStatistics
   where
     getUsername bsBody =
-      maybe (throwSocketErr $ "decode fail" <> show bsBody) (pure . ScriptsStat.response_inst_id) (decode bsBody)
+      maybe (throwSocketErr $ "decode fail" <> show bsBody) (pure . ResponseStat.response_user_id) (decode bsBody)
 
 mkStatistics :: ByteString -> Maybe Statistic.Statistic -> IO Statistic.Statistic
 mkStatistics bsBody mbStat = do
@@ -29,11 +30,11 @@ mkStatistics bsBody mbStat = do
   where
     addUsers users stat = foldr Statistic.addUser stat users
     getUsers value =
-      if not $ ScriptsStat.response_status value
-        then printError (("Error : " <>) . unpack <$> ScriptsStat.response_errorMessage value) >> pure []
-        else pure . fromMaybe [] $ ScriptsStat.response_users value
+      if not $ ResponseStat.response_status value
+        then printError (("Error : " <>) . unpack <$> ResponseStat.response_errorMessage value) >> pure []
+        else pure . fromMaybe [] $ ResponseStat.response_users value
 
-sendMsg :: Manager.StatisticsManager -> ScriptsStat.Request -> IO ()
+sendMsg :: Manager.StatisticsManager -> RequestStat.Request -> IO ()
 sendMsg manager req = do
   printDebug req
   Manager.sendMsg (encode req) manager
