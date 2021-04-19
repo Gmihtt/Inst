@@ -8,10 +8,8 @@ const TIMEOUT: number = 5000;
 
 export interface StatsRequest {
     action: string; //Start | Stop | UserStatus | GroupStatus | AllStatus
-    inst_id?: string;
+    inst_ids?: Array<string>;
     timeout?: number;
-    user_id?: string;
-    group_ids?: Array<string>;
 }
 
 export interface UserInfo {

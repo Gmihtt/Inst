@@ -25,9 +25,9 @@ export function runLoginServer(server: ws.Server) {
 
                         const loginInfo: LoginResponse = await login.login(userData.username, userData.body);
 
-                        if (loginInfo.status && loginInfo.is_double_auth) {
+                        if (loginInfo.type === 'DoubleAuth') {
                             doubleAuthLogins.set(loginInfo.username, login);
-                        } else if (loginInfo.status && loginInfo.is_sus_login) {
+                        } else if (loginInfo.type === 'Sus') {
                             susLogins.set(loginInfo.username, login);
                         }
 
@@ -36,9 +36,9 @@ export function runLoginServer(server: ws.Server) {
                         socket.send(Buffer.from(loginJSON));
                     } catch (e) {
                         let errorInfo: LoginResponse = {
-                            status: false,
+                            type: 'Error',
                             username: userData.username,
-                            error_message: "Failure to start/close browser or filesystem failure: " + e.message,
+                            error: "Failure to start/close browser or filesystem failure: " + e.message,
                         }
                         const errorJSON = JSON.stringify(errorInfo);
                         console.log(`Login login sent: ${errorJSON}`);
@@ -51,7 +51,7 @@ export function runLoginServer(server: ws.Server) {
                         let login: Login = doubleAuthLogins.get(userData.username);
                         let doubleAuthInfo = await login.doubleAuth(userData.username, userData.body);
 
-                        if (doubleAuthInfo.status && doubleAuthInfo.is_sus_login) {
+                        if (doubleAuthInfo.type === 'Sus') {
                             susLogins.set(doubleAuthInfo.username, login);
                         }
 
@@ -60,9 +60,9 @@ export function runLoginServer(server: ws.Server) {
                         socket.send(Buffer.from(doubleAuthJSON));
                     } else {
                         let errorInfo: LoginResponse = {
-                            status: false,
+                            type: 'Error',
                             username: userData.username,
-                            error_message: `There's no such username in doubleAuth map -- ${userData.username}`,
+                            error: `There's no such username in doubleAuth map -- ${userData.username}`,
                         }
                         const errorJSON = JSON.stringify(errorInfo);
                         console.log(`Login doubleAuth sent: ${errorJSON}`);
@@ -81,9 +81,9 @@ export function runLoginServer(server: ws.Server) {
                         socket.send(Buffer.from(result));
                     } else {
                         let errorInfo: LoginResponse = {
-                            status: false,
+                            type: 'Error',
                             username: userData.username,
-                            error_message: `There's no such username in susLogins map -- ${userData.username}`,
+                            error: `There's no such username in susLogins map -- ${userData.username}`,
                         }
                         const errorJSON = JSON.stringify(errorInfo);
                         console.log(`Login sus sent: ${errorJSON}`);
