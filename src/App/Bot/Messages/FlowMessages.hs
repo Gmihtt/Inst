@@ -16,10 +16,14 @@ module App.Bot.Messages.FlowMessages
     stop,
     todoMsg,
     publicAccount,
-    authCode,
-    incorrectAuthCode,
+    enterCode,
+    incorrectCode,
     confirmLogout,
     logout,
+    lastCountUsersNotFound,
+    continueStat,
+    choseStatistics,
+    failInstIdOrPrivate,
   )
 where
 
@@ -101,17 +105,33 @@ publicAccount :: Message -> Flow (Response Message)
 publicAccount msg =
   sendMessage Nothing (Messages.publicAccount msg)
 
-authCode :: Message -> Flow (Response Message)
-authCode msg =
-  sendMessage Nothing (Messages.authCode msg)
+enterCode :: Message -> Flow (Response Message)
+enterCode msg =
+  sendMessage Nothing (Messages.enterCode msg)
 
-incorrectAuthCode :: Message -> Flow (Response Message)
-incorrectAuthCode msg =
-  sendMessage Nothing (Messages.incorrectAuthCode msg)
+incorrectCode :: Message -> Flow (Response Message)
+incorrectCode msg =
+  sendMessage Nothing (Messages.incorrectCode msg)
 
 confirmLogout :: Message -> Flow (Response Message)
 confirmLogout msg =
-  sendMessage (Just Keyboard.confirmLogout) (Messages.confirmLogout msg)
+  sendMessage (Just Keyboard.confirm) (Messages.confirmLogout msg)
+
+continueStat :: Message -> Flow (Response Message)
+continueStat msg =
+  sendMessage (Just Keyboard.confirm) (Messages.continueStat msg)
+
+lastCountUsersNotFound :: Message -> Flow (Response Message)
+lastCountUsersNotFound msg =
+  sendMessage Nothing (Messages.lastCountUsersNotFound msg)
+
+choseStatistics :: Message -> Flow (Response Message)
+choseStatistics msg =
+  sendMessage (Just Keyboard.choseStatisticsKeyboard) (Messages.choseStatistics msg)
+
+failInstIdOrPrivate :: Message -> Flow (Response Message)
+failInstIdOrPrivate msg =
+  sendMessage Nothing (Messages.failInstIdOrPrivate msg)
 
 logout :: Message -> Flow (Response Message)
 logout msg =

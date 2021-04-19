@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c1aaf30a3269b26cf51a8279d7bc5c735b166b46a536ae105a2f988567e65aba
+-- hash: 63bbf602a86cc0aa6b78160fd18ae7e698ca7107422b2cc452905d6eda0fc720
 
 name:           Inst
 version:        0.1.0.0
@@ -30,7 +30,8 @@ library
       App.Bot.BotMain
       App.Bot.Buttons.Keyboards
       App.Bot.Buttons.User.AccountMenu
-      App.Bot.Buttons.User.ConfirmLogout
+      App.Bot.Buttons.User.ChoseStatistics
+      App.Bot.Buttons.User.Confirm
       App.Bot.Buttons.User.Help
       App.Bot.Buttons.User.MainMenu
       App.Bot.Buttons.User.ShowInstAccounts
@@ -39,7 +40,12 @@ library
       App.Bot.Execution.Users.Logout
       App.Bot.Execution.Users.MainMenu
       App.Bot.Execution.Users.ShowAccounts
-      App.Bot.Execution.Users.Statistics
+      App.Bot.Execution.Users.Statistics.Back
+      App.Bot.Execution.Users.Statistics.GetStatistics
+      App.Bot.Execution.Users.Statistics.Save
+      App.Bot.Execution.Users.Statistics.Start
+      App.Bot.Execution.Users.Statistics.Stop
+      App.Bot.Execution.Users.Statistics.Subscription
       App.Bot.GetUpdates
       App.Bot.Messages.FlowMessages
       App.Bot.Messages.MessagesBody
@@ -49,11 +55,12 @@ library
       App.Bot.Selecting.Admin.SelectingTgUser
       App.Bot.Selecting.Users.AccountMenu
       App.Bot.Selecting.Users.API
+      App.Bot.Selecting.Users.Confirm
       App.Bot.Selecting.Users.HelpMenu
       App.Bot.Selecting.Users.ListOfAccounts
-      App.Bot.Selecting.Users.Logout
       App.Bot.Selecting.Users.MainMenu
       App.Bot.Selecting.Users.MessageFromUser
+      App.Bot.Selecting.Users.Statistics
       App.Scripts.Auth.API
       App.Scripts.Socket.API
       App.Scripts.Socket.App
@@ -73,8 +80,11 @@ library
       Common.Json
       Common.Redis
       Common.TelegramUserStatus
-      MongoDB.Queries
+      MongoDB.Queries.Accounts
+      MongoDB.Queries.Common
+      MongoDB.Queries.Statistics
       MongoDB.Transforms.InstAccount
+      MongoDB.Transforms.InstStatistics
       MongoDB.Transforms.TgUser
       Redis.Queries
       Telegram.API.Methods.CallTelegram
@@ -96,9 +106,12 @@ library
       Telegram.Types.Domain.Update
       Telegram.Types.Domain.User
       Telegram.Types.Methods.SendMessage
-      Types.Communication.Scripts.Auth
-      Types.Communication.Scripts.Statistics
+      Types.Communication.Scripts.Auth.Request
+      Types.Communication.Scripts.Auth.Response
+      Types.Communication.Statistics.Request
+      Types.Communication.Statistics.Response
       Types.Domain.InstAccount
+      Types.Domain.InstStatistics
       Types.Domain.Manager
       Types.Domain.Socket
       Types.Domain.Statistic

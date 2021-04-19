@@ -1,5 +1,8 @@
+{-# LANGUAGE RecordWildCards #-}
+
 module Types.Domain.Statistic where
 
+import Data.Foldable (toList)
 import qualified Data.Sequence as Seq
 import Data.Sequence ((|>))
 import qualified Data.Set as Set
@@ -34,14 +37,17 @@ addUser user stat@(Statistic stat_users stat_lastUsers)
         else stat_lastUsers
 
 getSize :: Statistic -> Int
-getSize (Statistic stat_users _) = Set.size stat_users
+getSize Statistic {..} = Set.size users
+
+getLastUsers :: Statistic -> [Text]
+getLastUsers Statistic {..} = toList lastUsers
 
 isMember :: Text -> Statistic -> Bool
-isMember user (Statistic stat_users _) = Set.member user stat_users
+isMember user Statistic {..} = Set.member user users
 
 initWithLastUsers :: [Text] -> Statistic
-initWithLastUsers stat_users =
+initWithLastUsers lastCountUsers =
   Statistic
-    { users = Set.fromList stat_users,
-      lastUsers = Seq.fromList stat_users
+    { users = Set.fromList lastCountUsers,
+      lastUsers = Seq.fromList lastCountUsers
     }

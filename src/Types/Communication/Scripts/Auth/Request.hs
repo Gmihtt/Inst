@@ -1,6 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
 
-module Types.Communication.Scripts.Auth where
+module Types.Communication.Scripts.Auth.Request where
 
 import Common.Json
   ( FromJSON (..),
@@ -13,7 +13,7 @@ import Common.Json
 import Data.Text (Text)
 import GHC.Generics (Generic)
 
-data Auth = Login | DoubleAuth deriving (Show, Eq, Generic)
+data Auth = Login | DoubleAuth | Sus deriving (Show, Eq, Generic)
 
 instance ToJSON Auth where
   toJSON = toJson
@@ -45,25 +45,16 @@ mkRequestDoubleAuth username password =
       request_body = password
     }
 
+mkRequestSus :: Text -> Text -> Request
+mkRequestSus username password =
+  Request
+    { request_type = Sus,
+      request_username = username,
+      request_body = password
+    }
+
 instance ToJSON Request where
   toJSON = toJsonDrop 8
 
 instance FromJSON Request where
   parseJSON = parseJsonDrop 8
-
-data Response
-  = Response
-      { response_inst_id :: Maybe Text,
-        response_username :: Text,
-        response_is_double_auth :: Maybe Bool,
-        response_is_private :: Maybe Bool,
-        response_status :: Bool,
-        response_error_message :: Maybe Text
-      }
-  deriving (Show, Eq, Generic)
-
-instance ToJSON Response where
-  toJSON = toJsonDrop 9
-
-instance FromJSON Response where
-  parseJSON = parseJsonDrop 9

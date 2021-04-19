@@ -3,7 +3,7 @@
 module App.Bot.Execution.Users.Login
   ( login,
     password,
-    authCode,
+    enterCode,
   )
 where
 
@@ -17,12 +17,11 @@ import Control.Monad.IO.Class (MonadIO (liftIO))
 import qualified Data.List as List
 import Data.Text (Text)
 import qualified Data.Text as T
-import qualified MongoDB.Queries as Mongo
-import qualified MongoDB.Transforms.TgUser as Transforms
+import qualified MongoDB.Queries.Accounts as Mongo
 import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.Message as Message
 import qualified Telegram.Types.Domain.User as User
-import qualified Types.Communication.Scripts.Auth as Auth
+import qualified Types.Communication.Scripts.Auth.Response as ResponseAuth
 import qualified Types.Domain.InstAccount as InstAccount
 import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
 import qualified Types.Domain.TgUser as TgUser
@@ -41,21 +40,33 @@ login msg user accLogin = do
 
 password :: Message.Message -> User.User -> Text -> Text -> Flow (Response Message.Message)
 password msg user accLogin accPassword = do
-  mbRes <- runScript accLogin accPassword
-  maybe errorCase successCase mbRes
-  where
-    successCase (instId, private, doubleAuth) = do
-      if private
-        then Message.successAuthMsg msg
-        else Message.publicAccount msg
-      if doubleAuth
-        then do
-          let status = TgUserStatus.TgUser $ TgUserStatus.AddAccountCode accLogin accPassword instId
-          Common.updateUserStatus user status
-          Message.authCode msg
-        else do
+  res <- ScriptsAuth.authLogin accLogin accPassword
+  liftIO $ printDebug res
+  case ResponseAuth.response_type res of
+    ResponseAuth.DoubleAuth -> do
+      let status = TgUserStatus.TgUser $ TgUserStatus.AddCode accLogin accPassword
+      Common.updateUserStatus user status
+      Message.enterCode msg
+    ResponseAuth.Sus -> do
+      let status = TgUserStatus.TgUser $ TgUserStatus.AddCode accLogin accPassword
+      Common.updateUserStatus user status
+      Message.enterCode msg
+    ResponseAuth.Error -> errorCase
+    ResponseAuth.Success ->
+      case (ResponseAuth.response_inst_id res, ResponseAuth.response_is_private res) of
+        (Just instId, Just private) -> do
+          if private then Message.successAuthMsg msg else Message.publicAccount msg
           saveAccAndUser instId accLogin accPassword user
           Message.accountMenu msg
+        _ -> do
+          liftIO $ printDebug $
+            "For user : " ++ show user
+              ++ " with accLogin: "
+              ++ show accLogin
+              ++ " inst_id or private is Nothing, response: "
+              ++ show res
+          errorCase
+  where
     errorCase = do
       let status = TgUserStatus.TgUser TgUserStatus.ListOfAccounts
       Common.updateUserStatus user status
@@ -64,43 +75,38 @@ password msg user accLogin accPassword = do
       Message.showInstAccs msg (map InstAccount.login instAccs)
     userId = User.id user
 
-authCode ::
+enterCode ::
   Message.Message ->
   User.User ->
   Text ->
   Text ->
   Text ->
-  Text ->
   Flow (Response Message.Message)
-authCode msg user instId accLogin accPassword accCode = do
+enterCode msg user accLogin accPassword accCode = do
   res <- ScriptsAuth.doubleAuth accLogin accCode
   liftIO $ printDebug res
-  if Auth.response_status res
+  let resType = ResponseAuth.response_type res
+  if resType == ResponseAuth.DoubleAuth || resType == ResponseAuth.Sus
     then do
-      Message.successAuthMsg msg
-      saveAccAndUser instId accLogin accPassword user
-      Message.accountMenu msg
+      let mbInstId = ResponseAuth.response_inst_id res
+      let mbPrivate = ResponseAuth.response_is_private res
+      case (mbInstId, mbPrivate) of
+        (Just instId, Just private) -> do
+          if private then Message.successAuthMsg msg else Message.publicAccount msg
+          saveAccAndUser instId accLogin accPassword user
+          Message.accountMenu msg
+        _ -> do
+          Message.failInstIdOrPrivate msg
+          backToListAccounts
     else do
-      Message.incorrectAuthCode msg
+      Message.incorrectCode msg
+      backToListAccounts
+  where
+    backToListAccounts = do
       let status = TgUserStatus.TgUser TgUserStatus.ListOfAccounts
       Common.updateUserStatus user status
       instAccs <- Common.getInstAccs (User.id user)
       Message.showInstAccs msg (map InstAccount.login instAccs)
-
-runScript :: Text -> Text -> Flow (Maybe (Text, Bool, Bool))
-runScript accLogin accPassword = do
-  res <- ScriptsAuth.authLogin accLogin accPassword
-  liftIO $ printDebug res
-  let mbInstId = Auth.response_inst_id res
-  let mbPrivate = Auth.response_is_private res
-  let mbDoubleAuth = Auth.response_is_double_auth res
-  pure $ mkRes mbInstId mbPrivate mbDoubleAuth
-  where
-    mkRes mbInstId mbPrivate mbDoubleAuth = do
-      instId <- mbInstId
-      private <- mbPrivate
-      doubleAuth <- mbDoubleAuth
-      pure (instId, private, doubleAuth)
 
 saveAccAndUser :: Text -> Text -> Text -> User.User -> Flow Bool
 saveAccAndUser instId accLogin accPassword user = do
@@ -109,7 +115,7 @@ saveAccAndUser instId accLogin accPassword user = do
   let newInstAcc = InstAccount.mkInstAccount instId accLogin accPassword False
   let uId = T.pack $ show userId
   let tgUser = TgUser.mkTgUser uId (newInstAcc : instAccs)
-  Mongo.updateInstAccs uId (Transforms.mkDocByTgUser tgUser) "accounts"
+  Mongo.updateInstAccs uId tgUser
   let status = TgUserStatus.TgUser $ TgUserStatus.AccountMenu instId
   Common.putInstAccs userId
   Common.updateUserStatus user status

@@ -1,0 +1,34 @@
+module App.Bot.Execution.Users.Statistics.Save where
+
+import qualified Common.Environment as Environment
+import Common.Flow (Flow)
+import Control.Monad.IO.Class (liftIO)
+import Control.Monad.Trans.Reader (ask)
+import Data.Text (Text)
+import Data.Time (getCurrentTime)
+import qualified MongoDB.Queries.Statistics as Mongo
+import qualified Types.Domain.InstStatistics as InstStatistics
+import qualified Types.Domain.Manager as Manager
+import qualified Types.Domain.Statistic as Statistic
+
+execute :: Text -> Flow ()
+execute instId = do
+  env <- ask
+  let manager = Environment.statisticsManager env
+  mbStat <- liftIO $ Manager.findTask instId manager
+  case mbStat of
+    Just stat -> do
+      finish <- liftIO getCurrentTime
+      let count = Statistic.getSize stat
+      let statistic = InstStatistics.mkStatistic (fromIntegral count) finish
+      let lastCountUsers = Statistic.getLastUsers stat
+      let newInstStat = InstStatistics.mkInstStatistics instId [statistic] lastCountUsers
+      oldInstStat <- Mongo.findInstStatById instId
+      let instStat = maybe newInstStat (updateInstStat statistic lastCountUsers) oldInstStat
+      Mongo.updateInstStat instId instStat
+    Nothing -> pure ()
+  where
+    updateInstStat statistic lastCountUsers oldInstStat =
+      InstStatistics.addStatistic
+        oldInstStat {InstStatistics.lastCountUsers = lastCountUsers}
+        statistic

@@ -18,10 +18,14 @@ module App.Bot.Messages.MessagesBody
     stopMsg,
     todoMsg,
     publicAccount,
-    authCode,
-    incorrectAuthCode,
+    enterCode,
+    incorrectCode,
     confirmLogout,
     logout,
+    continueStat,
+    lastCountUsersNotFound,
+    choseStatistics,
+    failInstIdOrPrivate,
   )
 where
 
@@ -30,17 +34,17 @@ import Telegram.Types.Domain.Message (Message, mkMessage)
 
 mainMenu :: Message -> Message
 mainMenu =
-  mkMessage $
+  mkMessage
     "Это базовое меню, вы можете перейти к выбору перейти выбрать инстаграмм аккаунты или попросить помощь"
 
 login :: Message -> Message
 login =
-  mkMessage $
+  mkMessage
     "Введите логин от инстаграм аккаунта"
 
 password :: Message -> Message
 password =
-  mkMessage $
+  mkMessage
     "Введите пароль"
 
 success :: Message -> Message
@@ -65,7 +69,7 @@ oldMsg =
 
 stat :: Message -> Int -> Message
 stat msg num =
-  mkMessage ("Статистика по вашему инстаграм аккаунту : " <> (pack $ show num)) msg
+  mkMessage ("Статистика по вашему инстаграм аккаунту : " <> pack (show num)) msg
 
 showInstAccs :: Message -> Message
 showInstAccs =
@@ -95,12 +99,12 @@ todoMsg :: Message -> Message
 todoMsg =
   mkMessage "эта функция ещё не реализована"
 
-authCode :: Message -> Message
-authCode =
-  mkMessage "У вас включена двухступенчатая аутентификация, введите код"
+enterCode :: Message -> Message
+enterCode =
+  mkMessage "Вам на почту или телефон должен был прийти код, введите код"
 
-incorrectAuthCode :: Message -> Message
-incorrectAuthCode =
+incorrectCode :: Message -> Message
+incorrectCode =
   mkMessage "Либо вы прислали неверный код, либо попробуйте зарегестироваться позже"
 
 publicAccount :: Message -> Message
@@ -110,6 +114,22 @@ publicAccount =
 confirmLogout :: Message -> Message
 confirmLogout =
   mkMessage "Подвертидте выход"
+
+continueStat :: Message -> Message
+continueStat =
+  mkMessage "Вы желаете продолжить предыдущий сбор статистики или начать новый?"
+
+lastCountUsersNotFound :: Message -> Message
+lastCountUsersNotFound =
+  mkMessage "Не удалось найти данные о вашем прошлом сборе статистики"
+
+choseStatistics :: Message -> Message
+choseStatistics =
+  mkMessage "Выберите какую статистику хотитет получить"
+
+failInstIdOrPrivate :: Message -> Message
+failInstIdOrPrivate =
+  mkMessage "Не удалось получить данные вашего инстаграмм аккаунта"
 
 logout :: Message -> Message
 logout =

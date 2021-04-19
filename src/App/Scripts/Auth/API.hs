@@ -10,23 +10,24 @@ import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Trans.Reader (ask)
 import Data.Aeson (decode, encode)
 import Data.Text (Text)
-import qualified Types.Communication.Scripts.Auth as ScriptsAuth
+import qualified Types.Communication.Scripts.Auth.Request as RequestAuth
+import qualified Types.Communication.Scripts.Auth.Response as ResponseAuth
 import qualified Types.Domain.Manager as Manager
 import qualified Types.Domain.Socket as Socket
 
-authLogin :: Text -> Text -> Flow ScriptsAuth.Response
+authLogin :: Text -> Text -> Flow ResponseAuth.Response
 authLogin username password = do
   env <- ask
   let authManager = Environment.authManager env
-  let req = ScriptsAuth.mkRequestLogin username password
+  let req = RequestAuth.mkRequestLogin username password
   liftIO $ printDebug req
   liftIO $ sendAndReceiveMsg username authManager req
 
-doubleAuth :: Text -> Text -> Flow ScriptsAuth.Response
+doubleAuth :: Text -> Text -> Flow ResponseAuth.Response
 doubleAuth username code = do
   env <- ask
   let authManager = Environment.authManager env
-  let req = ScriptsAuth.mkRequestDoubleAuth username code
+  let req = RequestAuth.mkRequestDoubleAuth username code
   liftIO $ printDebug req
   liftIO $ sendAndReceiveMsg username authManager req
 
@@ -35,10 +36,10 @@ authConnection socket = do
   liftIO $ Connection.runConnection socket getUsername getBsBody
   where
     getUsername bsBody =
-      maybe (throwSocketErr $ "decode fail" <> show bsBody) (pure . ScriptsAuth.response_username) (decode bsBody)
+      maybe (throwSocketErr $ "decode fail" <> show bsBody) (pure . ResponseAuth.response_username) (decode bsBody)
     getBsBody bsBody _ = maybe (throwSocketErr $ "decode fail" <> show bsBody) pure (decode bsBody)
 
-sendAndReceiveMsg :: Text -> Manager.AuthManager -> ScriptsAuth.Request -> IO ScriptsAuth.Response
+sendAndReceiveMsg :: Text -> Manager.AuthManager -> RequestAuth.Request -> IO ResponseAuth.Response
 sendAndReceiveMsg key manager req = do
   Manager.sendMsg (encode req) manager
   script <- newEmptyMVar

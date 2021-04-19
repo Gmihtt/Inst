@@ -13,11 +13,11 @@ import Control.Monad.IO.Class (MonadIO (liftIO))
 import Control.Monad.Trans.Reader (ask)
 import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
-import qualified MongoDB.Queries as Mongo
+import qualified MongoDB.Queries.Accounts as Mongo
 import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.Message as Message
 import qualified Telegram.Types.Domain.User as User
-import qualified Types.Communication.Scripts.Statistics as ScriptsStat
+import qualified Types.Communication.Statistics.Request as RequestStat
 import qualified Types.Domain.InstAccount as InstAccount
 import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
 
@@ -53,10 +53,10 @@ checkStatus msg user = do
       env <- ask
       let statManager = Environment.statisticsManager env
       let uId = T.pack $ show userId
-      instAccs <- Mongo.findInstAccsByTgId uId "accounts"
-      liftIO $ mapM (API.sendMsg statManager . ScriptsStat.mkLogoutReq . InstAccount.id) instAccs
+      instAccs <- Mongo.findInstAccsByTgId uId
+      liftIO $ mapM (API.sendMsg statManager . RequestStat.mkLogoutReq . InstAccount.id) instAccs
       Common.dropInstAccs userId
-      Mongo.deleteTgUser uId "accounts"
+      Mongo.deleteTgUser uId
       setMainMenu
     userId = User.id user
 
@@ -78,7 +78,7 @@ choseAction msg user (TgUserStatus.TgUser status) =
             user
             (TgUserStatus.TgUser TgUserStatus.MainMenu)
           Messages.failAuthMsg msg
-    TgUserStatus.AddAccountCode username password instId -> Login.authCode msg user instId username password text
+    TgUserStatus.AddCode username password -> Login.enterCode msg user username password text
     _ -> Messages.strangeMessage msg
   where
     text = fromMaybe "" $ Message.text msg
