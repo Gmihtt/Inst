@@ -3,8 +3,8 @@ import ws = require('ws');
 import {Login, LoginRequest, LoginResponse} from "./login";
 
 
-let doubleAuthLogins = new Map();
-let susLogins = new Map();
+const doubleAuthLogins = new Map();
+const susLogins = new Map();
 
 export function runLoginServer(server: ws.Server) {
     server.on('connection', function connection(socket) {
@@ -31,18 +31,14 @@ export function runLoginServer(server: ws.Server) {
                             susLogins.set(loginInfo.username, login);
                         }
 
-                        const loginJSON = JSON.stringify(loginInfo);
-                        console.log(`Login login sent: ${loginJSON}`);
-                        socket.send(Buffer.from(loginJSON));
+                        sendWithLog(socket, loginInfo);
                     } catch (e) {
                         let errorInfo: LoginResponse = {
                             type: 'Error',
                             username: userData.username,
                             error: "Failure to start/close browser or filesystem failure: " + e.message,
                         }
-                        const errorJSON = JSON.stringify(errorInfo);
-                        console.log(`Login login sent: ${errorJSON}`);
-                        socket.send(Buffer.from(errorJSON));
+                        sendWithLog(socket, errorInfo);
                     }
                 }
                     break;
@@ -55,18 +51,14 @@ export function runLoginServer(server: ws.Server) {
                             susLogins.set(doubleAuthInfo.username, login);
                         }
 
-                        const doubleAuthJSON = JSON.stringify(doubleAuthInfo);
-                        console.log(`Login doubleAuth sent: ${doubleAuthJSON}`);
-                        socket.send(Buffer.from(doubleAuthJSON));
+                        sendWithLog(socket, doubleAuthInfo);
                     } else {
                         let errorInfo: LoginResponse = {
                             type: 'Error',
                             username: userData.username,
                             error: `There's no such username in doubleAuth map -- ${userData.username}`,
                         }
-                        const errorJSON = JSON.stringify(errorInfo);
-                        console.log(`Login doubleAuth sent: ${errorJSON}`);
-                        socket.send(Buffer.from(errorJSON));
+                        sendWithLog(socket, errorInfo);
                     }
                     doubleAuthLogins.delete(userData.username);
                 }
@@ -76,18 +68,14 @@ export function runLoginServer(server: ws.Server) {
                         let login: Login = susLogins.get(userData.username);
                         let susInfo = await login.sus(userData.username, userData.body);
 
-                        const result = JSON.stringify(susInfo);
-                        console.log(`Login sus sent: ${result}`);
-                        socket.send(Buffer.from(result));
+                        sendWithLog(socket, susInfo);
                     } else {
                         let errorInfo: LoginResponse = {
                             type: 'Error',
                             username: userData.username,
                             error: `There's no such username in susLogins map -- ${userData.username}`,
                         }
-                        const errorJSON = JSON.stringify(errorInfo);
-                        console.log(`Login sus sent: ${errorJSON}`);
-                        socket.send(Buffer.from(errorJSON));
+                        sendWithLog(socket, errorInfo);
                     }
                     susLogins.delete(userData.username);
                 }
@@ -95,5 +83,12 @@ export function runLoginServer(server: ws.Server) {
             }
         })
     });
+}
 
+
+
+function sendWithLog(socket: any, data: object){
+    const dataJSON = JSON.stringify(data);
+    console.log(`Login sent: ${dataJSON}`);
+    socket.send(Buffer.from(dataJSON));
 }

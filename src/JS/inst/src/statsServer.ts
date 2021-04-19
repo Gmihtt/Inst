@@ -166,7 +166,7 @@ function getAllInfoData(): Stats.StatusResponse{
 }
 
 function sendWithLog(socket: any, data: object){
-    let dataJSON = JSON.stringify(data);
+    const dataJSON = JSON.stringify(data);
     console.log(`Stats sent: ${dataJSON}`);
     socket.send(Buffer.from(dataJSON));
 }
