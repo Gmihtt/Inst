@@ -1,6 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Types.Domain.Socket where
+module Communication.Sockets.Socket where
 
 data Socket
   = Socket

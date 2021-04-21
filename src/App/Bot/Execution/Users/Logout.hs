@@ -7,11 +7,10 @@ import qualified App.Bot.Messages.FlowMessages as Messages
 import qualified App.Scripts.Statistics.API as API
 import qualified Common.Environment as Environment
 import Common.Error (throwLogicError)
-import Common.Flow (Flow)
+import Common.Flow (Flow, getEnvironment)
 import qualified Common.Redis as Common
 import qualified Common.TelegramUserStatus as Common
 import Control.Monad.IO.Class (liftIO)
-import Control.Monad.Trans.Reader (ask)
 import Data.Text (Text)
 import qualified Data.Text as T
 import qualified MongoDB.Queries.Accounts as Mongo
@@ -20,8 +19,8 @@ import qualified Telegram.Types.Domain.Message as Message
 import qualified Telegram.Types.Domain.User as User
 import qualified Types.Communication.Statistics.Request as RequestStat
 import qualified Types.Domain.InstAccount as InstAccount
-import qualified Types.Domain.Manager as Manager
 import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
+import qualified Types.Domain.ThreadManager as Manager
 
 confirmLogout :: Message.Message -> User.User -> Text -> Flow (Response Message.Message)
 confirmLogout msg user login = do
@@ -31,7 +30,7 @@ confirmLogout msg user login = do
 
 logout :: Message.Message -> User.User -> Text -> Flow (Response Message.Message)
 logout msg user instId = do
-  env <- ask
+  env <- getEnvironment
   let statManager = Environment.statisticsManager env
   liftIO $ API.sendMsg statManager (RequestStat.mkLogoutReq instId)
   Save.execute instId

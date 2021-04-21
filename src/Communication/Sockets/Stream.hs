@@ -1,4 +1,4 @@
-module Types.Domain.Stream where
+module Communication.Sockets.Stream where
 
 import qualified Control.Concurrent.Chan as Chan
 import Data.ByteString.Lazy (ByteString)

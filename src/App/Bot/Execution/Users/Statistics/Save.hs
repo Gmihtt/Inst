@@ -1,19 +1,18 @@
 module App.Bot.Execution.Users.Statistics.Save where
 
 import qualified Common.Environment as Environment
-import Common.Flow (Flow)
+import Common.Flow (Flow, getEnvironment)
 import Control.Monad.IO.Class (liftIO)
-import Control.Monad.Trans.Reader (ask)
 import Data.Text (Text)
 import Data.Time (getCurrentTime)
 import qualified MongoDB.Queries.Statistics as Mongo
 import qualified Types.Domain.InstStatistics as InstStatistics
-import qualified Types.Domain.Manager as Manager
 import qualified Types.Domain.Statistic as Statistic
+import qualified Types.Domain.ThreadManager as Manager
 
 execute :: Text -> Flow ()
 execute instId = do
-  env <- ask
+  env <- getEnvironment
   let manager = Environment.statisticsManager env
   mbStat <- liftIO $ Manager.findTask instId manager
   case mbStat of

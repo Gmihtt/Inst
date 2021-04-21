@@ -6,6 +6,7 @@ import qualified App.Scripts.Statistics.API as ScriptsStatistics
 import qualified Common.Config as Config
 import Common.Environment (mkEnv)
 import Common.Error (Error (..))
+import Common.Flow (runFlow)
 import Control.Exception (catch)
 import qualified Database.MongoDB as MongoDB
 import qualified Database.Redis as Redis
@@ -41,7 +42,7 @@ app =
         logger logName
         let env = mkEnv manager token pipe conn mongoDB collection authManager statManager tgUsersStatus logName
         print "App running..."
-        run Nothing env
+        runFlow (run Nothing) env
         MongoDB.close pipe
     )
     handler

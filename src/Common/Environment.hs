@@ -10,8 +10,8 @@ import Data.Text (Text)
 import Database.MongoDB.Connection (Pipe)
 import Database.Redis (Connection)
 import Network.HTTP.Client (Manager)
-import qualified Types.Domain.Manager as Manager
 import qualified Types.Domain.Status.TgUsersStatus as TgUsersStatus
+import qualified Types.Domain.ThreadManager as Manager
 
 data Environment
   = Environment

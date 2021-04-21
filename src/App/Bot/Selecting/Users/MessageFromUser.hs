@@ -6,11 +6,10 @@ import qualified App.Bot.Execution.Users.Login as Login
 import qualified App.Bot.Messages.FlowMessages as Messages
 import qualified App.Scripts.Statistics.API as API
 import qualified Common.Environment as Environment
-import Common.Flow (Flow)
+import Common.Flow (Flow, getEnvironment)
 import qualified Common.Redis as Common
 import qualified Common.TelegramUserStatus as Common
 import Control.Monad.IO.Class (MonadIO (liftIO))
-import Control.Monad.Trans.Reader (ask)
 import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
 import qualified MongoDB.Queries.Accounts as Mongo
@@ -50,7 +49,7 @@ checkStatus msg user = do
         (TgUserStatus.TgUser TgUserStatus.MainMenu)
       Messages.mainMenu msg
     reboot = do
-      env <- ask
+      env <- getEnvironment
       let statManager = Environment.statisticsManager env
       let uId = T.pack $ show userId
       instAccs <- Mongo.findInstAccsByTgId uId

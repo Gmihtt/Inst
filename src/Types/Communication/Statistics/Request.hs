@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Types.Communication.Statistics.Request where
 
@@ -14,9 +15,6 @@ import GHC.Generics (Generic)
 data Action
   = Start
   | Stop
-  | UserStatus
-  | GroupStatus
-  | AllStatus
   | Logout
   deriving (Show, Eq, Generic)
 
@@ -28,7 +26,7 @@ instance FromJSON Action where
 
 data Request
   = Request
-      { inst_ids :: Maybe [Text],
+      { inst_id :: Text,
         action :: Action,
         timeout :: Maybe Integer
       }
@@ -45,7 +43,7 @@ mkStartReq inst_id =
   Request
     { action = Start,
       timeout = Just 20000,
-      inst_ids = Just [inst_id]
+      ..
     }
 
 mkStopReq :: Text -> Request
@@ -53,7 +51,7 @@ mkStopReq inst_id =
   Request
     { action = Stop,
       timeout = Just 20000,
-      inst_ids = Just [inst_id]
+      ..
     }
 
 mkLogoutReq :: Text -> Request
@@ -61,29 +59,5 @@ mkLogoutReq inst_id =
   Request
     { action = Logout,
       timeout = Just 20000,
-      inst_ids = Just [inst_id]
-    }
-
-mkUserStatusReq :: Text -> Request
-mkUserStatusReq inst_id =
-  Request
-    { action = UserStatus,
-      timeout = Just 20000,
-      inst_ids = Just [inst_id]
-    }
-
-mkGroupStatusReq :: Text -> Request
-mkGroupStatusReq ids =
-  Request
-    { action = GroupStatus,
-      timeout = Just 20000,
-      inst_ids = Just [ids]
-    }
-
-mkAllStatusReq :: Request
-mkAllStatusReq =
-  Request
-    { action = AllStatus,
-      timeout = Just 20000,
-      inst_ids = Nothing
+      ..
     }

@@ -7,11 +7,10 @@ where
 
 import qualified Common.Environment as Environment
 import Common.Error (printError, throwTelegramErr, throwTgErr)
-import Common.Flow (Flow)
+import Common.Flow (Flow, getEnvironment, runFlow)
 import Control.Concurrent (forkIO)
 import Control.Concurrent.Chan (Chan, newChan, writeList2Chan)
 import Control.Monad.IO.Class (liftIO)
-import Control.Monad.Trans.Reader (ask, runReaderT)
 import Data.Maybe (fromMaybe)
 import Telegram.API.Methods.CallTelegram (callTelegram)
 import qualified Telegram.API.Routes as API
@@ -19,15 +18,16 @@ import qualified Telegram.Types.Communication.Response as Response
 import qualified Telegram.Types.Domain.Update as Update
 import Types.Domain.TgUpdates (ListOfUpdates)
 
-execute :: Maybe Integer -> Environment.Environment -> IO ListOfUpdates
-execute updateId env = do
-  listOfUpdates <- newChan
-  forkIO $ runReaderT (getUpdates updateId listOfUpdates) env
+execute :: Maybe Integer -> Flow ListOfUpdates
+execute updateId = do
+  env <- getEnvironment
+  listOfUpdates <- liftIO newChan
+  liftIO . forkIO $ runFlow (getUpdates updateId listOfUpdates) env
   pure listOfUpdates
 
 getUpdates :: Maybe Integer -> Chan Update.Update -> Flow ()
 getUpdates updateId listOfUpdates = do
-  env <- ask
+  env <- getEnvironment
   let token = Environment.token env
   eUpdates <- callTelegram (API.getUpdates token updateId Nothing (Just 1))
   updates <- getBody eUpdates
