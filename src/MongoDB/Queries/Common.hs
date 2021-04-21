@@ -2,7 +2,6 @@ module MongoDB.Queries.Common where
 
 import qualified Common.Environment as Environment
 import Common.Flow (Flow, getEnvironment)
-import Control.Monad.IO.Class (MonadIO)
 import qualified Database.MongoDB as Mongo
 
 callDB :: Mongo.Action Flow b -> Flow b

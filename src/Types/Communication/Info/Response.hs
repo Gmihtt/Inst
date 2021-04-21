@@ -1,14 +1,12 @@
 {-# LANGUAGE DeriveGeneric #-}
 
-module Types.Communication.Status.Response where
+module Types.Communication.Info.Response where
 
 import Common.Json
   ( FromJSON (..),
     ToJSON (..),
     parseJson,
-    parseJsonDrop,
     toJson,
-    toJsonDrop,
   )
 import Data.Text (Text)
 import GHC.Generics (Generic)
@@ -37,7 +35,7 @@ instance FromJSON UserInfo where
 data Response
   = Response
       { status :: Status,
-        admin_id :: Int,
+        admin_id :: Text,
         users_info :: Maybe [UserInfo],
         user_count_active :: Maybe Int
       }

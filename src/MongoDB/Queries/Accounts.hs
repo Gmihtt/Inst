@@ -6,9 +6,8 @@ import Common.Flow (Flow)
 import qualified Data.List as List
 import Data.Text (Text)
 import qualified Database.MongoDB as Mongo
-import Database.MongoDB ((!?), (=:))
+import Database.MongoDB ((=:))
 import MongoDB.Queries.Common (callDB)
-import MongoDB.Transforms.InstAccount (mkInstAccsByDocs)
 import qualified MongoDB.Transforms.TgUser as Transforms
 import qualified Types.Domain.InstAccount as InstAccount
 import qualified Types.Domain.TgUser as TgUser
@@ -18,12 +17,15 @@ updateInstAccs :: Text -> TgUser.TgUser -> Flow ()
 updateInstAccs tg_id val =
   callDB (Mongo.upsert (Mongo.select ["id" =: tg_id] "accounts") (Transforms.mkDocByTgUser val))
 
+findTgUserById :: Text -> Flow (Maybe TgUser.TgUser)
+findTgUserById tg_id = do
+  res <- callDB (Mongo.findOne (Mongo.select ["id" =: tg_id] "accounts"))
+  pure $ Transforms.mkTgUserByDoc =<< res
+
 findInstAccsByTgId :: Text -> Flow [InstAccount.InstAccount]
 findInstAccsByTgId tg_id = do
-  res <- callDB (Mongo.findOne (Mongo.select ["id" =: tg_id] "accounts"))
-  pure $ maybe [] getInstAccs res
-  where
-    getInstAccs doc = maybe [] mkInstAccsByDocs (doc !? "inst_accounts")
+  tgUser <- findTgUserById tg_id
+  pure $ maybe [] TgUser.inst_accounts tgUser
 
 findInstAccountByLogin :: Text -> Text -> Flow (Maybe InstAccount.InstAccount)
 findInstAccountByLogin tg_id login = do
@@ -37,9 +39,13 @@ findInstAccountByInstId tg_id instId = do
 
 deleteInstAccount :: Text -> Text -> Flow ()
 deleteInstAccount tg_id login = do
-  instAccs <- findInstAccsByTgId tg_id
-  let newTgUser = TgUser.mkTgUser tg_id (deleteInstAcc instAccs)
-  updateInstAccs tg_id newTgUser
+  mbTgUser <- findTgUserById tg_id
+  case mbTgUser of
+    Nothing -> pure ()
+    Just tgUser -> do
+      let instAccs = TgUser.inst_accounts tgUser
+      let newTgUser = tgUser {TgUser.inst_accounts = deleteInstAcc instAccs}
+      updateInstAccs tg_id newTgUser
   where
     deleteInstAcc [] = []
     deleteInstAcc (instAcc : accs) =

@@ -6,17 +6,14 @@ import Common.Json
   ( FromJSON (..),
     ToJSON (..),
     parseJson,
-    parseJsonDrop,
     toJson,
-    toJsonDrop,
   )
 import Data.Text (Text)
 import GHC.Generics (Generic)
 
 data Response
   = Response
-      { user_id :: Text,
-        status :: Bool,
+      { inst_id :: Text,
         users :: Maybe [Text],
         error_message :: Maybe Text
       }

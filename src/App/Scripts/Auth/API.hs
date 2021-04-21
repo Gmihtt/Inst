@@ -9,8 +9,8 @@ import Control.Concurrent.MVar (newEmptyMVar, putMVar, takeMVar)
 import Control.Monad.IO.Class (liftIO)
 import Data.Aeson (decode, encode)
 import Data.Text (Text)
-import qualified Types.Communication.Scripts.Auth.Request as RequestAuth
-import qualified Types.Communication.Scripts.Auth.Response as ResponseAuth
+import qualified Types.Communication.Auth.Request as RequestAuth
+import qualified Types.Communication.Auth.Response as ResponseAuth
 import qualified Types.Domain.ThreadManager as Manager
 
 authLogin :: Text -> Text -> Flow ResponseAuth.Response
@@ -34,7 +34,7 @@ authConnection socket = do
   liftIO $ SocketsAPI.runConnection socket getUsername getBsBody
   where
     getUsername bsBody =
-      maybe (throwSocketErr $ "decode fail" <> show bsBody) (pure . ResponseAuth.response_username) (decode bsBody)
+      maybe (throwSocketErr $ "decode fail" <> show bsBody) (pure . ResponseAuth.username) (decode bsBody)
     getBsBody bsBody _ = maybe (throwSocketErr $ "decode fail" <> show bsBody) pure (decode bsBody)
 
 sendAndReceiveMsg :: Text -> Manager.AuthManager -> RequestAuth.Request -> IO ResponseAuth.Response

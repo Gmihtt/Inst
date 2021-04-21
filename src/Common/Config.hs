@@ -6,6 +6,7 @@ module Common.Config
     getCollection,
     getAuthSocket,
     getStatSocket,
+    getInfoSocket,
   )
 where
 
@@ -38,6 +39,12 @@ getStatSocket :: IO Socket
 getStatSocket = do
   port <- unpack <$> getValue "stat_socket_port"
   host <- unpack <$> getValue "stat_socket_host"
+  pure $ mkSocket host (read port) ""
+
+getInfoSocket :: IO Socket
+getInfoSocket = do
+  port <- unpack <$> getValue "info_socket_port"
+  host <- unpack <$> getValue "info_socket_host"
   pure $ mkSocket host (read port) ""
 
 getDataBase :: IO Text

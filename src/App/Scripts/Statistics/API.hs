@@ -7,7 +7,6 @@ import qualified Communication.Sockets.API as SocketAPI
 import Control.Monad.IO.Class (liftIO)
 import Data.Aeson (decode, encode)
 import Data.ByteString.Lazy (ByteString)
-import Data.Maybe (fromMaybe)
 import Data.Text (unpack)
 import qualified Types.Communication.Statistics.Request as RequestStat
 import qualified Types.Communication.Statistics.Response as ResponseStat
@@ -19,7 +18,7 @@ statConnection socket = do
   liftIO $ SocketAPI.runConnection socket getUsername mkStatistics
   where
     getUsername bsBody =
-      maybe (throwSocketErr $ "decode fail" <> show bsBody) (pure . ResponseStat.user_id) (decode bsBody)
+      maybe (throwSocketErr $ "decode fail" <> show bsBody) (pure . ResponseStat.inst_id) (decode bsBody)
 
 mkStatistics :: ByteString -> Maybe Statistic.Statistic -> IO Statistic.Statistic
 mkStatistics bsBody mbStat = do
@@ -29,9 +28,10 @@ mkStatistics bsBody mbStat = do
   where
     addUsers users stat = foldr Statistic.addUser stat users
     getUsers value =
-      if not $ ResponseStat.status value
-        then printError (("Error : " <>) . unpack <$> ResponseStat.error_message value) >> pure []
-        else pure . fromMaybe [] $ ResponseStat.users value
+      maybe
+        (printError (("Error : " <>) . unpack <$> ResponseStat.error_message value) >> pure [])
+        pure
+        (ResponseStat.users value)
 
 sendMsg :: Manager.StatisticsManager -> RequestStat.Request -> IO ()
 sendMsg manager req = do

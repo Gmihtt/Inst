@@ -23,6 +23,7 @@ data Environment
         collection :: Text,
         authManager :: Manager.AuthManager,
         statisticsManager :: Manager.StatisticsManager,
+        infoManager :: Manager.InfoManager,
         tgUsersStatus :: TgUsersStatus.TgUsersStatus,
         logName :: String
       }
@@ -36,8 +37,9 @@ mkEnv ::
   Text ->
   Manager.AuthManager ->
   Manager.StatisticsManager ->
+  Manager.InfoManager ->
   TgUsersStatus.TgUsersStatus ->
   String ->
   Environment
-mkEnv manager token pipe conn mongoDB collection authManager statisticsManager tgUsersStatus logName =
+mkEnv manager token pipe conn mongoDB collection authManager statisticsManager infoManager tgUsersStatus logName =
   Environment {..}

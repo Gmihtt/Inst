@@ -2,6 +2,7 @@ module App.App (app) where
 
 import App.Bot.BotMain (run)
 import qualified App.Scripts.Auth.API as ScriptsAuth
+import qualified App.Scripts.Info.API as ScriptInfo
 import qualified App.Scripts.Statistics.API as ScriptsStatistics
 import qualified Common.Config as Config
 import Common.Environment (mkEnv)
@@ -35,12 +36,14 @@ app =
         collection <- Config.getCollection
         authSocket <- Config.getAuthSocket
         statSocket <- Config.getStatSocket
+        infoSocket <- Config.getInfoSocket
         authManager <- ScriptsAuth.authConnection authSocket
         statManager <- ScriptsStatistics.statConnection statSocket
+        infoManager <- ScriptInfo.infoConnection infoSocket
         tgUsersStatus <- TgUsersStatus.empty
         let logName = "BotLogger.Main"
         logger logName
-        let env = mkEnv manager token pipe conn mongoDB collection authManager statManager tgUsersStatus logName
+        let env = mkEnv manager token pipe conn mongoDB collection authManager statManager infoManager tgUsersStatus logName
         print "App running..."
         runFlow (run Nothing) env
         MongoDB.close pipe

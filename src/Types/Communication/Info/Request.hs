@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE RecordWildCards #-}
 
-module Types.Communication.Status.Request where
+module Types.Communication.Info.Request where
 
 import Common.Json
   ( FromJSON (..),
@@ -27,7 +27,7 @@ instance FromJSON Status where
 data Request
   = Request
       { inst_ids :: Maybe [Text],
-        admin_id :: Int,
+        admin_id :: Text,
         status :: Status
       }
   deriving (Show, Eq, Generic)
@@ -38,7 +38,7 @@ instance ToJSON Request where
 instance FromJSON Request where
   parseJSON = parseJson
 
-mkUserStatusReq :: [Text] -> Int -> Request
+mkUserStatusReq :: [Text] -> Text -> Request
 mkUserStatusReq inst_ids admin_id =
   Request
     { status = UserStatus,
@@ -46,7 +46,7 @@ mkUserStatusReq inst_ids admin_id =
       ..
     }
 
-mkGroupStatusReq :: [Text] -> Int -> Request
+mkGroupStatusReq :: [Text] -> Text -> Request
 mkGroupStatusReq inst_ids admin_id =
   Request
     { status = GroupStatus,
@@ -54,7 +54,7 @@ mkGroupStatusReq inst_ids admin_id =
       ..
     }
 
-mkAllStatusReq :: Int -> Request
+mkAllStatusReq :: Text -> Request
 mkAllStatusReq admin_id =
   Request
     { status = AllStatus,
