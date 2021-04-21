@@ -13,13 +13,11 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-    status: boolean;
     username: string;
+    type: string; // DoubleAuth | Sus | Success | Error
     is_private?: boolean;
     inst_id?: string;
-    is_double_auth?: boolean;
-    is_sus_login?: boolean;
-    error_message?: string;
+    error?: string;
 }
 
 interface UserIdAndPrivacy {
@@ -82,9 +80,8 @@ export class Login {
 
             if (isDouble) {
                 return {
-                    status: true,
+                    type: 'DoubleAuth',
                     username: username,
-                    is_double_auth: true,
                 }
             }
 
@@ -94,20 +91,17 @@ export class Login {
 
             if (isSus){
                 return {
-                    status: true,
+                    type: 'Sus',
                     username: username,
-                    is_double_auth: false,
-                    is_sus_login: true,
                 }
             }
 
             const userIdAndPrivacy = await this.afterAuthMenu(username);
 
             return {
-                status: true,
+                type: 'Success',
                 username: username,
                 inst_id: userIdAndPrivacy.inst_id,
-                is_double_auth: false,
                 is_private: userIdAndPrivacy.is_private,
             }
 
@@ -116,9 +110,9 @@ export class Login {
             await File.screenError(`${this.dirNumber}-login.png`, this.page);
             await File.saveHTML(`${this.dirNumber}-login.html`, this.page);
             return {
-                status: false,
+                type: 'Error',
                 username: username,
-                error_message: `${e.message}, Check ${this.dirNumber}-login.{png/html}`,
+                error: `${e.message}, Check ${this.dirNumber}-login.{png/html}`,
             }
         } finally {
 
@@ -154,9 +148,8 @@ export class Login {
             isSus = await this.isSus();
             if (isSus){
                 return {
-                    status: true,
+                    type: 'Sus',
                     username: username,
-                    is_sus_login: true,
                 }
             }
 
@@ -164,7 +157,7 @@ export class Login {
             await this.browser.close();
             await File.copyUserDirIntoCookiesDir(this.dirNumber, this.instId as string);
             return {
-                status: true,
+                type: 'Success',
                 username: username,
                 inst_id: userIdAndPrivacy.inst_id,
                 is_private: userIdAndPrivacy.is_private,
@@ -175,9 +168,9 @@ export class Login {
             await File.saveHTML(`${this.dirNumber}-doubleAuth.html`, this.page);
             await this.browser.close();
             return {
-                status: false,
+                type: 'Error',
                 username: username,
-                error_message: e.message + `Check ${this.dirNumber}-doubleAuth.{png/html}`,
+                error: e.message + `Check ${this.dirNumber}-doubleAuth.{png/html}`,
             }
         } finally {
             if (!isSus) {
@@ -186,7 +179,7 @@ export class Login {
         }
     }
 
-    public async sus(username:string, code: string) {
+    public async sus(username:string, code: string) : Promise<LoginResponse> {
         try {
             await this.page.type('[aria-label="Security code"]', code);
             await this.page.addScriptTag({path: require.resolve('jquery')});
@@ -200,7 +193,7 @@ export class Login {
             await this.browser.close();
             await File.copyUserDirIntoCookiesDir(this.dirNumber, this.instId as string);
             return {
-                status: true,
+                type: 'Success',
                 username: username,
                 inst_id: userIdAndPrivacy.inst_id,
                 is_private: userIdAndPrivacy.is_private,
@@ -211,9 +204,9 @@ export class Login {
             await File.saveHTML(`${this.dirNumber}-sus.html`, this.page);
             await this.browser.close();
             return {
-                status: false,
+                type: 'Error',
                 username: username,
-                error_message: e.message + `Check ${this.dirNumber}-sus.{png/html}`,
+                error: e.message + `Check ${this.dirNumber}-sus.{png/html}`,
             }
         } finally {
             await this.removeUserDir();
@@ -283,12 +276,14 @@ export class Login {
     private async isSus() {
         await this.page.addScriptTag({path: require.resolve('jquery')});
         await this.page.evaluate(() => {
-            $('button:contains("Send Security Code")').addClass('suuuus');
+            $('button:contains("Send Security Code")').addClass('suspicious');
         });
-        if (await this.page.$('.suuuus') == null) {
+        if (await this.page.$('.suspicious') == null) {
             return false;
         }
-        await this.page.click('.suuuus');
+        await File.screenError(`${this.dirNumber}-suss.png`, this.page);
+        await File.saveHTML(`${this.dirNumber}-suss.html`, this.page);
+        await this.page.click('.suspicious');
         return true;
     }
 

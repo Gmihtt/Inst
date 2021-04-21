@@ -52,39 +52,39 @@ export function runStatsServer(server: ws.Server) {
 
             switch (request.action) {
                 case 'Start': {
-                    if (activeFollowerGetters.has(request.inst_id as string)) {
+                    if (activeFollowerGetters.has(request.inst_ids?.[0] as string)) {
                         break;
                     }
-                    activeFollowerGetters.add(request.inst_id as string);
+                    activeFollowerGetters.add(request.inst_ids?.[0] as string);
                     let timeout: number = 60000;
                     if (request.timeout != undefined) {
                         timeout = request.timeout;
                     }
-                    getAndSendFollowersCount(socket, request.inst_id as string, timeout).catch(e => console.log(`Error while getting data: ${e}`));
+                    getAndSendFollowersCount(socket, request.inst_ids?.[0] as string, timeout).catch(e => console.log(`Error while getting data: ${e}`));
 
                 }
                     break;
                 case 'Stop': {
-                    activeFollowerGetters.delete(request.inst_id as string);
+                    activeFollowerGetters.delete(request.inst_ids?.[0] as string);
                 }
                     break;
                 case 'Logout': {
                     try {
-                        activeFollowerGetters.delete(request.inst_id as string);
+                        activeFollowerGetters.delete(request.inst_ids?.[0] as string);
                         //Говно решение. Возможна ситуация когда посередине что нибудь вклинится
-                        if (await File.isUserLoggedInBot(request.inst_id as string)) {
-                            await File.acquireMutex(request.inst_id as string);
-                            await fs.remove(path.resolve(__dirname, path.resolve(__dirname, `cookies/${request.inst_id}`)));
-                            File.releaseMutex(request.inst_id as string);
+                        if (await File.isUserLoggedInBot(request.inst_ids?.[0] as string)) {
+                            await File.acquireMutex(request.inst_ids?.[0] as string);
+                            await fs.remove(path.resolve(__dirname, path.resolve(__dirname, `cookies/${request.inst_ids?.[0]}`)));
+                            File.releaseMutex(request.inst_ids?.[0] as string);
                             let okResponse: Stats.StatsResponse = {
                                 status: true,
-                                inst_id: request.inst_id as string,
+                                inst_id: request.inst_ids?.[0] as string,
                             };
                             sendWithLog(socket, okResponse);
                         } else {
                             let errorObj: Stats.StatsResponse = {
                                 status: false,
-                                inst_id: request.inst_id as string,
+                                inst_id: request.inst_ids?.[0] as string,
                                 errorMessage: `Error: there's no such user.`,
                             };
                             sendWithLog(socket, errorObj);
@@ -92,7 +92,7 @@ export function runStatsServer(server: ws.Server) {
                     } catch (e) {
                         let errorObj: Stats.StatsResponse = {
                             status: false,
-                            inst_id: request.inst_id as string,
+                            inst_id: request.inst_ids?.[0]as string,
                             errorMessage: `Failure during logout: ${e.message}`,
                         };
                         sendWithLog(socket, errorObj);
@@ -100,12 +100,12 @@ export function runStatsServer(server: ws.Server) {
                 }
                     break;
                 case 'UserStatus': {
-                    let result = getUserInfoData(request.user_id as string);
+                    let result = getUserInfoData(request.inst_ids?.[0] as string);
                     sendWithLog(socket, result);
                 }
                     break;
                 case 'GroupStatus': {
-                    let result = getGroupInfoData(request.group_ids as Array<string>)
+                    let result = getGroupInfoData(request.inst_ids as Array<string>)
                     sendWithLog(socket, result);
                 }
                     break;
@@ -166,7 +166,7 @@ function getAllInfoData(): Stats.StatusResponse{
 }
 
 function sendWithLog(socket: any, data: object){
-    let dataJSON = JSON.stringify(data);
+    const dataJSON = JSON.stringify(data);
     console.log(`Stats sent: ${dataJSON}`);
     socket.send(Buffer.from(dataJSON));
 }
