@@ -27,7 +27,7 @@ instance FromJSON Action where
 data Request
   = Request
       { inst_id :: Text,
-        action :: Action,
+        status :: Action,
         timeout :: Maybe Integer
       }
   deriving (Show, Eq, Generic)
@@ -41,7 +41,7 @@ instance FromJSON Request where
 mkStartReq :: Text -> Request
 mkStartReq inst_id =
   Request
-    { action = Start,
+    { status = Start,
       timeout = Just 20000,
       ..
     }
@@ -49,7 +49,7 @@ mkStartReq inst_id =
 mkStopReq :: Text -> Request
 mkStopReq inst_id =
   Request
-    { action = Stop,
+    { status = Stop,
       timeout = Just 20000,
       ..
     }
@@ -57,7 +57,7 @@ mkStopReq inst_id =
 mkLogoutReq :: Text -> Request
 mkLogoutReq inst_id =
   Request
-    { action = Logout,
+    { status = Logout,
       timeout = Just 20000,
       ..
     }
