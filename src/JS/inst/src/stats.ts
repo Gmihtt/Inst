@@ -7,27 +7,16 @@ const fs = require('fs-extra');
 const TIMEOUT: number = 5000;
 
 export interface StatsRequest {
-    action: string; //Start | Stop | UserStatus | GroupStatus | AllStatus
-    inst_ids?: Array<string>;
+    action: string; //Start | Stop | Logout
+    inst_id: string;
     timeout?: number;
 }
 
-export interface UserInfo {
-    id: string;
-    is_active: boolean;
-}
-
-export interface StatusResponse {
-    type: string; //User | Group | All
-    users: Array<UserInfo>;
-    count_active?: number;
-}
 
 export interface StatsResponse {
-    status: boolean;
     inst_id: string;
     users?: Array<string>;
-    errorMessage?: string;
+    error_message?: string;
 }
 
 
@@ -35,9 +24,8 @@ export async function getFollowers(id: string): Promise<StatsResponse> {
     const isLogged: boolean = await fs.pathExists(path.resolve(__dirname, `cookies/${id}`));
     if (!isLogged) {
         return {
-            status: false,
             inst_id: id,
-            errorMessage: "User directory doesn't exist",
+            error_message: "User directory doesn't exist",
         }
     }
 
@@ -52,9 +40,8 @@ export async function getFollowers(id: string): Promise<StatsResponse> {
 
         if (!(await isUserLoggedInInst(page))) {
             return {
-                status: false,
                 inst_id: id,
-                errorMessage: "User isn't logged in",
+                error_message: "User isn't logged in",
             }
         }
 
@@ -70,9 +57,8 @@ export async function getFollowers(id: string): Promise<StatsResponse> {
 
         if (responseObject === null) {
             return {
-                status: false,
                 inst_id: id,
-                errorMessage: 'Error while fetching followers',
+                error_message: 'Error while fetching followers',
             }
         }
 
@@ -85,16 +71,14 @@ export async function getFollowers(id: string): Promise<StatsResponse> {
         }
 
         return {
-            status: true,
             inst_id: id,
             users: IDs,
         }
 
     } catch (e) {
         return {
-            status: false,
             inst_id: id,
-            errorMessage: e.message,
+            error_message: e.message,
         }
     } finally {
         await browser.close();

@@ -1,6 +1,7 @@
 import puppeteer = require('puppeteer');
 import puppeteerEx = require('puppeteer-extra');
 import * as Proxy from './proxyTester';
+
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 // @ts-ignore
 puppeteerEx.use(StealthPlugin());
@@ -10,13 +11,13 @@ puppeteerEx.use(require('puppeteer-extra-plugin-block-resources')({
 }))
 
 
-export async function createBrowser(dirPath: string): Promise<puppeteer.Browser>{
+export async function createBrowser(dirPath: string): Promise<puppeteer.Browser> {
     let args = [
         '--no-sandbox',
         '--lang=en-GB'
     ];
 
-    if (Proxy.isProxy){
+    if (Proxy.isProxy) {
         args.push(`--proxy-server=${Proxy.proxyServer}`);
     }
 
