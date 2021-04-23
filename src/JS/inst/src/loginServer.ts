@@ -25,16 +25,16 @@ export function runLoginServer(server: ws.Server) {
 
                         const loginInfo: LoginResponse = await login.login(userData.username, userData.body);
 
-                        if (loginInfo.type === 'DoubleAuth') {
+                        if (loginInfo.status === 'DoubleAuth') {
                             doubleAuthLogins.set(loginInfo.username, login);
-                        } else if (loginInfo.type === 'Sus') {
+                        } else if (loginInfo.status === 'Sus') {
                             susLogins.set(loginInfo.username, login);
                         }
 
                         sendWithLog(socket, loginInfo);
                     } catch (e) {
                         let errorInfo: LoginResponse = {
-                            type: 'Error',
+                            status: 'Error',
                             username: userData.username,
                             error_message: "Failure to start/close browser or filesystem failure: " + e.message,
                         }
@@ -47,14 +47,14 @@ export function runLoginServer(server: ws.Server) {
                         let login: Login = doubleAuthLogins.get(userData.username);
                         let doubleAuthInfo = await login.doubleAuth(userData.username, userData.body);
 
-                        if (doubleAuthInfo.type === 'Sus') {
+                        if (doubleAuthInfo.status === 'Sus') {
                             susLogins.set(doubleAuthInfo.username, login);
                         }
 
                         sendWithLog(socket, doubleAuthInfo);
                     } else {
                         let errorInfo: LoginResponse = {
-                            type: 'Error',
+                            status: 'Error',
                             username: userData.username,
                             error_message: `There's no such username in doubleAuth map -- ${userData.username}`,
                         }
@@ -71,7 +71,7 @@ export function runLoginServer(server: ws.Server) {
                         sendWithLog(socket, susInfo);
                     } else {
                         let errorInfo: LoginResponse = {
-                            type: 'Error',
+                            status: 'Error',
                             username: userData.username,
                             error_message: `There's no such username in susLogins map -- ${userData.username}`,
                         }
