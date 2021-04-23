@@ -7,7 +7,7 @@ import fs from "fs-extra";
 import * as File from './file';
 
 export interface LoginRequest {
-    type: string; // Login | DoubleAuth | Sus
+    status: string; // Login | DoubleAuth | Sus
     username: string;
     body: string;
 }
@@ -17,7 +17,7 @@ export interface LoginResponse {
     type: string; // DoubleAuth | Sus | Success | Error
     is_private?: boolean;
     inst_id?: string;
-    error?: string;
+    error_message?: string;
 }
 
 interface UserIdAndPrivacy {
@@ -42,7 +42,7 @@ export class Login {
     private readonly dirNumber: number;
     private instId: string | null = null;
 
-    //A constructor cannot be async so I created async function for getting browser data
+    // A constructor cannot be async, so I created async function for getting browser data
     public static async getBrowserAndPage(): Promise<BrowserData> {
         await dirNumberMutex.acquire();
         let dirNumber = dirCounter++;
@@ -89,7 +89,7 @@ export class Login {
 
             isSus = await this.isSus();
 
-            if (isSus){
+            if (isSus) {
                 return {
                     type: 'Sus',
                     username: username,
@@ -112,7 +112,7 @@ export class Login {
             return {
                 type: 'Error',
                 username: username,
-                error: `${e.message}, Check ${this.dirNumber}-login.{png/html}`,
+                error_message: `${e.message}, Check ${this.dirNumber}-login.{png/html}`,
             }
         } finally {
 
@@ -146,7 +146,7 @@ export class Login {
 
 
             isSus = await this.isSus();
-            if (isSus){
+            if (isSus) {
                 return {
                     type: 'Sus',
                     username: username,
@@ -170,7 +170,7 @@ export class Login {
             return {
                 type: 'Error',
                 username: username,
-                error: e.message + `Check ${this.dirNumber}-doubleAuth.{png/html}`,
+                error_message: e.message + `Check ${this.dirNumber}-doubleAuth.{png/html}`,
             }
         } finally {
             if (!isSus) {
@@ -179,7 +179,7 @@ export class Login {
         }
     }
 
-    public async sus(username:string, code: string) : Promise<LoginResponse> {
+    public async sus(username: string, code: string): Promise<LoginResponse> {
         try {
             await this.page.type('[aria-label="Security code"]', code);
             await this.page.addScriptTag({path: require.resolve('jquery')});
@@ -199,14 +199,14 @@ export class Login {
                 is_private: userIdAndPrivacy.is_private,
 
             }
-        } catch (e){
+        } catch (e) {
             await File.screenError(`${this.dirNumber}-sus.png`, this.page);
             await File.saveHTML(`${this.dirNumber}-sus.html`, this.page);
             await this.browser.close();
             return {
                 type: 'Error',
                 username: username,
-                error: e.message + `Check ${this.dirNumber}-sus.{png/html}`,
+                error_message: e.message + `Check ${this.dirNumber}-sus.{png/html}`,
             }
         } finally {
             await this.removeUserDir();

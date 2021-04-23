@@ -4,10 +4,11 @@ declare module "puppeteer" {
     interface Browser {
         newPage(): Promise<Page>;
 
-        pages() : Promise<Array<Page>>;
+        pages(): Promise<Array<Page>>;
 
         close(): Promise<any>;
     }
+
     interface Credentials {
         username: string;
         password: string;
@@ -45,6 +46,4 @@ declare module "puppeteer" {
 
     interface HTTPResponse {
     }
-
-    function launch(obj: object): Promise<Browser>;
 }

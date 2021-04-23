@@ -19,7 +19,7 @@ export async function screenError(name: string, page: puppeteer.Page) {
     await page.screenshot({path: path.resolve(__dirname, `errors/${name}`)});
 }
 
-export async function saveHTML(name:string, page: puppeteer.Page){
+export async function saveHTML(name: string, page: puppeteer.Page) {
     const code = await page.content();
     await fs.outputFile(path.resolve(__dirname, `errors/${name}`), code);
 }
@@ -34,7 +34,7 @@ export async function acquireMutex(id: string) {
 }
 
 export function releaseMutex(id: string) {
-    if (mutexes.has(id)){
+    if (mutexes.has(id)) {
         let mutex: Mutex = mutexes.get(id) as Mutex;
         mutex.release();
     } else {
@@ -44,7 +44,7 @@ export function releaseMutex(id: string) {
 
 export async function copyUserDirIntoCookiesDir(dirNumber: number, id: string) {
     let dirMutex: Mutex;
-    if (mutexes.has(id)){
+    if (mutexes.has(id)) {
         dirMutex = mutexes.get(id) as Mutex;
     } else {
         dirMutex = new Mutex();
@@ -57,7 +57,7 @@ export async function copyUserDirIntoCookiesDir(dirNumber: number, id: string) {
 
 export async function isUserLoggedInBot(id: string): Promise<boolean> {
     let dirMutex: Mutex;
-    if (mutexes.has(id)){
+    if (mutexes.has(id)) {
         dirMutex = mutexes.get(id) as Mutex;
     } else {
         dirMutex = new Mutex();

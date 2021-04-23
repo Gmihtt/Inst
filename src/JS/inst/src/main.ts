@@ -1,6 +1,7 @@
 import ws = require('ws');
 import {runLoginServer} from "./loginServer";
 import {runStatsServer} from "./statsServer";
+import {runInfoServer} from "./infoServer";
 import * as Proxy from "./proxyTester";
 import fs = require('fs-extra');
 import path = require('path');
@@ -22,10 +23,15 @@ import path = require('path');
         const statsServer = new ws.Server({
             port: 5013,
         });
+
+        const infoServer = new ws.Server({
+            port: 5014,
+        })
+
         runLoginServer(loginServer);
         runStatsServer(statsServer);
-    },
-    (error: Error) => {
-        console.log(`Proxy validating error: ${error.message}. Terminating...`);
+        runInfoServer(infoServer);
     }
-);
+).catch((error: Error) => {
+    console.log(`Some error occurred:  ${error.message}. Terminating...`);
+});

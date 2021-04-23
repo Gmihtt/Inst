@@ -10,14 +10,14 @@ export function runLoginServer(server: ws.Server) {
     server.on('connection', function connection(socket) {
         console.log('Login: connection established');
 
-        socket.onclose = function () {
+        socket.onclose = () => {
             console.log('Login: connection finished');
         }
 
         socket.on('message', async function incoming(message: Buffer) {
             console.log(`Login: ${message.toString()}`);
             const userData: LoginRequest = JSON.parse(message.toString());
-            switch (userData.type) {
+            switch (userData.status) {
                 case 'Login': {
                     try {
                         let browserData = await Login.getBrowserAndPage();
@@ -36,7 +36,7 @@ export function runLoginServer(server: ws.Server) {
                         let errorInfo: LoginResponse = {
                             type: 'Error',
                             username: userData.username,
-                            error: "Failure to start/close browser or filesystem failure: " + e.message,
+                            error_message: "Failure to start/close browser or filesystem failure: " + e.message,
                         }
                         sendWithLog(socket, errorInfo);
                     }
@@ -56,15 +56,15 @@ export function runLoginServer(server: ws.Server) {
                         let errorInfo: LoginResponse = {
                             type: 'Error',
                             username: userData.username,
-                            error: `There's no such username in doubleAuth map -- ${userData.username}`,
+                            error_message: `There's no such username in doubleAuth map -- ${userData.username}`,
                         }
                         sendWithLog(socket, errorInfo);
                     }
                     doubleAuthLogins.delete(userData.username);
                 }
                     break;
-                case 'Sus':{
-                    if (susLogins.has(userData.username)){
+                case 'Sus': {
+                    if (susLogins.has(userData.username)) {
                         let login: Login = susLogins.get(userData.username);
                         let susInfo = await login.sus(userData.username, userData.body);
 
@@ -73,7 +73,7 @@ export function runLoginServer(server: ws.Server) {
                         let errorInfo: LoginResponse = {
                             type: 'Error',
                             username: userData.username,
-                            error: `There's no such username in susLogins map -- ${userData.username}`,
+                            error_message: `There's no such username in susLogins map -- ${userData.username}`,
                         }
                         sendWithLog(socket, errorInfo);
                     }
@@ -86,8 +86,7 @@ export function runLoginServer(server: ws.Server) {
 }
 
 
-
-function sendWithLog(socket: any, data: object){
+function sendWithLog(socket: any, data: object) {
     const dataJSON = JSON.stringify(data);
     console.log(`Login sent: ${dataJSON}`);
     socket.send(Buffer.from(dataJSON));
