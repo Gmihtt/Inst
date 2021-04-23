@@ -21,7 +21,7 @@ import qualified MongoDB.Queries.Accounts as Mongo
 import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.Message as Message
 import qualified Telegram.Types.Domain.User as User
-import qualified Types.Communication.Scripts.Auth.Response as ResponseAuth
+import qualified Types.Communication.Auth.Response as ResponseAuth
 import qualified Types.Domain.InstAccount as InstAccount
 import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
 import qualified Types.Domain.TgUser as TgUser
@@ -42,7 +42,7 @@ password :: Message.Message -> User.User -> Text -> Text -> Flow (Response Messa
 password msg user accLogin accPassword = do
   res <- ScriptsAuth.authLogin accLogin accPassword
   liftIO $ printDebug res
-  case ResponseAuth.response_type res of
+  case ResponseAuth.status res of
     ResponseAuth.DoubleAuth -> do
       let status = TgUserStatus.TgUser $ TgUserStatus.AddCode accLogin accPassword
       Common.updateUserStatus user status
@@ -53,7 +53,7 @@ password msg user accLogin accPassword = do
       Message.enterCode msg
     ResponseAuth.Error -> errorCase
     ResponseAuth.Success ->
-      case (ResponseAuth.response_inst_id res, ResponseAuth.response_is_private res) of
+      case (ResponseAuth.inst_id res, ResponseAuth.is_private res) of
         (Just instId, Just private) -> do
           if private then Message.successAuthMsg msg else Message.publicAccount msg
           saveAccAndUser instId accLogin accPassword user
@@ -85,11 +85,11 @@ enterCode ::
 enterCode msg user accLogin accPassword accCode = do
   res <- ScriptsAuth.doubleAuth accLogin accCode
   liftIO $ printDebug res
-  let resType = ResponseAuth.response_type res
-  if resType == ResponseAuth.DoubleAuth || resType == ResponseAuth.Sus
+  let status = ResponseAuth.status res
+  if status == ResponseAuth.DoubleAuth || status == ResponseAuth.Sus
     then do
-      let mbInstId = ResponseAuth.response_inst_id res
-      let mbPrivate = ResponseAuth.response_is_private res
+      let mbInstId = ResponseAuth.inst_id res
+      let mbPrivate = ResponseAuth.is_private res
       case (mbInstId, mbPrivate) of
         (Just instId, Just private) -> do
           if private then Message.successAuthMsg msg else Message.publicAccount msg
@@ -114,7 +114,9 @@ saveAccAndUser instId accLogin accPassword user = do
   instAccs <- Common.getInstAccs userId
   let newInstAcc = InstAccount.mkInstAccount instId accLogin accPassword False
   let uId = T.pack $ show userId
-  let tgUser = TgUser.mkTgUser uId (newInstAcc : instAccs)
+  let userFirstName = User.first_name user
+  let username = User.username user
+  let tgUser = TgUser.mkTgUser uId userFirstName username (newInstAcc : instAccs)
   Mongo.updateInstAccs uId tgUser
   let status = TgUserStatus.TgUser $ TgUserStatus.AccountMenu instId
   Common.putInstAccs userId

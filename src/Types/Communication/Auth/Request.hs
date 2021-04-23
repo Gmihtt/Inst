@@ -1,6 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE RecordWildCards #-}
 
-module Types.Communication.Scripts.Auth.Request where
+module Types.Communication.Auth.Request where
 
 import Common.Json
   ( FromJSON (..),
@@ -23,34 +24,34 @@ instance FromJSON Auth where
 
 data Request
   = Request
-      { request_type :: Auth,
-        request_username :: Text,
-        request_body :: Text
+      { status :: Auth,
+        username :: Text,
+        body :: Text
       }
   deriving (Show, Eq, Generic)
 
 mkRequestLogin :: Text -> Text -> Request
 mkRequestLogin username password =
   Request
-    { request_type = Login,
-      request_username = username,
-      request_body = password
+    { status = Login,
+      body = password,
+      ..
     }
 
 mkRequestDoubleAuth :: Text -> Text -> Request
-mkRequestDoubleAuth username password =
+mkRequestDoubleAuth inst_id code =
   Request
-    { request_type = DoubleAuth,
-      request_username = username,
-      request_body = password
+    { status = DoubleAuth,
+      username = inst_id,
+      body = code
     }
 
 mkRequestSus :: Text -> Text -> Request
-mkRequestSus username password =
+mkRequestSus inst_id code =
   Request
-    { request_type = Sus,
-      request_username = username,
-      request_body = password
+    { status = Sus,
+      username = inst_id,
+      body = code
     }
 
 instance ToJSON Request where

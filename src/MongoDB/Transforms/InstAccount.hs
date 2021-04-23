@@ -9,10 +9,10 @@ module MongoDB.Transforms.InstAccount
   )
 where
 
-import Data.Bson ((!?))
 import Data.Maybe (mapMaybe)
 import Database.MongoDB
-  ( (=:),
+  ( (!?),
+    (=:),
     Document,
     Value (..),
   )

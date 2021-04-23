@@ -1,15 +1,15 @@
-module App.Scripts.Socket.Connection
+module Communication.Sockets.Connection
   ( runConnection,
   )
 where
 
-import qualified App.Scripts.Socket.API as API
+import qualified Communication.Sockets.App as App
+import qualified Communication.Sockets.Socket as Socket
+import qualified Communication.ThreadManager.Manager as Manager
 import Control.Concurrent (forkIO)
 import Control.Monad (forever)
 import Data.ByteString.Lazy (ByteString)
 import Data.Text (Text)
-import qualified Types.Domain.Manager as Manager
-import qualified Types.Domain.Socket as Socket
 
 type TaskIdGetter = ByteString -> IO Text
 
@@ -21,7 +21,7 @@ runConnection ::
   TaskGetter a ->
   IO (Manager.Manager a)
 runConnection socket getTaskId getTask = do
-  manager <- Manager.initManager socket API.run
+  manager <- Manager.initManager socket App.run
   forkIO . forever $ receiver manager getTaskId getTask
   pure manager
 

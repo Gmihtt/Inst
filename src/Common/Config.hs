@@ -6,15 +6,16 @@ module Common.Config
     getCollection,
     getAuthSocket,
     getStatSocket,
+    getInfoSocket,
   )
 where
 
 import Common.Error (throwConfigErr)
+import Communication.Sockets.Socket (Socket, mkSocket)
 import Control.Monad.Cont (liftIO)
 import Data.Text (Text, unpack)
 import qualified Data.Yaml as Yaml
 import Data.Yaml ((.:))
-import Types.Domain.Socket (Socket, mkSocket)
 
 getValue :: Text -> IO Text
 getValue field = do
@@ -38,6 +39,12 @@ getStatSocket :: IO Socket
 getStatSocket = do
   port <- unpack <$> getValue "stat_socket_port"
   host <- unpack <$> getValue "stat_socket_host"
+  pure $ mkSocket host (read port) ""
+
+getInfoSocket :: IO Socket
+getInfoSocket = do
+  port <- unpack <$> getValue "info_socket_port"
+  host <- unpack <$> getValue "info_socket_host"
   pure $ mkSocket host (read port) ""
 
 getDataBase :: IO Text

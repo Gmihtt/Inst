@@ -21,12 +21,14 @@ import Prelude hiding (id)
 data TgUser
   = TgUser
       { id :: Text,
+        first_name :: Text,
+        username :: Maybe Text,
         inst_accounts :: InstAccounts
       }
   deriving (Show, Eq, Generic)
 
-mkTgUser :: Text -> InstAccounts -> TgUser
-mkTgUser id inst_accounts =
+mkTgUser :: Text -> Text -> Maybe Text -> InstAccounts -> TgUser
+mkTgUser id first_name username inst_accounts =
   TgUser {..}
 
 instance ToJSON TgUser where

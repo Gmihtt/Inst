@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 63bbf602a86cc0aa6b78160fd18ae7e698ca7107422b2cc452905d6eda0fc720
+-- hash: 2753a41a20c394746586669674b777557747c1bd7d3dea3a022ad1c77865cd43
 
 name:           Inst
 version:        0.1.0.0
@@ -62,9 +62,7 @@ library
       App.Bot.Selecting.Users.MessageFromUser
       App.Bot.Selecting.Users.Statistics
       App.Scripts.Auth.API
-      App.Scripts.Socket.API
-      App.Scripts.Socket.App
-      App.Scripts.Socket.Connection
+      App.Scripts.Info.API
       App.Scripts.Statistics.API
       Common.Config
       Common.Environment
@@ -80,6 +78,12 @@ library
       Common.Json
       Common.Redis
       Common.TelegramUserStatus
+      Communication.Sockets.API
+      Communication.Sockets.App
+      Communication.Sockets.Connection
+      Communication.Sockets.Socket
+      Communication.Sockets.Stream
+      Communication.ThreadManager.Manager
       MongoDB.Queries.Accounts
       MongoDB.Queries.Common
       MongoDB.Queries.Statistics
@@ -106,20 +110,21 @@ library
       Telegram.Types.Domain.Update
       Telegram.Types.Domain.User
       Telegram.Types.Methods.SendMessage
-      Types.Communication.Scripts.Auth.Request
-      Types.Communication.Scripts.Auth.Response
+      Types.Communication.Auth.Request
+      Types.Communication.Auth.Response
+      Types.Communication.Info.Request
+      Types.Communication.Info.Response
       Types.Communication.Statistics.Request
       Types.Communication.Statistics.Response
+      Types.Domain.Admin
       Types.Domain.InstAccount
       Types.Domain.InstStatistics
-      Types.Domain.Manager
-      Types.Domain.Socket
       Types.Domain.Statistic
       Types.Domain.Status.TgUsersStatus
       Types.Domain.Status.TgUserStatus
-      Types.Domain.Stream
       Types.Domain.TgUpdates
       Types.Domain.TgUser
+      Types.Domain.ThreadManager
   other-modules:
       Paths_Inst
   hs-source-dirs:

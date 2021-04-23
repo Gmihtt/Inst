@@ -1,14 +1,12 @@
 module MongoDB.Queries.Common where
 
 import qualified Common.Environment as Environment
-import Common.Flow (Flow)
-import Control.Monad.IO.Class (MonadIO)
-import Control.Monad.Trans.Reader (ReaderT, ask)
+import Common.Flow (Flow, getEnvironment)
 import qualified Database.MongoDB as Mongo
 
-callDB :: MonadIO m => Mongo.Action (ReaderT Environment.Environment m) b -> ReaderT Environment.Environment m b
+callDB :: Mongo.Action Flow b -> Flow b
 callDB action = do
-  env <- ask
+  env <- getEnvironment
   let pipe = Environment.pipe env
   let db = Environment.mongoDB env
   Mongo.access pipe Mongo.master db action

@@ -1,6 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
 
-module Types.Communication.Scripts.Auth.Response where
+module Types.Communication.Auth.Response where
 
 import Common.Json
   ( FromJSON (..),
@@ -23,11 +23,11 @@ instance FromJSON Auth where
 
 data Response
   = Response
-      { response_inst_id :: Maybe Text,
-        response_username :: Text,
-        response_type :: Auth,
-        response_is_private :: Maybe Bool,
-        response_error_message :: Maybe Text
+      { inst_id :: Maybe Text,
+        username :: Text,
+        status :: Auth,
+        is_private :: Maybe Bool,
+        error_message :: Maybe Text
       }
   deriving (Show, Eq, Generic)
 

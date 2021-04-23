@@ -4,13 +4,11 @@ module App.Bot.ParseUpdates where
 
 import qualified App.Bot.Messages.FlowMessages as Messages
 import qualified App.Bot.Selecting.Users.API as UserAPI
-import qualified Common.Environment as Environment
 import Common.Error (throwTgErr)
-import Common.Flow (Flow)
+import Common.Flow (Flow, getEnvironment, runFlow)
 import qualified Common.TelegramUserStatus as Common
 import Control.Concurrent (forkIO)
 import Control.Monad.IO.Class (liftIO)
-import Control.Monad.Trans.Reader (runReaderT)
 import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.CallbackQuery as CallbackQuery
 import Telegram.Types.Domain.Message (Message)
@@ -20,11 +18,12 @@ import qualified Telegram.Types.Domain.User as User
 import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
 import qualified Types.Domain.TgUpdates as TgUpdates
 
-execute :: TgUpdates.ListOfUpdates -> Environment.Environment -> IO ()
-execute updates env = do
+execute :: TgUpdates.ListOfUpdates -> Flow ()
+execute updates = do
+  env <- getEnvironment
   update <- TgUpdates.getUpdate updates
-  forkIO $ runReaderT (parseUpdate update) env
-  execute updates env
+  liftIO . forkIO $ runFlow (parseUpdate update) env
+  execute updates
 
 parseUpdate :: Update -> Flow ()
 parseUpdate update = do
