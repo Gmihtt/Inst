@@ -14,7 +14,7 @@ export interface LoginRequest {
 
 export interface LoginResponse {
     username: string;
-    type: string; // DoubleAuth | Sus | Success | Error
+    status: string; // DoubleAuth | Sus | Success | Error
     is_private?: boolean;
     inst_id?: string;
     error_message?: string;
@@ -80,7 +80,7 @@ export class Login {
 
             if (isDouble) {
                 return {
-                    type: 'DoubleAuth',
+                    status: 'DoubleAuth',
                     username: username,
                 }
             }
@@ -91,7 +91,7 @@ export class Login {
 
             if (isSus) {
                 return {
-                    type: 'Sus',
+                    status: 'Sus',
                     username: username,
                 }
             }
@@ -99,7 +99,7 @@ export class Login {
             const userIdAndPrivacy = await this.afterAuthMenu(username);
 
             return {
-                type: 'Success',
+                status: 'Success',
                 username: username,
                 inst_id: userIdAndPrivacy.inst_id,
                 is_private: userIdAndPrivacy.is_private,
@@ -110,7 +110,7 @@ export class Login {
             await File.screenError(`${this.dirNumber}-login.png`, this.page);
             await File.saveHTML(`${this.dirNumber}-login.html`, this.page);
             return {
-                type: 'Error',
+                status: 'Error',
                 username: username,
                 error_message: `${e.message}, Check ${this.dirNumber}-login.{png/html}`,
             }
@@ -148,7 +148,7 @@ export class Login {
             isSus = await this.isSus();
             if (isSus) {
                 return {
-                    type: 'Sus',
+                    status: 'Sus',
                     username: username,
                 }
             }
@@ -157,7 +157,7 @@ export class Login {
             await this.browser.close();
             await File.copyUserDirIntoCookiesDir(this.dirNumber, this.instId as string);
             return {
-                type: 'Success',
+                status: 'Success',
                 username: username,
                 inst_id: userIdAndPrivacy.inst_id,
                 is_private: userIdAndPrivacy.is_private,
@@ -168,7 +168,7 @@ export class Login {
             await File.saveHTML(`${this.dirNumber}-doubleAuth.html`, this.page);
             await this.browser.close();
             return {
-                type: 'Error',
+                status: 'Error',
                 username: username,
                 error_message: e.message + `Check ${this.dirNumber}-doubleAuth.{png/html}`,
             }
@@ -193,7 +193,7 @@ export class Login {
             await this.browser.close();
             await File.copyUserDirIntoCookiesDir(this.dirNumber, this.instId as string);
             return {
-                type: 'Success',
+                status: 'Success',
                 username: username,
                 inst_id: userIdAndPrivacy.inst_id,
                 is_private: userIdAndPrivacy.is_private,
@@ -204,7 +204,7 @@ export class Login {
             await File.saveHTML(`${this.dirNumber}-sus.html`, this.page);
             await this.browser.close();
             return {
-                type: 'Error',
+                status: 'Error',
                 username: username,
                 error_message: e.message + `Check ${this.dirNumber}-sus.{png/html}`,
             }
