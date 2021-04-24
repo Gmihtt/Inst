@@ -117,7 +117,7 @@ export class Login {
         } finally {
 
             let correctFinishing: boolean = !isDouble && !wasError && !isSus;
-            let justFinishing: boolean = !isDouble || wasError || !isSus;
+            let justFinishing: boolean = (!isDouble && !isSus) || wasError;
 
             if (justFinishing) {
                 await this.browser.close();
