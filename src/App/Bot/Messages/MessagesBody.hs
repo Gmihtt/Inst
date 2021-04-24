@@ -26,6 +26,10 @@ module App.Bot.Messages.MessagesBody
     lastCountUsersNotFound,
     choseStatistics,
     failInstIdOrPrivate,
+    adminMenu,
+    selectUser,
+    selectAdmin,
+    enterUsername,
   )
 where
 
@@ -134,3 +138,19 @@ failInstIdOrPrivate =
 logout :: Message -> Message
 logout =
   mkMessage "Вы успешно вышли из аккаунта"
+
+adminMenu :: Message -> Message
+adminMenu =
+  mkMessage "Это базовое меню администратор"
+
+selectUser :: Message -> Message
+selectUser =
+  mkMessage "Если пользователь зарегестирован в базе, то вы можете найти его по его username в telegram или instagram"
+
+selectAdmin :: Message -> Message
+selectAdmin =
+  mkMessage "Выберете администратора по его telegram username"
+
+enterUsername :: Message -> Message
+enterUsername =
+  mkMessage "Введите username"

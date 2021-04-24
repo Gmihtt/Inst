@@ -10,10 +10,10 @@ module Common.Config
   )
 where
 
-import Data.Aeson (FromJSON) 
 import Common.Error (throwConfigErr)
 import Communication.Sockets.Socket (Socket, mkSocket)
 import Control.Monad.Cont (liftIO)
+import Data.Aeson (FromJSON)
 import Data.Text (Text, unpack)
 import qualified Data.Yaml as Yaml
 import Data.Yaml ((.:))

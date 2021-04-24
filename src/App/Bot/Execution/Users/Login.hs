@@ -3,7 +3,8 @@
 module App.Bot.Execution.Users.Login
   ( login,
     password,
-    enterCode,
+    doubleAuth,
+    sus,
   )
 where
 
@@ -42,13 +43,47 @@ password :: Message.Message -> User.User -> Text -> Text -> Flow (Response Messa
 password msg user accLogin accPassword = do
   res <- ScriptsAuth.authLogin accLogin accPassword
   liftIO $ printDebug res
+  statusHandler msg user accLogin accPassword res
+
+doubleAuth ::
+  Message.Message ->
+  User.User ->
+  Text ->
+  Text ->
+  Text ->
+  Flow (Response Message.Message)
+doubleAuth msg user accLogin accPassword accCode = do
+  res <- ScriptsAuth.doubleAuth accLogin accCode
+  liftIO $ printDebug res
+  statusHandler msg user accLogin accPassword res
+
+sus ::
+  Message.Message ->
+  User.User ->
+  Text ->
+  Text ->
+  Text ->
+  Flow (Response Message.Message)
+sus msg user accLogin accPassword accCode = do
+  res <- ScriptsAuth.susCode accLogin accCode
+  liftIO $ printDebug res
+  statusHandler msg user accLogin accPassword res
+
+statusHandler ::
+  Message.Message ->
+  User.User ->
+  Text ->
+  Text ->
+  ResponseAuth.Response ->
+  Flow (Response Message.Message)
+statusHandler msg user accLogin accPassword res = do
   case ResponseAuth.status res of
     ResponseAuth.DoubleAuth -> do
-      let status = TgUserStatus.TgUser $ TgUserStatus.AddCode accLogin accPassword
+      let status = TgUserStatus.TgUser $ TgUserStatus.AddDoubleAuth accLogin accPassword
       Common.updateUserStatus user status
       Message.enterCode msg
     ResponseAuth.Sus -> do
-      let status = TgUserStatus.TgUser $ TgUserStatus.AddCode accLogin accPassword
+      let status = TgUserStatus.TgUser $ TgUserStatus.AddSusCode accLogin accPassword
       Common.updateUserStatus user status
       Message.enterCode msg
     ResponseAuth.Error -> errorCase
@@ -74,39 +109,6 @@ password msg user accLogin accPassword = do
       instAccs <- Common.getInstAccs userId
       Message.showInstAccs msg (map InstAccount.login instAccs)
     userId = User.id user
-
-enterCode ::
-  Message.Message ->
-  User.User ->
-  Text ->
-  Text ->
-  Text ->
-  Flow (Response Message.Message)
-enterCode msg user accLogin accPassword accCode = do
-  res <- ScriptsAuth.doubleAuth accLogin accCode
-  liftIO $ printDebug res
-  let status = ResponseAuth.status res
-  if status == ResponseAuth.DoubleAuth || status == ResponseAuth.Sus
-    then do
-      let mbInstId = ResponseAuth.inst_id res
-      let mbPrivate = ResponseAuth.is_private res
-      case (mbInstId, mbPrivate) of
-        (Just instId, Just private) -> do
-          if private then Message.successAuthMsg msg else Message.publicAccount msg
-          saveAccAndUser instId accLogin accPassword user
-          Message.accountMenu msg
-        _ -> do
-          Message.failInstIdOrPrivate msg
-          backToListAccounts
-    else do
-      Message.incorrectCode msg
-      backToListAccounts
-  where
-    backToListAccounts = do
-      let status = TgUserStatus.TgUser TgUserStatus.ListOfAccounts
-      Common.updateUserStatus user status
-      instAccs <- Common.getInstAccs (User.id user)
-      Message.showInstAccs msg (map InstAccount.login instAccs)
 
 saveAccAndUser :: Text -> Text -> Text -> User.User -> Flow Bool
 saveAccAndUser instId accLogin accPassword user = do

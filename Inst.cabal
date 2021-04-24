@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 2753a41a20c394746586669674b777557747c1bd7d3dea3a022ad1c77865cd43
+-- hash: c85591f493e2a301234cd1e7375766958d166dc8890fa9be93920a24eb9e3114
 
 name:           Inst
 version:        0.1.0.0
@@ -28,6 +28,8 @@ library
   exposed-modules:
       App.App
       App.Bot.BotMain
+      App.Bot.Buttons.Admin.AdminMenu
+      App.Bot.Buttons.Admin.SelectUser
       App.Bot.Buttons.Keyboards
       App.Bot.Buttons.User.AccountMenu
       App.Bot.Buttons.User.ChoseStatistics
@@ -35,6 +37,8 @@ library
       App.Bot.Buttons.User.Help
       App.Bot.Buttons.User.MainMenu
       App.Bot.Buttons.User.ShowInstAccounts
+      App.Bot.Execution.Admin.AdminMenu
+      App.Bot.Execution.Admin.SelectUser
       App.Bot.Execution.Users.Help
       App.Bot.Execution.Users.Login
       App.Bot.Execution.Users.Logout
@@ -50,8 +54,7 @@ library
       App.Bot.Messages.FlowMessages
       App.Bot.Messages.MessagesBody
       App.Bot.ParseUpdates
-      App.Bot.Selecting.Admin.AccountsMenu
-      App.Bot.Selecting.Admin.MessageFromBot
+      App.Bot.Selecting.Admin.AdminMenu
       App.Bot.Selecting.Admin.SelectingTgUser
       App.Bot.Selecting.Users.AccountMenu
       App.Bot.Selecting.Users.API
@@ -90,6 +93,7 @@ library
       MongoDB.Transforms.InstAccount
       MongoDB.Transforms.InstStatistics
       MongoDB.Transforms.TgUser
+      MongoDB.Transforms.Usernames
       Redis.Queries
       Telegram.API.Methods.CallTelegram
       Telegram.API.Methods.SendMessage
@@ -125,6 +129,7 @@ library
       Types.Domain.TgUpdates
       Types.Domain.TgUser
       Types.Domain.ThreadManager
+      Types.Domain.Usernames
   other-modules:
       Paths_Inst
   hs-source-dirs:

@@ -24,6 +24,10 @@ module App.Bot.Messages.FlowMessages
     continueStat,
     choseStatistics,
     failInstIdOrPrivate,
+    adminMenu,
+    selectUser,
+    selectAdmin,
+    enterUsername,
   )
 where
 
@@ -34,7 +38,7 @@ import Data.Text (Text)
 import qualified Data.Text as Text
 import Telegram.API.Methods.SendMessage (sendMessage)
 import Telegram.Types.Communication.Response (Response (..))
-import Telegram.Types.Domain.Message (Message)
+import Telegram.Types.Domain.Message (Message (Message))
 
 mainMenu :: Message -> Flow (Response Message)
 mainMenu msg = sendMessage (Just Keyboard.mainMenuKeyboard) (Messages.mainMenu msg)
@@ -136,3 +140,19 @@ failInstIdOrPrivate msg =
 logout :: Message -> Flow (Response Message)
 logout msg =
   sendMessage Nothing (Messages.logout msg)
+
+adminMenu :: Message -> Flow (Response Message)
+adminMenu msg =
+  sendMessage (Just Keyboard.adminMenuKeyboard) (Messages.adminMenu msg)
+
+selectUser :: Message -> Flow (Response Message)
+selectUser msg =
+  sendMessage (Just Keyboard.selectUserKeyboard) (Messages.selectUser msg)
+
+selectAdmin :: Message -> Flow (Response Message)
+selectAdmin msg =
+  sendMessage Nothing (Messages.selectAdmin msg)
+
+enterUsername :: Message -> Flow (Response Message)
+enterUsername  msg =
+  sendMessage Nothing (Messages.enterUsername  msg)

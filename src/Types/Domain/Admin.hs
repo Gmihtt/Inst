@@ -1,25 +1,12 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE RecordWildCards #-}
 
 module Types.Domain.Admin where
 
-import Common.Json
-  ( FromJSON (..),
-    ToJSON (..),
-    parseJson,
-    toJson,
-  )
 import Data.Text (Text)
 import GHC.Generics (Generic)
 import Prelude hiding (id)
 
 data Privilege = High | Medium | Low deriving (Show, Eq, Generic)
-
-instance ToJSON Privilege where
-  toJSON = toJson
-
-instance FromJSON Privilege where
-  parseJSON = parseJson
 
 data Admin
   = Admin
@@ -27,3 +14,24 @@ data Admin
         privilege :: Privilege
       }
   deriving (Show, Eq)
+
+mkHighAdmin :: Text -> Admin
+mkHighAdmin id =
+  Admin {
+    id = id,
+    privilege = High
+  }
+
+mkMediumAdmin :: Text -> Admin
+mkMediumAdmin id =
+  Admin {
+    id = id,
+    privilege = Medium
+  }
+
+mkLowAdmin :: Text -> Admin
+mkLowAdmin id =
+  Admin {
+    id = id,
+    privilege = Low
+  }

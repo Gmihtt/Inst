@@ -29,6 +29,14 @@ doubleAuth username code = do
   liftIO $ printDebug req
   liftIO $ sendAndReceiveMsg username authManager req
 
+susCode :: Text -> Text -> Flow ResponseAuth.Response
+susCode username code = do
+  env <- getEnvironment
+  let authManager = Environment.authManager env
+  let req = RequestAuth.mkRequestSus username code
+  liftIO $ printDebug req
+  liftIO $ sendAndReceiveMsg username authManager req
+
 authConnection :: SocketsAPI.Socket -> IO Manager.AuthManager
 authConnection socket = do
   liftIO $ SocketsAPI.runConnection socket getUsername getBsBody
