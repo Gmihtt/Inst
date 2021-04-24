@@ -13,11 +13,12 @@ where
 import Common.Error (throwConfigErr)
 import Communication.Sockets.Socket (Socket, mkSocket)
 import Control.Monad.Cont (liftIO)
+import Data.Aeson (FromJSON)
 import Data.Text (Text, unpack)
 import qualified Data.Yaml as Yaml
 import Data.Yaml ((.:))
 
-getValue :: Text -> IO Text
+getValue :: FromJSON a => Text -> IO a
 getValue field = do
   settings <- liftIO $ Yaml.decodeFileEither "configs/config.yaml"
   body <- either (throwConfigErr . Yaml.prettyPrintParseException) pure settings

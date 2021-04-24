@@ -6,26 +6,45 @@ import Common.Flow (Flow)
 import qualified Data.List as List
 import Data.Text (Text)
 import qualified Database.MongoDB as Mongo
-import Database.MongoDB ((=:))
+import Database.MongoDB ((=:), (!?))
 import MongoDB.Queries.Common (callDB)
 import qualified MongoDB.Transforms.TgUser as Transforms
+import qualified MongoDB.Transforms.Usernames as Transforms
 import qualified Types.Domain.InstAccount as InstAccount
 import qualified Types.Domain.TgUser as TgUser
+import qualified Types.Domain.Usernames as Usernames
 import Prelude hiding (id)
 
 updateInstAccs :: Text -> TgUser.TgUser -> Flow ()
-updateInstAccs tg_id val =
-  callDB (Mongo.upsert (Mongo.select ["id" =: tg_id] "accounts") (Transforms.mkDocByTgUser val))
+updateInstAccs tgId val = do
+  callDB (Mongo.upsert (Mongo.select ["id" =: tgId] "accounts") (Transforms.mkDocByTgUser val))
+  let instUsernames = InstAccount.login <$> TgUser.inst_accounts val
+  let tgUsername = TgUser.username val
+  let usernames = (\iUn -> Usernames.mkUsernames iUn tgUsername tgId) <$> instUsernames
+  callDB (Mongo.insertMany "usernames" $ Transforms.mkDocByUsernames <$> usernames)
+  pure ()
 
 findTgUserById :: Text -> Flow (Maybe TgUser.TgUser)
 findTgUserById tg_id = do
   res <- callDB (Mongo.findOne (Mongo.select ["id" =: tg_id] "accounts"))
   pure $ Transforms.mkTgUserByDoc =<< res
 
+findTgUserByUsername :: Text -> Flow (Maybe TgUser.TgUser)
+findTgUserByUsername tgUsername = do
+  res <- callDB (Mongo.findOne (Mongo.select ["username" =: tgUsername] "accounts"))
+  pure $ Transforms.mkTgUserByDoc =<< res
+
 findInstAccsByTgId :: Text -> Flow [InstAccount.InstAccount]
 findInstAccsByTgId tg_id = do
   tgUser <- findTgUserById tg_id
   pure $ maybe [] TgUser.inst_accounts tgUser
+
+findTgUserByInstLogin :: Text -> Flow (Maybe TgUser.TgUser)
+findTgUserByInstLogin instUsername = do
+  docUsernames <- callDB (Mongo.findOne (Mongo.select ["instUsername" =: instUsername] "usernames"))
+  case (!? "tgId") =<< docUsernames of
+    Nothing -> pure Nothing
+    Just tgId -> findTgUserById tgId
 
 findInstAccountByLogin :: Text -> Text -> Flow (Maybe InstAccount.InstAccount)
 findInstAccountByLogin tg_id login = do

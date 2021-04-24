@@ -30,7 +30,9 @@ initManager socket getSocket = do
   pure Manager {..}
 
 sendMsg :: ByteString -> Manager a -> IO ()
-sendMsg msg manager = Stream.sendMsgToScript msg (stream manager)
+sendMsg msg manager = do
+  print msg
+  Stream.sendMsgToScript msg (stream manager)
 
 receiveMsg :: Manager a -> IO ByteString
 receiveMsg manager = Stream.getMsgForServer (stream manager)

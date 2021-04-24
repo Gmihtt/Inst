@@ -1,6 +1,6 @@
 proxy:
   # isEnabled turns on proxy check
-  isEnabled: true
+  isEnabled: false
   # without isExternal server will use proxy data downside
   isExternal: false
   url: "http://45.95.99.20:7580"

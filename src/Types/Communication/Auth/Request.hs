@@ -55,7 +55,7 @@ mkRequestSus inst_id code =
     }
 
 instance ToJSON Request where
-  toJSON = toJsonDrop 8
+  toJSON = toJson
 
 instance FromJSON Request where
-  parseJSON = parseJsonDrop 8
+  parseJSON = parseJson

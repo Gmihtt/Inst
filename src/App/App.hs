@@ -59,4 +59,3 @@ app =
     handler :: Error -> IO ()
     handler err = do
       print err
-      print "hello"

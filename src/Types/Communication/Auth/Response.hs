@@ -32,7 +32,7 @@ data Response
   deriving (Show, Eq, Generic)
 
 instance ToJSON Response where
-  toJSON = toJsonDrop 9
+  toJSON = toJson
 
 instance FromJSON Response where
-  parseJSON = parseJsonDrop 9
+  parseJSON = parseJson

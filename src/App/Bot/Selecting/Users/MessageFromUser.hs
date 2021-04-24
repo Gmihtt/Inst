@@ -63,9 +63,6 @@ choseAction :: Message.Message -> User.User -> TgUserStatus.TgUserStatus -> Flow
 choseAction _ _ (TgUserStatus.TgAdmin status) =
   case status of
     TgUserStatus.SelectTgUser -> undefined
-    TgUserStatus.MessageFromBot -> undefined
-    TgUserStatus.ShowInstAccounts -> undefined
-    TgUserStatus.AccountInfo -> undefined
 choseAction msg user (TgUserStatus.TgUser status) =
   case status of
     TgUserStatus.AddAccountLogin -> Login.login msg user text
@@ -77,7 +74,8 @@ choseAction msg user (TgUserStatus.TgUser status) =
             user
             (TgUserStatus.TgUser TgUserStatus.MainMenu)
           Messages.failAuthMsg msg
-    TgUserStatus.AddCode username password -> Login.enterCode msg user username password text
+    TgUserStatus.AddDoubleAuth username password -> Login.doubleAuth msg user username password text
+    TgUserStatus.AddSusCode username password -> Login.sus msg user username password text
     _ -> Messages.strangeMessage msg
   where
     text = fromMaybe "" $ Message.text msg

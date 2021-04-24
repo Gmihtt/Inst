@@ -16,7 +16,8 @@ data UserStatus
   | ListOfAccounts
   | AddAccountLogin
   | AddAccountPassword Username
-  | AddCode Username Password
+  | AddDoubleAuth Username Password
+  | AddSusCode Username Password
   | AccountMenu InstId
   | WaitStart InstId
   | ChoseStatistics InstId
@@ -24,8 +25,12 @@ data UserStatus
   deriving (Show)
 
 data AdminStatus
-  = SelectTgUser
-  | MessageFromBot
-  | ShowInstAccounts
-  | AccountInfo
+  = AdminMenu
+  | SelectTgUser
+  | WaitTgUsername
+  | WaitInstUsername
+  | ShowUser
+  | SelectAdmin
+  | WaitAdminUsername
+  | ManageAdmin
   deriving (Show)
