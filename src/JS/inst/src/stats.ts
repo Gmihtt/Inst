@@ -7,7 +7,7 @@ const fs = require('fs-extra');
 const TIMEOUT: number = 5000;
 
 export interface StatsRequest {
-    action: string; //Start | Stop | Logout
+    status: string; //Start | Stop | Logout
     inst_id: string;
     timeout?: number;
 }

@@ -49,7 +49,7 @@ export function runStatsServer(server: ws.Server) {
             console.log(`Stats: ${message.toString()}`);
             const request: Stats.StatsRequest = JSON.parse(message.toString());
 
-            switch (request.action) {
+            switch (request.status) {
                 case 'Start': {
                     if (activeFollowerGetters.has(request.inst_id)) {
                         break;
