@@ -46,4 +46,6 @@ declare module "puppeteer" {
 
     interface HTTPResponse {
     }
+
+    function launch(obj: object): Promise<Browser>;
 }
