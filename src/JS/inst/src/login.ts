@@ -83,7 +83,7 @@ export class Login {
         let isCheck: boolean = false;
         let wasError: boolean = false;
         try {
-            await action(username, code);
+            await action.call(this, username, code);
 
             const check = await this.runChecks(checks);
 
