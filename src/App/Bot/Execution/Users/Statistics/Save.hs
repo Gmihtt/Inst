@@ -13,8 +13,9 @@ import qualified Types.Domain.ThreadManager as Manager
 execute :: Text -> Flow ()
 execute instId = do
   env <- getEnvironment
-  let manager = Environment.statisticsManager env
-  mbStat <- liftIO $ Manager.findTask instId manager
+  let statManager = Environment.statisticsManager env
+  mbStat <- liftIO $ Manager.findTask instId statManager
+  liftIO $ Manager.deleteTask instId statManager
   case mbStat of
     Just stat -> do
       finish <- liftIO getCurrentTime

@@ -34,7 +34,6 @@ logout msg user instId = do
   let statManager = Environment.statisticsManager env
   liftIO $ API.sendMsg statManager (RequestStat.mkLogoutReq instId)
   Save.execute instId
-  liftIO $ Manager.deleteTask instId statManager
   let userId = User.id user
   let tg_id = T.pack $ show userId
   instAcc <-
