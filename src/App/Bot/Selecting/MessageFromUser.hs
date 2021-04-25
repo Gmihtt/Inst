@@ -37,7 +37,7 @@ checkStatus msg user = do
     "/start" -> setMainMenu
     "/help" -> setHelpMenu
     "/reboot" -> reboot
-    "/admin" -> admin
+    "/admin konechno" -> admin
     _ -> do
       status <- Common.getUserStatus userId
       maybe setMainMenu (choseAction msg user) status
