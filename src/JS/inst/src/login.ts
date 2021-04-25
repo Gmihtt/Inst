@@ -83,7 +83,7 @@ export class Login {
         let isCheck: boolean = false;
         let wasError: boolean = false;
         try {
-            await action(username, code);
+            await action.call(this, username, code);
 
             const check = await this.runChecks(checks);
 
@@ -155,7 +155,7 @@ export class Login {
 
 
     public async login(username: string, password: string): Promise<LoginResponse> {
-        return await this.runAction(this.loginAction, username, password, {
+        return await this.runAction.call(this, this.loginAction, username, password, {
             doubleAuth: true,
             phoneCheck: true,
             sus: true,
@@ -173,7 +173,7 @@ export class Login {
     }
 
     public async doubleAuth(username: string, code: string): Promise<LoginResponse> {
-        return await this.runAction(this.doubleAuthAction, username, code, {
+        return await this.runAction.call(this, this.doubleAuthAction, username, code, {
             doubleAuth: false,
             phoneCheck: true,
             sus: true,
@@ -194,7 +194,7 @@ export class Login {
     }
 
     public async sus(username: string, code: string): Promise<LoginResponse> {
-        return await this.runAction(this.susAction, username, code, {
+        return await this.runAction.call(this, this.susAction, username, code, {
             doubleAuth: false,
             phoneCheck: true,
             sus: false,
@@ -230,7 +230,7 @@ export class Login {
     }
 
     public async phoneCheck(username: string, code: string): Promise<LoginResponse> {
-        return await this.runAction(this.runPhoneCheck, username, code, {
+        return await this.runAction.call(this, this.runPhoneCheck, username, code, {
             doubleAuth: false,
             phoneCheck: false,
             sus: true,
