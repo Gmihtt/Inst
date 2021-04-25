@@ -94,15 +94,15 @@ statusHandler msg user accLogin accPassword res = do
     ResponseAuth.DoubleAuth -> do
       let status = TgUserStatus.TgUser $ TgUserStatus.AddDoubleAuth accLogin accPassword
       Common.updateUserStatus user status
-      Message.enterCode msg
+      Message.doubleAuth msg
     ResponseAuth.Sus -> do
       let status = TgUserStatus.TgUser $ TgUserStatus.AddSusCode accLogin accPassword
       Common.updateUserStatus user status
-      Message.enterCode msg
+      Message.susCode msg
     ResponseAuth.PhoneCheck -> do
       let status = TgUserStatus.TgUser $ TgUserStatus.PhoneCheck accLogin accPassword
       Common.updateUserStatus user status
-      Message.enterPhone msg
+      Message.susCode msg
     ResponseAuth.Error -> errorCase
     ResponseAuth.Success ->
       case (ResponseAuth.inst_id res, ResponseAuth.is_private res) of
