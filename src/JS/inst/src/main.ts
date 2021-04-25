@@ -10,6 +10,7 @@ import path = require('path');
 (async () => {
     await fs.remove(path.resolve(__dirname, 'loginDirs'));
     await fs.mkdirp(path.resolve(__dirname, 'loginDirs'));
+    // TODO CREATE MUTEXES AFTER THIS
     await fs.mkdirp(path.resolve(__dirname, 'cookies'));
     await fs.mkdirp(path.resolve(__dirname, 'errors'));
 })().then(Proxy.checkProxyAndSetVar).then(

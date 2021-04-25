@@ -7,14 +7,14 @@ import fs from "fs-extra";
 import * as File from './file';
 
 export interface LoginRequest {
-    status: string; // Login | DoubleAuth | Sus
+    status: string; // Login | DoubleAuth | Sus | PhoneCheck
     username: string;
     body: string;
 }
 
 export interface LoginResponse {
     username: string;
-    status: string; // DoubleAuth | Sus | Success | Error
+    status: string; // DoubleAuth | Sus | Success | PhoneCheck | Error
     is_private?: boolean;
     inst_id?: string;
     error_message?: string;
@@ -25,12 +25,27 @@ interface UserIdAndPrivacy {
     is_private: boolean;
 }
 
+interface Checks {
+    doubleAuth: boolean;
+    phoneCheck: boolean;
+    sus: boolean;
+}
+
+enum CheckResult {
+    ok,
+    doubleAuth,
+    phoneCheck,
+    sus,
+}
+
 
 export interface BrowserData {
     browser: puppeteer.Browser;
     page: puppeteer.Page;
     dirNumber: number;
 }
+
+type Action = (username: string, code: string) => Promise<void>;
 
 
 let dirNumberMutex = new Mutex();
@@ -64,60 +79,67 @@ export class Login {
         this.dirNumber = browserData.dirNumber;
     }
 
-
-    public async login(username: string, password: string): Promise<LoginResponse> {
-        let isDouble: boolean = false;
-        let isSus: boolean = false;
+    private async runAction(action: Action, username: string, code: string, checks: Checks): Promise<LoginResponse> {
+        let isCheck: boolean = false;
         let wasError: boolean = false;
         try {
-            await this.page.goto('https://www.instagram.com/accounts/login/');
+            await action(username, code);
 
-            await this.clickAcceptCookies();
+            const check = await this.runChecks(checks);
 
-            await this.fillInputsAndSubmit(username, password);
+            if (check != CheckResult.ok) {
+                isCheck = true;
+            }
 
-            isDouble = await this.isDoubleAuth();
-
-            if (isDouble) {
+            if (checks.doubleAuth && check === CheckResult.doubleAuth) {
                 return {
                     status: 'DoubleAuth',
                     username: username,
                 }
             }
-
-            await this.checkUnusualPlace();
-
-            isSus = await this.isSus();
-
-            if (isSus) {
+            if (checks.phoneCheck && check === CheckResult.phoneCheck) {
+                return {
+                    status: 'PhoneCheck',
+                    username: username,
+                }
+            }
+            if (checks.sus && check === CheckResult.sus) {
                 return {
                     status: 'Sus',
                     username: username,
                 }
             }
+            if (check === CheckResult.ok) {
+                const userIdAndPrivacy = await this.afterAuthMenu(username);
 
-            const userIdAndPrivacy = await this.afterAuthMenu(username);
-
-            return {
-                status: 'Success',
-                username: username,
-                inst_id: userIdAndPrivacy.inst_id,
-                is_private: userIdAndPrivacy.is_private,
+                return {
+                    status: 'Success',
+                    username: username,
+                    inst_id: userIdAndPrivacy.inst_id,
+                    is_private: userIdAndPrivacy.is_private,
+                }
             }
 
-        } catch (e) {
             wasError = true;
             await File.screenError(`${this.dirNumber}-login.png`, this.page);
             await File.saveHTML(`${this.dirNumber}-login.html`, this.page);
             return {
                 status: 'Error',
                 username: username,
-                error_message: `${e.message}, Check ${this.dirNumber}-login.{png/html}`,
+                error_message: `THIS EXCEPTION SHOULD NEVER OCCUR! Info: checks: double:${checks.doubleAuth}, phone:${checks.phoneCheck}, sus:${checks.sus}, check: ${check}`,
+            }
+        } catch (e) {
+            wasError = true;
+            await File.screenError(`${this.dirNumber}-action.png`, this.page);
+            await File.saveHTML(`${this.dirNumber}-action.html`, this.page);
+            return {
+                status: 'Error',
+                username: username,
+                error_message: `${e.message}, Check ${this.dirNumber}-action.{png/html}`,
             }
         } finally {
-
-            let correctFinishing: boolean = !isDouble && !wasError && !isSus;
-            let justFinishing: boolean = (!isDouble && !isSus) || wasError;
+            let correctFinishing: boolean = !isCheck && !wasError;
+            let justFinishing: boolean = !isCheck || wasError;
 
             if (justFinishing) {
                 await this.browser.close();
@@ -131,87 +153,118 @@ export class Login {
         }
     }
 
-    // I need username only for creating response object. Maybe I should get rid of this. Same for sus
+
+    public async login(username: string, password: string): Promise<LoginResponse> {
+        return await this.runAction(this.loginAction, username, password, {
+            doubleAuth: true,
+            phoneCheck: true,
+            sus: true,
+        });
+    }
+
+    private async loginAction(username: string, code: string): Promise<void> {
+        await this.page.goto('https://www.instagram.com/accounts/login/');
+
+        await this.clickAcceptCookies();
+
+        await this.fillInputsAndSubmit(username, code);
+
+        await this.page.waitForTimeout(5000);
+    }
+
     public async doubleAuth(username: string, code: string): Promise<LoginResponse> {
-        let isSus: boolean = false;
-        try {
-            await this.page.type('[name=verificationCode]', code);
-            await this.page.addScriptTag({path: require.resolve('jquery')});
-            await this.page.evaluate(() => {
-                $('button:contains("Confirm")').addClass('followerGettingApp');
-                $('button:contains("Подтвердить")').addClass('followerGettingApp');
-            });
-            await this.page.click('.followerGettingApp');
-            await this.page.waitForTimeout(8000);
+        return await this.runAction(this.doubleAuthAction, username, code, {
+            doubleAuth: false,
+            phoneCheck: true,
+            sus: true,
+        });
+    }
 
+    private async doubleAuthAction(username: string, code: string): Promise<void> {
+        await this.page.type('[name=verificationCode]', code);
 
-            isSus = await this.isSus();
-            if (isSus) {
-                return {
-                    status: 'Sus',
-                    username: username,
-                }
-            }
+        await this.page.addScriptTag({path: require.resolve('jquery')});
+        await this.page.evaluate(() => {
+            $('button:contains("Confirm")').addClass('followerGettingApp');
+            $('button:contains("Подтвердить")').addClass('followerGettingApp');
+        });
+        await this.page.click('.followerGettingApp');
 
-            const userIdAndPrivacy = await this.afterAuthMenu(username);
-            await this.browser.close();
-            await File.copyUserDirIntoCookiesDir(this.dirNumber, this.instId as string);
-            return {
-                status: 'Success',
-                username: username,
-                inst_id: userIdAndPrivacy.inst_id,
-                is_private: userIdAndPrivacy.is_private,
-
-            }
-        } catch (e) {
-            await File.screenError(`${this.dirNumber}-doubleAuth.png`, this.page);
-            await File.saveHTML(`${this.dirNumber}-doubleAuth.html`, this.page);
-            await this.browser.close();
-            return {
-                status: 'Error',
-                username: username,
-                error_message: e.message + `Check ${this.dirNumber}-doubleAuth.{png/html}`,
-            }
-        } finally {
-            if (!isSus) {
-                await this.removeUserDir();
-            }
-        }
+        await this.page.waitForTimeout(8000);
     }
 
     public async sus(username: string, code: string): Promise<LoginResponse> {
-        try {
-            await this.page.type('[aria-label="Security code"]', code);
-            await this.page.addScriptTag({path: require.resolve('jquery')});
-            await this.page.evaluate(() => {
-                $('button:contains("Submit")').addClass('submitButton');
-            });
-            await this.page.click('.submitButton');
-            await this.page.waitForTimeout(8000);
-
-            const userIdAndPrivacy = await this.afterAuthMenu(username);
-            await this.browser.close();
-            await File.copyUserDirIntoCookiesDir(this.dirNumber, this.instId as string);
-            return {
-                status: 'Success',
-                username: username,
-                inst_id: userIdAndPrivacy.inst_id,
-                is_private: userIdAndPrivacy.is_private,
-
-            }
-        } catch (e) {
-            await File.screenError(`${this.dirNumber}-sus.png`, this.page);
-            await File.saveHTML(`${this.dirNumber}-sus.html`, this.page);
-            await this.browser.close();
-            return {
-                status: 'Error',
-                username: username,
-                error_message: e.message + `Check ${this.dirNumber}-sus.{png/html}`,
-            }
-        } finally {
-            await this.removeUserDir();
-        }
+        return await this.runAction(this.susAction, username, code, {
+            doubleAuth: false,
+            phoneCheck: true,
+            sus: false,
+        });
     }
+
+    private async susAction(username: string, code: string): Promise<void> {
+        await this.page.type('[aria-label="Security code"]', code);
+
+        await this.page.addScriptTag({path: require.resolve('jquery')});
+        await this.page.evaluate(() => {
+            $('button:contains("Submit")').addClass('submitButton');
+        });
+        await this.page.click('.submitButton');
+
+        await this.page.waitForTimeout(8000);
+    }
+
+    private async runChecks(checks: Checks): Promise<CheckResult> {
+        if (checks.doubleAuth && await this.isDoubleAuth()) {
+            return CheckResult.doubleAuth;
+        }
+        if (checks.phoneCheck && await this.isPhoneCheck()) {
+            return CheckResult.phoneCheck;
+        }
+        if (checks.sus && await this.isSus()) {
+            return CheckResult.sus;
+        }
+
+        await this.checkUnusualPlace();
+
+        return CheckResult.ok;
+    }
+
+    public async phoneCheck(username: string, code: string): Promise<LoginResponse> {
+        return await this.runAction(this.runPhoneCheck, username, code, {
+            doubleAuth: false,
+            phoneCheck: false,
+            sus: true,
+        });
+    }
+
+    private async runPhoneCheck(username: string, code: string): Promise<void> {
+        await this.page.type('[name="tel"]', code);
+
+        await this.page.addScriptTag({path: require.resolve('jquery')});
+        await this.page.evaluate(() => {
+            $('button:contains("Submit")').addClass('submitButton');
+        });
+        await this.page.click('.submitButton');
+
+        await this.page.waitForTimeout(8000);
+    }
+
+
+    private async isPhoneCheck(): Promise<boolean> {
+        await this.page.addScriptTag({path: require.resolve('jquery')});
+        await this.page.evaluate(() => {
+            $('button:contains("Send Confirmation")').addClass('phoneCheck');
+        });
+        if (await this.page.$('.phoneCheck') == null) {
+            return false;
+        }
+        //TEST SHIT
+        await File.screenError(`${this.dirNumber}-phoneCheck.png`, this.page);
+        await File.saveHTML(`${this.dirNumber}-phoneCheck.html`, this.page);
+        await this.page.click('.phoneCheck');
+        return true;
+    }
+
 
     private async clickAcceptCookies(): Promise<void> {
         await this.page.addScriptTag({path: require.resolve('jquery')});
@@ -281,6 +334,7 @@ export class Login {
         if (await this.page.$('.suspicious') == null) {
             return false;
         }
+        //TEST SHIT
         await File.screenError(`${this.dirNumber}-suss.png`, this.page);
         await File.saveHTML(`${this.dirNumber}-suss.html`, this.page);
         await this.page.click('.suspicious');
