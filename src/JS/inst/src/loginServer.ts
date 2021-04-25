@@ -5,6 +5,7 @@ import {Login, LoginRequest, LoginResponse} from "./login";
 
 const doubleAuthLogins = new Map();
 const susLogins = new Map();
+const phoneCheckLogins = new Map();
 
 export function runLoginServer(server: ws.Server) {
     server.on('connection', function connection(socket) {
@@ -29,10 +30,13 @@ export function runLoginServer(server: ws.Server) {
                             doubleAuthLogins.set(loginInfo.username, login);
                         } else if (loginInfo.status === 'Sus') {
                             susLogins.set(loginInfo.username, login);
+                        } else if (loginInfo.status === 'PhoneCheck') {
+                            phoneCheckLogins.set(loginInfo.username, login);
                         }
 
                         sendWithLog(socket, loginInfo);
                     } catch (e) {
+                        // TODO DELETE USER DIR
                         let errorInfo: LoginResponse = {
                             status: 'Error',
                             username: userData.username,
@@ -49,6 +53,8 @@ export function runLoginServer(server: ws.Server) {
 
                         if (doubleAuthInfo.status === 'Sus') {
                             susLogins.set(doubleAuthInfo.username, login);
+                        } else if (doubleAuthInfo.status === 'PhoneCheck') {
+                            phoneCheckLogins.set(doubleAuthInfo.username, login);
                         }
 
                         sendWithLog(socket, doubleAuthInfo);
@@ -57,7 +63,7 @@ export function runLoginServer(server: ws.Server) {
                             status: 'Error',
                             username: userData.username,
                             error_message: `There's no such username in doubleAuth map -- ${userData.username}`,
-                        }
+                        };
                         sendWithLog(socket, errorInfo);
                     }
                     doubleAuthLogins.delete(userData.username);
@@ -68,16 +74,40 @@ export function runLoginServer(server: ws.Server) {
                         let login: Login = susLogins.get(userData.username);
                         let susInfo = await login.sus(userData.username, userData.body);
 
+                        if (susInfo.status === 'PhoneCheck') {
+                            phoneCheckLogins.set(susInfo.username, login);
+                        }
+
                         sendWithLog(socket, susInfo);
                     } else {
                         let errorInfo: LoginResponse = {
                             status: 'Error',
                             username: userData.username,
                             error_message: `There's no such username in susLogins map -- ${userData.username}`,
-                        }
+                        };
                         sendWithLog(socket, errorInfo);
                     }
                     susLogins.delete(userData.username);
+                }
+                    break;
+                case 'PhoneCheck': {
+                    if (phoneCheckLogins.has(userData.username)) {
+                        let login: Login = phoneCheckLogins.get(userData.username);
+                        let phoneCheckInfo = await login.phoneCheck(userData.username, userData.body);
+
+                        if (phoneCheckInfo.status === 'Sus') {
+                            susLogins.set(phoneCheckInfo.username, login);
+                        }
+
+                        sendWithLog(socket, phoneCheckInfo);
+                    } else {
+                        let errorInfo: LoginResponse = {
+                            status: 'Error',
+                            username: userData.username,
+                            error_message: `There's no such username in phoneCheck map -- ${userData.username}`,
+                        };
+                        sendWithLog(socket, errorInfo);
+                    }
                 }
                     break;
             }
