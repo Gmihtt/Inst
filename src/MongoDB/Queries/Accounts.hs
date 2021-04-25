@@ -59,6 +59,7 @@ findInstAccountByInstId tg_id instId = do
 deleteInstAccount :: Text -> Text -> Flow ()
 deleteInstAccount tg_id login = do
   mbTgUser <- findTgUserById tg_id
+  deleteUsernames login
   case mbTgUser of
     Nothing -> pure ()
     Just tgUser -> do
@@ -75,3 +76,7 @@ deleteInstAccount tg_id login = do
 deleteTgUser :: Text -> Flow ()
 deleteTgUser tg_id = do
   callDB $ Mongo.deleteOne (Mongo.select ["id" =: tg_id] "accounts")
+
+deleteUsernames :: Text -> Flow ()
+deleteUsernames instUsername = do
+  callDB $ Mongo.deleteOne (Mongo.select ["instUsername" =: instUsername] "usernames")
