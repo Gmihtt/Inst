@@ -7,14 +7,12 @@ import Common.Json
   ( FromJSON (..),
     ToJSON (..),
     parseJson,
-    parseJsonDrop,
     toJson,
-    toJsonDrop,
   )
 import Data.Text (Text)
 import GHC.Generics (Generic)
 
-data Auth = Login | DoubleAuth | Sus deriving (Show, Eq, Generic)
+data Auth = Login | DoubleAuth | Sus | PhoneCheck deriving (Show, Eq, Generic)
 
 instance ToJSON Auth where
   toJSON = toJson
@@ -50,6 +48,14 @@ mkRequestSus :: Text -> Text -> Request
 mkRequestSus inst_id code =
   Request
     { status = Sus,
+      username = inst_id,
+      body = code
+    }
+
+mkRequestPhoneCheck :: Text -> Text -> Request
+mkRequestPhoneCheck inst_id code =
+  Request
+    { status = PhoneCheck,
       username = inst_id,
       body = code
     }

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c85591f493e2a301234cd1e7375766958d166dc8890fa9be93920a24eb9e3114
+-- hash: 99488dca892780434372e72e0483f2e6acaaf151fcfe8bd4f75ef2fc708bdd3b
 
 name:           Inst
 version:        0.1.0.0
@@ -39,6 +39,7 @@ library
       App.Bot.Buttons.User.ShowInstAccounts
       App.Bot.Execution.Admin.AdminMenu
       App.Bot.Execution.Admin.SelectUser
+      App.Bot.Execution.Admin.ShowUser
       App.Bot.Execution.Users.Help
       App.Bot.Execution.Users.Login
       App.Bot.Execution.Users.Logout
@@ -90,6 +91,7 @@ library
       MongoDB.Queries.Accounts
       MongoDB.Queries.Common
       MongoDB.Queries.Statistics
+      MongoDB.Queries.Usernames
       MongoDB.Transforms.InstAccount
       MongoDB.Transforms.InstStatistics
       MongoDB.Transforms.TgUser

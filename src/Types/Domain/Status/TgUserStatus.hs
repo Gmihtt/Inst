@@ -18,6 +18,7 @@ data UserStatus
   | AddAccountPassword Username
   | AddDoubleAuth Username Password
   | AddSusCode Username Password
+  | PhoneCheck Username Password
   | AccountMenu InstId
   | WaitStart InstId
   | ChoseStatistics InstId

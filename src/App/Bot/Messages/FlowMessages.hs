@@ -28,6 +28,7 @@ module App.Bot.Messages.FlowMessages
     selectUser,
     selectAdmin,
     enterUsername,
+    enterPhone,
   )
 where
 
@@ -112,6 +113,10 @@ publicAccount msg =
 enterCode :: Message -> Flow (Response Message)
 enterCode msg =
   sendMessage Nothing (Messages.enterCode msg)
+
+enterPhone :: Message -> Flow (Response Message)
+enterPhone msg =
+  sendMessage Nothing (Messages.enterPhone msg)
 
 incorrectCode :: Message -> Flow (Response Message)
 incorrectCode msg =

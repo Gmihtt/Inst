@@ -76,6 +76,7 @@ choseAction msg user (TgUserStatus.TgUser status) =
           Messages.failAuthMsg msg
     TgUserStatus.AddDoubleAuth username password -> Login.doubleAuth msg user username password text
     TgUserStatus.AddSusCode username password -> Login.sus msg user username password text
+    TgUserStatus.PhoneCheck username password -> Login.phoneCheck msg user username password text
     _ -> Messages.strangeMessage msg
   where
     text = fromMaybe "" $ Message.text msg
