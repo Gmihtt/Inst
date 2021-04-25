@@ -8,4 +8,4 @@ Configs/
 .idea
 *.log
 configs/config.yaml
-*.pem
+Inst_key.pem
