@@ -5,6 +5,7 @@ module App.Bot.Execution.Users.Login
     password,
     doubleAuth,
     sus,
+    phoneCheck,
   )
 where
 
@@ -69,6 +70,18 @@ sus msg user accLogin accPassword accCode = do
   liftIO $ printDebug res
   statusHandler msg user accLogin accPassword res
 
+phoneCheck :: 
+  Message.Message ->
+  User.User ->
+  Text ->
+  Text ->
+  Text ->
+  Flow (Response Message.Message)
+phoneCheck msg user accLogin accPassword accCode = do
+  res <- ScriptsAuth.phoneCheck accLogin accCode
+  liftIO $ printDebug res
+  statusHandler msg user accLogin accPassword res
+
 statusHandler ::
   Message.Message ->
   User.User ->
@@ -86,6 +99,10 @@ statusHandler msg user accLogin accPassword res = do
       let status = TgUserStatus.TgUser $ TgUserStatus.AddSusCode accLogin accPassword
       Common.updateUserStatus user status
       Message.enterCode msg
+    ResponseAuth.PhoneCheck -> do
+      let status = TgUserStatus.TgUser $ TgUserStatus.PhoneCheck accLogin accPassword
+      Common.updateUserStatus user status
+      Message.enterPhone msg
     ResponseAuth.Error -> errorCase
     ResponseAuth.Success ->
       case (ResponseAuth.inst_id res, ResponseAuth.is_private res) of

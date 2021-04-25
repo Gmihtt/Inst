@@ -30,6 +30,7 @@ module App.Bot.Messages.MessagesBody
     selectUser,
     selectAdmin,
     enterUsername,
+    enterPhone,
   )
 where
 
@@ -106,6 +107,10 @@ todoMsg =
 enterCode :: Message -> Message
 enterCode =
   mkMessage "Вам на почту или телефон должен был прийти код, введите код"
+
+enterPhone :: Message -> Message
+enterPhone =
+  mkMessage "Введите номер телефона"
 
 incorrectCode :: Message -> Message
 incorrectCode =

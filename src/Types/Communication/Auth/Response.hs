@@ -13,7 +13,7 @@ import Common.Json
 import Data.Text (Text)
 import GHC.Generics (Generic)
 
-data Auth = DoubleAuth | Sus | Success | Error deriving (Show, Eq, Generic)
+data Auth = DoubleAuth | Sus | PhoneCheck | Success | Error deriving (Show, Eq, Generic)
 
 instance ToJSON Auth where
   toJSON = toJson

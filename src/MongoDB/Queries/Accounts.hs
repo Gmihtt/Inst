@@ -13,16 +13,14 @@ import qualified MongoDB.Transforms.Usernames as Transforms
 import qualified Types.Domain.InstAccount as InstAccount
 import qualified Types.Domain.TgUser as TgUser
 import qualified Types.Domain.Usernames as Usernames
+import qualified MongoDB.Queries.Usernames as QUsernames
 import Prelude hiding (id)
 
 updateInstAccs :: Text -> TgUser.TgUser -> Flow ()
 updateInstAccs tgId val = do
   callDB (Mongo.upsert (Mongo.select ["id" =: tgId] "accounts") (Transforms.mkDocByTgUser val))
-  let instUsernames = InstAccount.login <$> TgUser.inst_accounts val
-  let tgUsername = TgUser.username val
-  let usernames = (\iUn -> Usernames.mkUsernames iUn tgUsername tgId) <$> instUsernames
-  callDB (Mongo.insertMany "usernames" $ Transforms.mkDocByUsernames <$> usernames)
-  pure ()
+  QUsernames.insertUsernames tgId val
+
 
 findTgUserById :: Text -> Flow (Maybe TgUser.TgUser)
 findTgUserById tg_id = do
@@ -39,10 +37,10 @@ findInstAccsByTgId tg_id = do
   tgUser <- findTgUserById tg_id
   pure $ maybe [] TgUser.inst_accounts tgUser
 
-findTgUserByInstLogin :: Text -> Flow (Maybe TgUser.TgUser)
-findTgUserByInstLogin instUsername = do
-  docUsernames <- callDB (Mongo.findOne (Mongo.select ["instUsername" =: instUsername] "usernames"))
-  case (!? "tgId") =<< docUsernames of
+findTgUserByInstUsername :: Text -> Flow (Maybe TgUser.TgUser)
+findTgUserByInstUsername instUsername = do
+  mbUsernames <- QUsernames.findUsernamesByInstUsernames instUsername
+  case Usernames.tgId <$> mbUsernames of
     Nothing -> pure Nothing
     Just tgId -> findTgUserById tgId
 
@@ -59,7 +57,7 @@ findInstAccountByInstId tg_id instId = do
 deleteInstAccount :: Text -> Text -> Flow ()
 deleteInstAccount tg_id login = do
   mbTgUser <- findTgUserById tg_id
-  deleteUsernames login
+  QUsernames.deleteUsernames login
   case mbTgUser of
     Nothing -> pure ()
     Just tgUser -> do
@@ -76,7 +74,3 @@ deleteInstAccount tg_id login = do
 deleteTgUser :: Text -> Flow ()
 deleteTgUser tg_id = do
   callDB $ Mongo.deleteOne (Mongo.select ["id" =: tg_id] "accounts")
-
-deleteUsernames :: Text -> Flow ()
-deleteUsernames instUsername = do
-  callDB $ Mongo.deleteOne (Mongo.select ["instUsername" =: instUsername] "usernames")

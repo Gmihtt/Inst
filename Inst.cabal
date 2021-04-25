@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c85591f493e2a301234cd1e7375766958d166dc8890fa9be93920a24eb9e3114
+-- hash: dcf6b25cf8729e56eeec4f3802c1e681cc2bad67619bc9a0816457c4ecfc1fc8
 
 name:           Inst
 version:        0.1.0.0
@@ -39,6 +39,7 @@ library
       App.Bot.Buttons.User.ShowInstAccounts
       App.Bot.Execution.Admin.AdminMenu
       App.Bot.Execution.Admin.SelectUser
+      App.Bot.Execution.Admin.ShowUser
       App.Bot.Execution.Users.Help
       App.Bot.Execution.Users.Login
       App.Bot.Execution.Users.Logout
@@ -56,13 +57,13 @@ library
       App.Bot.ParseUpdates
       App.Bot.Selecting.Admin.AdminMenu
       App.Bot.Selecting.Admin.SelectingTgUser
+      App.Bot.Selecting.MessageFromUser
       App.Bot.Selecting.Users.AccountMenu
       App.Bot.Selecting.Users.API
       App.Bot.Selecting.Users.Confirm
       App.Bot.Selecting.Users.HelpMenu
       App.Bot.Selecting.Users.ListOfAccounts
       App.Bot.Selecting.Users.MainMenu
-      App.Bot.Selecting.Users.MessageFromUser
       App.Bot.Selecting.Users.Statistics
       App.Scripts.Auth.API
       App.Scripts.Info.API
@@ -90,6 +91,7 @@ library
       MongoDB.Queries.Accounts
       MongoDB.Queries.Common
       MongoDB.Queries.Statistics
+      MongoDB.Queries.Usernames
       MongoDB.Transforms.InstAccount
       MongoDB.Transforms.InstStatistics
       MongoDB.Transforms.TgUser
