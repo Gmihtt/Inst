@@ -31,6 +31,7 @@ module App.Bot.Messages.MessagesBody
     selectAdmin,
     enterUsername,
     enterPhone,
+    smthMessage,
   )
 where
 
@@ -159,3 +160,7 @@ selectAdmin =
 enterUsername :: Message -> Message
 enterUsername =
   mkMessage "Введите username"
+
+smthMessage :: (Show a) => a -> Message -> Message
+smthMessage a =
+  mkMessage (pack $ show a)

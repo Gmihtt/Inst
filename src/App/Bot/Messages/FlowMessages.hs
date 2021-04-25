@@ -29,6 +29,7 @@ module App.Bot.Messages.FlowMessages
     selectAdmin,
     enterUsername,
     enterPhone,
+    smthMessage,
   )
 where
 
@@ -159,5 +160,9 @@ selectAdmin msg =
   sendMessage Nothing (Messages.selectAdmin msg)
 
 enterUsername :: Message -> Flow (Response Message)
-enterUsername  msg =
+enterUsername msg =
   sendMessage Nothing (Messages.enterUsername  msg)
+
+smthMessage :: (Show a) => a -> Message -> Flow (Response Message)
+smthMessage a msg =
+  sendMessage Nothing (Messages.smthMessage a msg)

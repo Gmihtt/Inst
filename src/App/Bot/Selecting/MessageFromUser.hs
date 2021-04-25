@@ -4,7 +4,8 @@ module App.Bot.Selecting.MessageFromUser where
 
 import qualified App.Bot.Execution.Users.Login as Login
 import qualified App.Bot.Messages.FlowMessages as Messages
-import qualified App.Scripts.Statistics.API as API
+import qualified App.Scripts.Statistics.API as StatAPI
+import qualified App.Scripts.Info.API as InfoAPI
 import qualified Common.Environment as Environment
 import Common.Flow (Flow, getEnvironment)
 import qualified Common.Redis as Common
@@ -17,8 +18,10 @@ import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.Message as Message
 import qualified Telegram.Types.Domain.User as User
 import qualified Types.Communication.Statistics.Request as RequestStat
+import qualified  Types.Communication.Info.Request as InfoRequest
 import qualified Types.Domain.InstAccount as InstAccount
 import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
+import qualified Types.Domain.ThreadManager as Manager
 
 messageFromUser :: Message.Message -> Flow (Response Message.Message)
 messageFromUser msg = do
@@ -34,6 +37,7 @@ checkStatus msg user = do
     "/start" -> setMainMenu
     "/help" -> setHelpMenu
     "/reboot" -> reboot
+    "/admin" -> admin
     _ -> do
       status <- Common.getUserStatus userId
       maybe setMainMenu (choseAction msg user) status
@@ -53,10 +57,16 @@ checkStatus msg user = do
       let statManager = Environment.statisticsManager env
       let uId = T.pack $ show userId
       instAccs <- Mongo.findInstAccsByTgId uId
-      liftIO $ mapM (API.sendMsg statManager . RequestStat.mkLogoutReq . InstAccount.id) instAccs
+      liftIO $ mapM (StatAPI.sendMsg statManager . RequestStat.mkLogoutReq . InstAccount.id) instAccs
       Common.dropInstAccs userId
       Mongo.deleteTgUser uId
       setMainMenu
+    admin = do
+      env <- getEnvironment
+      let infoManager = Environment.infoManager env
+      let uId = T.pack $ show userId
+      res <- liftIO $ InfoAPI.sendAndReceiveMsg "1" infoManager $ InfoRequest.mkAllStatusReq "1"
+      Messages.smthMessage res msg
     userId = User.id user
 
 choseAction :: Message.Message -> User.User -> TgUserStatus.TgUserStatus -> Flow (Response Message.Message)
