@@ -121,7 +121,7 @@ confirmLogout =
 
 continueStat :: Message -> Message
 continueStat =
-  mkMessage "Вы желаете продолжить предыдущий сбор статистики или начать новый?"
+  mkMessage "Вы желаете продолжить предыдущий сбор статистики?"
 
 lastCountUsersNotFound :: Message -> Message
 lastCountUsersNotFound =
