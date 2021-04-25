@@ -17,6 +17,7 @@ import qualified Telegram.Types.Domain.Update as Update
 import qualified Telegram.Types.Domain.User as User
 import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
 import qualified Types.Domain.TgUpdates as TgUpdates
+import qualified App.Bot.Selecting.MessageFromUser as MessageFromUser
 
 execute :: TgUpdates.ListOfUpdates -> Flow ()
 execute updates = do
@@ -67,7 +68,7 @@ parseUpdate update = do
         Just _ -> pure ()
     checkCallBack = do
       case Update.callback_query update of
-        Nothing -> getMsg >>= UserAPI.messageFromUser
+        Nothing -> getMsg >>= MessageFromUser.messageFromUser
         Just cb -> maybe (getMsg >>= Messages.oldMsg) (checkUserStatus cb) (CallbackQuery.callback_message cb)
       pure ()
     getMsg = do

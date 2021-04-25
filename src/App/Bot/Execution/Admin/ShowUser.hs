@@ -1,4 +1,4 @@
-module App.Bot.Execution.Admin.SelectUser where
+module App.Bot.Execution.Admin.ShowUser where
 
 import qualified App.Bot.Messages.FlowMessages as Message
 import Common.Flow (Flow)

@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module App.Bot.Selecting.Users.MessageFromUser where
+module App.Bot.Selecting.MessageFromUser where
 
 import qualified App.Bot.Execution.Users.Login as Login
 import qualified App.Bot.Messages.FlowMessages as Messages

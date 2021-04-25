@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 99488dca892780434372e72e0483f2e6acaaf151fcfe8bd4f75ef2fc708bdd3b
+-- hash: dcf6b25cf8729e56eeec4f3802c1e681cc2bad67619bc9a0816457c4ecfc1fc8
 
 name:           Inst
 version:        0.1.0.0
@@ -57,13 +57,13 @@ library
       App.Bot.ParseUpdates
       App.Bot.Selecting.Admin.AdminMenu
       App.Bot.Selecting.Admin.SelectingTgUser
+      App.Bot.Selecting.MessageFromUser
       App.Bot.Selecting.Users.AccountMenu
       App.Bot.Selecting.Users.API
       App.Bot.Selecting.Users.Confirm
       App.Bot.Selecting.Users.HelpMenu
       App.Bot.Selecting.Users.ListOfAccounts
       App.Bot.Selecting.Users.MainMenu
-      App.Bot.Selecting.Users.MessageFromUser
       App.Bot.Selecting.Users.Statistics
       App.Scripts.Auth.API
       App.Scripts.Info.API
