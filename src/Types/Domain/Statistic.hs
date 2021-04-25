@@ -6,6 +6,7 @@ import Data.Foldable (toList)
 import qualified Data.Sequence as Seq
 import Data.Sequence ((|>))
 import qualified Data.Set as Set
+import Data.Maybe ( isJust )
 import Data.Text (Text)
 
 data Statistic
@@ -25,6 +26,7 @@ empty =
 addUser :: Text -> Statistic -> Statistic
 addUser user stat@(Statistic stat_users stat_lastUsers)
   | Set.member user stat_users = stat
+  | isJust (Seq.elemIndexL user stat_lastUsers) = stat
   | otherwise =
     Statistic
       { users = Set.insert user stat_users,
@@ -48,6 +50,6 @@ isMember user Statistic {..} = Set.member user users
 initWithLastUsers :: [Text] -> Statistic
 initWithLastUsers lastCountUsers =
   Statistic
-    { users = Set.fromList lastCountUsers,
+    { users = Set.empty,
       lastUsers = Seq.fromList lastCountUsers
     }
