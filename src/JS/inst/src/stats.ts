@@ -1,6 +1,7 @@
 import puppeteer = require('puppeteer');
 import path = require('path');
 import {createBrowser} from "./browserCreation";
+import * as File from './file'
 
 const fs = require('fs-extra');
 
@@ -17,6 +18,7 @@ export interface StatsResponse {
     inst_id: string;
     users?: Array<string>;
     error_message?: string;
+    error_code?: string; // USER_IS_NOT_LOGGED | FETCHING_ERROR  | NO_USER_DIR | LOGOUT_FAILURE | LOGOUT_NO_USER | OTHER_ERROR_1 | OTHER_ERROR_2
 }
 
 
@@ -26,6 +28,7 @@ export async function getFollowers(id: string): Promise<StatsResponse> {
         return {
             inst_id: id,
             error_message: "User directory doesn't exist",
+            error_code: 'NO_USER_DIR'
         }
     }
 
@@ -39,9 +42,12 @@ export async function getFollowers(id: string): Promise<StatsResponse> {
 
 
         if (!(await isUserLoggedInInst(page))) {
+            let screenNum = File.screenErrorStats(page);
+            let htmlNum = File.saveHTMLStats(page);
             return {
                 inst_id: id,
-                error_message: "User isn't logged in",
+                error_message: `User isn't logged in. Check ${screenNum}.png, ${htmlNum}.html`,
+                error_code: 'USER_IS_NOT_LOGGED',
             }
         }
 
@@ -56,9 +62,12 @@ export async function getFollowers(id: string): Promise<StatsResponse> {
         });
 
         if (responseObject === null) {
+            let screenNum = File.screenErrorStats(page);
+            let htmlNum = File.saveHTMLStats(page);
             return {
                 inst_id: id,
-                error_message: 'Error while fetching followers',
+                error_message: `Error while fetching followers. Check ${screenNum}.png, ${htmlNum}.html`,
+                error_code: 'FETCHING_ERROR',
             }
         }
 
@@ -76,9 +85,12 @@ export async function getFollowers(id: string): Promise<StatsResponse> {
         }
 
     } catch (e) {
+        let screenNum = File.screenErrorStats(page);
+        let htmlNum = File.saveHTMLStats(page);
         return {
             inst_id: id,
-            error_message: e.message,
+            error_message: e.message + `. Check ${screenNum}.png, ${htmlNum}.html`,
+            error_code: 'OTHER_ERROR_1'
         }
     } finally {
         await browser.close();

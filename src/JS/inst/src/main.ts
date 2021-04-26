@@ -13,6 +13,7 @@ import path = require('path');
     // TODO CREATE MUTEXES AFTER THIS
     await fs.mkdirp(path.resolve(__dirname, 'cookies'));
     await fs.mkdirp(path.resolve(__dirname, 'errors'));
+    await fs.mkdirp(path.resolve(__dirname, 'statsErrors'));
 })().then(Proxy.checkProxyAndSetVar).then(
     () => {
         console.log("Proxy OK");

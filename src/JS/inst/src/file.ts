@@ -24,6 +24,21 @@ export async function saveHTML(name: string, page: puppeteer.Page) {
     await fs.outputFile(path.resolve(__dirname, `errors/${name}`), code);
 }
 
+let screenCounter = 1;
+export async function screenErrorStats(page: puppeteer.Page): Promise<number> {
+    let counter = screenCounter++;
+    await page.screenshot({path: path.resolve(__dirname, `statsErrors/${counter}.png`)});
+    return counter;
+}
+
+let htmlCounter = 1;
+export async function saveHTMLStats(page: puppeteer.Page): Promise<number> {
+    let counter = htmlCounter++;
+    const code = await page.content();
+    await fs.outputFile(path.resolve(__dirname, `statsErrors/${counter}.html`), code);
+    return counter;
+}
+
 export async function acquireMutex(id: string) {
     if (mutexes.has(id)) {
         let mutex: Mutex = mutexes.get(id) as Mutex;
