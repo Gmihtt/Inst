@@ -20,7 +20,6 @@ import qualified Telegram.Types.Domain.User as User
 import qualified Types.Communication.Statistics.Request as RequestStat
 import qualified Types.Domain.InstAccount as InstAccount
 import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
-import qualified Types.Domain.ThreadManager as Manager
 
 confirmLogout :: Message.Message -> User.User -> Text -> Flow (Response Message.Message)
 confirmLogout msg user login = do

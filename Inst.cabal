@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: dcf6b25cf8729e56eeec4f3802c1e681cc2bad67619bc9a0816457c4ecfc1fc8
+-- hash: a3c6dbe21ab92156f1e2846ba72b9b2d10dc73063f503f8c6213741487666798
 
 name:           Inst
 version:        0.1.0.0
@@ -118,6 +118,7 @@ library
       Telegram.Types.Methods.SendMessage
       Types.Communication.Auth.Request
       Types.Communication.Auth.Response
+      Types.Communication.Error
       Types.Communication.Info.Request
       Types.Communication.Info.Response
       Types.Communication.Statistics.Request

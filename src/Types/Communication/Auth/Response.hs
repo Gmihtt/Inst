@@ -12,6 +12,7 @@ import Common.Json
   )
 import Data.Text (Text)
 import GHC.Generics (Generic)
+import Types.Communication.Error ( Error )
 
 data Auth = DoubleAuth | Sus | PhoneCheck | Success | Error deriving (Show, Eq, Generic)
 
@@ -27,7 +28,7 @@ data Response
         username :: Text,
         status :: Auth,
         is_private :: Maybe Bool,
-        error_message :: Maybe Text
+        error :: Maybe Error
       }
   deriving (Show, Eq, Generic)
 

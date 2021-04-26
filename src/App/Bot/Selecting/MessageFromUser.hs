@@ -64,7 +64,6 @@ checkStatus msg user = do
     admin = do
       env <- getEnvironment
       let infoManager = Environment.infoManager env
-      let uId = T.pack $ show userId
       res <- liftIO $ InfoAPI.sendAndReceiveMsg "1" infoManager $ InfoRequest.mkAllStatusReq "1"
       Messages.smthMessage res msg
     userId = User.id user

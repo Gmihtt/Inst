@@ -2,7 +2,7 @@
 
 module App.Scripts.Info.API where
 
-import Common.Error (printDebug, printError, throwSocketErr)
+import Common.Error (printError, throwSocketErr)
 import qualified Communication.Sockets.API as SocketAPI
 import Control.Monad.IO.Class (liftIO)
 import Data.Aeson (decode, encode)

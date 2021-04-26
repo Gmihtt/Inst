@@ -10,12 +10,13 @@ import Common.Json
   )
 import Data.Text (Text)
 import GHC.Generics (Generic)
+import Types.Communication.Error ( Error )
 
 data Response
   = Response
       { inst_id :: Text,
         users :: Maybe [Text],
-        error_message :: Maybe Text
+        error :: Maybe Error
       }
   deriving (Show, Eq, Generic)
 

@@ -7,13 +7,14 @@ import qualified Communication.Sockets.API as SocketsAPI
 import Control.Concurrent (threadDelay)
 import Control.Concurrent.MVar (newEmptyMVar, putMVar, takeMVar)
 import Control.Monad.IO.Class (liftIO)
-import Data.Aeson (decode, encode)
+import Data.Aeson (decode, encode, Result (Error))
 import Data.Text (Text)
 import qualified Types.Communication.Auth.Request as RequestAuth
 import qualified Types.Communication.Auth.Response as ResponseAuth
+import qualified Types.Communication.Error as Error
 import qualified Types.Domain.ThreadManager as Manager
 
-authLogin :: Text -> Text -> Flow ResponseAuth.Response
+authLogin :: Text -> Text -> Flow (Either Text ResponseAuth.Response)
 authLogin username password = do
   env <- getEnvironment
   let authManager = Environment.authManager env
@@ -21,7 +22,7 @@ authLogin username password = do
   liftIO $ printDebug req
   liftIO $ sendAndReceiveMsg username authManager req
 
-doubleAuth :: Text -> Text -> Flow ResponseAuth.Response
+doubleAuth :: Text -> Text -> Flow (Either Text ResponseAuth.Response)
 doubleAuth username code = do
   env <- getEnvironment
   let authManager = Environment.authManager env
@@ -29,7 +30,7 @@ doubleAuth username code = do
   liftIO $ printDebug req
   liftIO $ sendAndReceiveMsg username authManager req
 
-susCode :: Text -> Text -> Flow ResponseAuth.Response
+susCode :: Text -> Text -> Flow (Either Text ResponseAuth.Response)
 susCode username code = do
   env <- getEnvironment
   let authManager = Environment.authManager env
@@ -37,7 +38,7 @@ susCode username code = do
   liftIO $ printDebug req
   liftIO $ sendAndReceiveMsg username authManager req
 
-phoneCheck :: Text -> Text -> Flow ResponseAuth.Response
+phoneCheck :: Text -> Text -> Flow (Either Text ResponseAuth.Response)
 phoneCheck username code = do
   env <- getEnvironment
   let authManager = Environment.authManager env
@@ -53,14 +54,15 @@ authConnection socket = do
       maybe (throwSocketErr $ "decode fail" <> show bsBody) (pure . ResponseAuth.username) (decode bsBody)
     getBsBody bsBody _ = maybe (throwSocketErr $ "decode fail" <> show bsBody) pure (decode bsBody)
 
-sendAndReceiveMsg :: Text -> Manager.AuthManager -> RequestAuth.Request -> IO ResponseAuth.Response
+sendAndReceiveMsg :: Text -> Manager.AuthManager -> RequestAuth.Request -> IO (Either Text ResponseAuth.Response)
 sendAndReceiveMsg key manager req = do
   Manager.sendMsg (encode req) manager
   script <- newEmptyMVar
   getMsg script
   bsRes <- takeMVar script
   Manager.deleteTask key manager
-  pure bsRes
+  let bsError = (Error.parseCriticalError . Error.error_code) =<< ResponseAuth.error bsRes
+  pure $ maybe (Right bsRes) Left bsError
   where
     getMsg script = do
       sleepSecond

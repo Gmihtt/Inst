@@ -6,7 +6,7 @@ import Common.Flow (Flow)
 import qualified Data.List as List
 import Data.Text (Text)
 import qualified Database.MongoDB as Mongo
-import Database.MongoDB ((=:), (!?))
+import Database.MongoDB ((=:))
 import MongoDB.Queries.Common (callDB)
 import qualified MongoDB.Transforms.TgUser as Transforms
 import qualified MongoDB.Transforms.Usernames as Transforms

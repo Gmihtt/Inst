@@ -11,7 +11,7 @@ where
 
 import qualified App.Bot.Messages.FlowMessages as Message
 import qualified App.Scripts.Auth.API as ScriptsAuth
-import Common.Error (printDebug)
+import Common.Error ( printDebug, throwLogicError )
 import Common.Flow (Flow)
 import qualified Common.Redis as Common
 import qualified Common.TelegramUserStatus as Common
@@ -70,7 +70,7 @@ sus msg user accLogin accPassword accCode = do
   liftIO $ printDebug res
   statusHandler msg user accLogin accPassword res
 
-phoneCheck :: 
+phoneCheck ::
   Message.Message ->
   User.User ->
   Text ->
@@ -87,9 +87,10 @@ statusHandler ::
   User.User ->
   Text ->
   Text ->
-  ResponseAuth.Response ->
+  Either Text ResponseAuth.Response ->
   Flow (Response Message.Message)
-statusHandler msg user accLogin accPassword res = do
+statusHandler msg user accLogin accPassword eRes = do
+  res <- either (liftIO . throwLogicError . T.unpack) pure eRes
   case ResponseAuth.status res of
     ResponseAuth.DoubleAuth -> do
       let status = TgUserStatus.TgUser $ TgUserStatus.AddDoubleAuth accLogin accPassword

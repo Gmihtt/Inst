@@ -2,12 +2,18 @@
 
 module App.Scripts.Statistics.API where
 
-import Common.Error (printDebug, printError, throwSocketErr)
+import Common.Error
+    ( printDebug,
+      printError,
+      throwSocketErr,
+      printDebug,
+      throwLogicError )
 import qualified Communication.Sockets.API as SocketAPI
 import Control.Monad.IO.Class (liftIO)
 import Data.Aeson (decode, encode)
 import Data.ByteString.Lazy (ByteString)
-import Data.Text (unpack)
+import qualified Data.Text as T
+import qualified Types.Communication.Error as Error
 import qualified Types.Communication.Statistics.Request as RequestStat
 import qualified Types.Communication.Statistics.Response as ResponseStat
 import qualified Types.Domain.Statistic as Statistic
@@ -28,8 +34,13 @@ mkStatistics bsBody mbStat = do
   where
     addUsers users stat = foldr Statistic.addUser stat users
     getUsers value =
+      let mbError = (Error.parseCriticalError . Error.error_code) =<< ResponseStat.error value in
+      let error = maybe 
+            (printError ("Error : " <> show (ResponseStat.error value))) 
+            (liftIO . throwLogicError . T.unpack) 
+            mbError in
       maybe
-        (printError (("Error : " <>) . unpack <$> ResponseStat.error_message value) >> pure [])
+        (error >> pure [])
         pure
         (ResponseStat.users value)
 
