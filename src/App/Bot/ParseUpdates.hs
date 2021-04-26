@@ -9,6 +9,7 @@ import Common.Flow (Flow, getEnvironment, runFlow)
 import qualified Common.TelegramUserStatus as Common
 import Control.Concurrent (forkIO)
 import Control.Monad.IO.Class (liftIO)
+import qualified Data.Text as T
 import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.CallbackQuery as CallbackQuery
 import Telegram.Types.Domain.Message (Message)
@@ -73,7 +74,8 @@ parseUpdate update = do
       pure ()
     getMsg = do
       let mbMsg = Update.message update
-      liftIO $ maybe (throwTgErr "Function: parseUpdate. In 'update' field 'message' is Nothing") pure mbMsg
+      liftIO $ maybe (throwTgErr errMsg) pure mbMsg
+    errMsg = T.pack $ "Function: parseUpdate. In 'update' field 'message' is Nothing, with update: " ++ show update
 
 checkUserStatus :: CallbackQuery.CallbackQuery -> Message -> Flow (Response Message)
 checkUserStatus cb msg = do
