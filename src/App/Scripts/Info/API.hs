@@ -6,6 +6,9 @@ import Common.Error (printDebug, printError, throwSocketErr)
 import qualified Communication.Sockets.API as SocketAPI
 import Control.Monad.IO.Class (liftIO)
 import Data.Aeson (decode, encode)
+import Control.Concurrent.MVar (newEmptyMVar, putMVar, takeMVar)
+import Control.Concurrent (threadDelay)
+import Data.Text (Text)
 import qualified Types.Communication.Info.Request as RequestInfo
 import qualified Types.Communication.Info.Response as ResponseInfo
 import qualified Types.Domain.ThreadManager as Manager
@@ -18,7 +21,17 @@ infoConnection socket = do
       maybe (throwSocketErr $ "decode fail" <> show bsBody) (pure . ResponseInfo.admin_id) (decode bsBody)
     getBody bsBody _ = maybe (throwSocketErr $ "decode fail" <> show bsBody) pure (decode bsBody)
 
-sendMsg :: Manager.StatisticsManager -> RequestInfo.Request -> IO ()
-sendMsg manager req = do
-  printDebug req
+sendAndReceiveMsg :: Text -> Manager.InfoManager -> RequestInfo.Request -> IO ResponseInfo.Response
+sendAndReceiveMsg key manager req = do
   Manager.sendMsg (encode req) manager
+  script <- newEmptyMVar
+  getMsg script
+  bsRes <- takeMVar script
+  Manager.deleteTask key manager
+  pure bsRes
+  where
+    getMsg script = do
+      sleepSecond
+      mbMsg <- Manager.findTask key manager
+      maybe (getMsg script) (putMVar script) mbMsg
+    sleepSecond = threadDelay 1000000

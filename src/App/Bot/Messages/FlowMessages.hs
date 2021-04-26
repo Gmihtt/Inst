@@ -16,7 +16,8 @@ module App.Bot.Messages.FlowMessages
     stop,
     todoMsg,
     publicAccount,
-    enterCode,
+    doubleAuth,
+    susCode,
     incorrectCode,
     confirmLogout,
     logout,
@@ -28,7 +29,7 @@ module App.Bot.Messages.FlowMessages
     selectUser,
     selectAdmin,
     enterUsername,
-    enterPhone,
+    smthMessage,
   )
 where
 
@@ -110,13 +111,13 @@ publicAccount :: Message -> Flow (Response Message)
 publicAccount msg =
   sendMessage Nothing (Messages.publicAccount msg)
 
-enterCode :: Message -> Flow (Response Message)
-enterCode msg =
-  sendMessage Nothing (Messages.enterCode msg)
+doubleAuth :: Message -> Flow (Response Message)
+doubleAuth msg =
+  sendMessage Nothing (Messages.doubleAuth msg)
 
-enterPhone :: Message -> Flow (Response Message)
-enterPhone msg =
-  sendMessage Nothing (Messages.enterPhone msg)
+susCode :: Message -> Flow (Response Message)
+susCode msg =
+  sendMessage Nothing (Messages.susCode msg)
 
 incorrectCode :: Message -> Flow (Response Message)
 incorrectCode msg =
@@ -159,5 +160,9 @@ selectAdmin msg =
   sendMessage Nothing (Messages.selectAdmin msg)
 
 enterUsername :: Message -> Flow (Response Message)
-enterUsername  msg =
+enterUsername msg =
   sendMessage Nothing (Messages.enterUsername  msg)
+
+smthMessage :: (Show a) => a -> Message -> Flow (Response Message)
+smthMessage a msg =
+  sendMessage Nothing (Messages.smthMessage a msg)

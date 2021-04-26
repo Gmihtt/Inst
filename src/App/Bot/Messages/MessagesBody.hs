@@ -18,7 +18,8 @@ module App.Bot.Messages.MessagesBody
     stopMsg,
     todoMsg,
     publicAccount,
-    enterCode,
+    doubleAuth,
+    susCode,
     incorrectCode,
     confirmLogout,
     logout,
@@ -30,7 +31,7 @@ module App.Bot.Messages.MessagesBody
     selectUser,
     selectAdmin,
     enterUsername,
-    enterPhone,
+    smthMessage
   )
 where
 
@@ -104,13 +105,13 @@ todoMsg :: Message -> Message
 todoMsg =
   mkMessage "эта функция ещё не реализована"
 
-enterCode :: Message -> Message
-enterCode =
-  mkMessage "Вам на почту или телефон должен был прийти код, введите код"
+doubleAuth :: Message -> Message
+doubleAuth = 
+  mkMessage "Введите код от двухфакторной аутентификации"
 
-enterPhone :: Message -> Message
-enterPhone =
-  mkMessage "Введите номер телефона"
+susCode :: Message -> Message
+susCode =
+  mkMessage "Вам на почту или телефон должен был прийти код, введите код"
 
 incorrectCode :: Message -> Message
 incorrectCode =
@@ -159,3 +160,7 @@ selectAdmin =
 enterUsername :: Message -> Message
 enterUsername =
   mkMessage "Введите username"
+
+smthMessage :: (Show a) => a -> Message -> Message
+smthMessage a =
+  mkMessage (pack $ show a)
