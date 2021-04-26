@@ -26,8 +26,10 @@ async function getAndSendFollowersCount(socket: any, id: string, timeout: number
     } catch (e) {
         let error: Stats.StatsResponse = {
             inst_id: id,
-            error_message: e.message,
-            error_code: 'OTHER_ERROR_2'
+            error: {
+                error_message: e.message,
+                error_code: 'OTHER_ERROR_2'
+            }
         }
         sendWithLog(socket, error);
     }
@@ -83,16 +85,20 @@ export function runStatsServer(server: ws.Server) {
                         } else {
                             let errorObj: Stats.StatsResponse = {
                                 inst_id: request.inst_id,
-                                error_message: `Error: there's no such user.`,
-                                error_code: 'LOGOUT_NO_USER'
+                                error: {
+                                    error_message: `Error: there's no such user.`,
+                                    error_code: 'LOGOUT_NO_USER'
+                                }
                             };
                             sendWithLog(socket, errorObj);
                         }
                     } catch (e) {
                         let errorObj: Stats.StatsResponse = {
                             inst_id: request.inst_id,
-                            error_message: `Failure during logout: ${e.message}`,
-                            error_code: 'LOGOUT_FAILURE'
+                            error: {
+                                error_message: `Failure during logout: ${e.message}`,
+                                error_code: 'LOGOUT_FAILURE'
+                            }
                         };
                         sendWithLog(socket, errorObj);
                     }
