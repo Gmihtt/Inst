@@ -38,7 +38,7 @@ start True msg user instId = do
     Just instStat -> do
       let statManager = Environment.statisticsManager env
       liftIO $ API.sendMsg statManager (RequestStat.mkStartReq instId)
-      let statistics = Statistic.initWithLastUsers $ InstStatistics.lastCountUsers instStat
+      let statistics = Right . Statistic.initWithLastUsers $ InstStatistics.lastCountUsers instStat
       liftIO $ Manager.addTask instId statistics statManager
       let status = TgUserStatus.TgUser $ TgUserStatus.AccountMenu instId
       Common.updateUserStatus user status
