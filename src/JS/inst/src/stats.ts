@@ -13,12 +13,15 @@ export interface StatsRequest {
     timeout?: number;
 }
 
+export interface Error {
+    error_message?: string;
+    error_code?: string; // USER_IS_NOT_LOGGED | FETCHING_ERROR  | NO_USER_DIR | LOGOUT_FAILURE | LOGOUT_NO_USER | OTHER_ERROR_1 | OTHER_ERROR_2
+}
 
 export interface StatsResponse {
     inst_id: string;
     users?: Array<string>;
-    error_message?: string;
-    error_code?: string; // USER_IS_NOT_LOGGED | FETCHING_ERROR  | NO_USER_DIR | LOGOUT_FAILURE | LOGOUT_NO_USER | OTHER_ERROR_1 | OTHER_ERROR_2
+    error?: Error;
 }
 
 
@@ -27,8 +30,10 @@ export async function getFollowers(id: string): Promise<StatsResponse> {
     if (!isLogged) {
         return {
             inst_id: id,
-            error_message: "User directory doesn't exist",
-            error_code: 'NO_USER_DIR'
+            error: {
+                error_message: "User directory doesn't exist",
+                error_code: 'NO_USER_DIR'
+            }
         }
     }
 
@@ -46,8 +51,10 @@ export async function getFollowers(id: string): Promise<StatsResponse> {
             let htmlNum = File.saveHTMLStats(page);
             return {
                 inst_id: id,
-                error_message: `User isn't logged in. Check ${screenNum}.png, ${htmlNum}.html`,
-                error_code: 'USER_IS_NOT_LOGGED',
+                error: {
+                    error_message: `User isn't logged in. Check ${screenNum}.png, ${htmlNum}.html`,
+                    error_code: 'USER_IS_NOT_LOGGED',
+                }
             }
         }
 
@@ -66,8 +73,10 @@ export async function getFollowers(id: string): Promise<StatsResponse> {
             let htmlNum = File.saveHTMLStats(page);
             return {
                 inst_id: id,
-                error_message: `Error while fetching followers. Check ${screenNum}.png, ${htmlNum}.html`,
-                error_code: 'FETCHING_ERROR',
+                error: {
+                    error_message: `Error while fetching followers. Check ${screenNum}.png, ${htmlNum}.html`,
+                    error_code: 'FETCHING_ERROR',
+                }
             }
         }
 
@@ -89,8 +98,10 @@ export async function getFollowers(id: string): Promise<StatsResponse> {
         let htmlNum = File.saveHTMLStats(page);
         return {
             inst_id: id,
-            error_message: e.message + `. Check ${screenNum}.png, ${htmlNum}.html`,
-            error_code: 'OTHER_ERROR_1'
+            error: {
+                error_message: e.message + `. Check ${screenNum}.png, ${htmlNum}.html`,
+                error_code: 'OTHER_ERROR_1'
+            }
         }
     } finally {
         await browser.close();
