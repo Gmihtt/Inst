@@ -10,7 +10,8 @@ import qualified Common.TelegramUserStatus as Common
 import Control.Monad.IO.Class (liftIO)
 import Data.Text (Text)
 import qualified Data.Text as T
-import Data.Time (getCurrentTime)
+import Data.Int ( Int32 )
+import Data.Time (getCurrentTime, UTCTime)
 import qualified MongoDB.Queries.Statistics as Mongo
 import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.Message as Message
@@ -19,6 +20,7 @@ import qualified Types.Domain.InstStatistics as InstStatistics
 import qualified Types.Domain.Statistic as Statistic
 import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
 import qualified Types.Domain.ThreadManager as Manager
+import qualified Types.Communication.Error as Error
 
 choseStatistics :: Message.Message -> User.User -> Text -> Flow (Response Message.Message)
 choseStatistics msg user instId = do
@@ -28,42 +30,43 @@ choseStatistics msg user instId = do
 
 oneStatistics :: Message.Message -> User.User -> Text -> Flow (Response Message.Message)
 oneStatistics msg user instId = do
-  curStatistics <- currentStatistics instId
-  Messages.sendStat msg curStatistics
-  choseStatistics msg user instId
+  eCurStatistics <- currentStatistics instId
+  case eCurStatistics of
+    Right curStatistics -> do 
+      Messages.sendStat msg curStatistics
+      choseStatistics msg user instId
+    Left err -> Messages.smthMessage err msg
 
 dayStatistics :: Message.Message -> User.User -> Text -> Flow (Response Message.Message)
-dayStatistics msg user instId = do
-  curStatistics <- currentStatistics instId
-  time <- liftIO getCurrentTime
-  instStatistics <- Mongo.findInstStatById instId
-  let dayStat = fromIntegral $ maybe 0 (InstStatistics.groupCountByDay time) instStatistics
-  Messages.sendStat msg $ curStatistics + dayStat
-  choseStatistics msg user instId
+dayStatistics msg user instId = groupStatistics msg user instId InstStatistics.groupCountByDay
 
 weekStatistics :: Message.Message -> User.User -> Text -> Flow (Response Message.Message)
-weekStatistics msg user instId = do
-  curStatistics <- currentStatistics instId
-  time <- liftIO getCurrentTime
-  instStatistics <- Mongo.findInstStatById instId
-  let weekStat = fromIntegral $ maybe 0 (InstStatistics.groupCountByWeek time) instStatistics
-  Messages.sendStat msg $ curStatistics + weekStat
-  choseStatistics msg user instId
+weekStatistics msg user instId = groupStatistics msg user instId InstStatistics.groupCountByWeek
 
 monthStatistics :: Message.Message -> User.User -> Text -> Flow (Response Message.Message)
-monthStatistics msg user instId = do
-  curStatistics <- currentStatistics instId
-  time <- liftIO getCurrentTime
-  instStatistics <- Mongo.findInstStatById instId
-  let monthStat = fromIntegral $ maybe 0 (InstStatistics.groupCountByMonth time) instStatistics
-  Messages.sendStat msg $ curStatistics + monthStat
-  choseStatistics msg user instId
+monthStatistics msg user instId = groupStatistics msg user instId InstStatistics.groupCountByMonth
 
-currentStatistics :: Text -> Flow Int
+groupStatistics :: 
+  Message.Message -> 
+  User.User ->
+  Text -> 
+  (UTCTime -> InstStatistics.InstStatistics -> Int32) -> 
+  Flow (Response Message.Message)
+groupStatistics msg user instId group = do
+  eCurStatistics <- currentStatistics instId
+  case eCurStatistics of
+    Right curStatistics -> do 
+      time <- liftIO getCurrentTime
+      instStatistics <- Mongo.findInstStatById instId
+      let monthStat = fromIntegral $ maybe 0 (group time) instStatistics
+      Messages.sendStat msg $ curStatistics + monthStat
+      choseStatistics msg user instId
+    Left err -> Messages.smthMessage err msg
+
+currentStatistics :: Text -> Flow (Either Error.Error Int)
 currentStatistics instId = do
   env <- getEnvironment
   let manager = Environment.statisticsManager env
   mbStat <- liftIO $ Manager.findTask instId manager
-  let value = maybe 0 Statistic.getSize mbStat
-  liftIO $ printDebug ("Current statistics = " <> T.pack (show value) <> " For instId: " <> instId)
+  let value = maybe (Right 0) (Statistic.getSize <$>) mbStat
   pure value

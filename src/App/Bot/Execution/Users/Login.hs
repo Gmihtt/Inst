@@ -90,7 +90,7 @@ statusHandler ::
   Either Text ResponseAuth.Response ->
   Flow (Response Message.Message)
 statusHandler msg user accLogin accPassword eRes = do
-  res <- either (liftIO . throwLogicError . T.unpack) pure eRes
+  res <- either cricitalCase pure eRes
   case ResponseAuth.status res of
     ResponseAuth.DoubleAuth -> do
       let status = TgUserStatus.TgUser $ TgUserStatus.AddDoubleAuth accLogin accPassword
@@ -120,6 +120,9 @@ statusHandler msg user accLogin accPassword eRes = do
               ++ show res
           errorCase
   where
+    cricitalCase err = do
+      Message.smthMessage err msg
+      liftIO . throwLogicError $ T.unpack err
     errorCase = do
       let status = TgUserStatus.TgUser TgUserStatus.ListOfAccounts
       Common.updateUserStatus user status

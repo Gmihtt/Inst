@@ -13,6 +13,7 @@ import Control.Monad.IO.Class (liftIO)
 import Data.Aeson (decode, encode)
 import Data.ByteString.Lazy (ByteString)
 import qualified Data.Text as T
+import Data.Maybe (fromMaybe)
 import qualified Types.Communication.Error as Error
 import qualified Types.Communication.Statistics.Request as RequestStat
 import qualified Types.Communication.Statistics.Response as ResponseStat
@@ -26,23 +27,18 @@ statConnection socket = do
     getUsername bsBody =
       maybe (throwSocketErr $ "decode fail" <> show bsBody) (pure . ResponseStat.inst_id) (decode bsBody)
 
-mkStatistics :: ByteString -> Maybe Statistic.Statistic -> IO Statistic.Statistic
+mkStatistics :: ByteString -> Maybe (Either Error.Error Statistic.Statistic) -> IO (Either Error.Error Statistic.Statistic)
 mkStatistics bsBody mbStat = do
   value <- maybe (throwSocketErr $ "decode fail" <> show bsBody) pure (decode bsBody)
-  users <- getUsers value
-  pure $ maybe (addUsers users Statistic.empty) (addUsers users) mbStat
+  eUsers <- getUsers value
+  case eUsers of
+    Right users ->
+      pure $ maybe (Right $ addUsers users Statistic.empty) (fmap (addUsers users)) mbStat
   where
     addUsers users stat = foldr Statistic.addUser stat users
     getUsers value =
       let mbError = (Error.parseCriticalError . Error.error_code) =<< ResponseStat.error value in
-      let error = maybe 
-            (printError ("Error : " <> show (ResponseStat.error value))) 
-            (liftIO . throwLogicError . T.unpack) 
-            mbError in
-      maybe
-        (error >> pure [])
-        pure
-        (ResponseStat.users value)
+      pure $ maybe (Right . fromMaybe [] $ ResponseStat.users value) Left mbError
 
 sendMsg :: Manager.StatisticsManager -> RequestStat.Request -> IO ()
 sendMsg manager req = do

@@ -16,5 +16,5 @@ execute msg instId = do
   env <- getEnvironment
   let statManager = Environment.statisticsManager env
   liftIO $ API.sendMsg statManager (RequestStat.mkStopReq instId)
-  Save.execute instId
+  Save.execute msg instId
   Messages.stop msg
