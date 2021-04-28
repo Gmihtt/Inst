@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 93fdfd82b8e84b918c89fa246de9551b37cc804f9397149d41f99d5962a43cfa
+-- hash: a3c6dbe21ab92156f1e2846ba72b9b2d10dc73063f503f8c6213741487666798
 
 name:           Inst
 version:        0.1.0.0
@@ -28,49 +28,74 @@ library
   exposed-modules:
       App.App
       App.Bot.BotMain
+      App.Bot.Buttons.Admin.AdminMenu
+      App.Bot.Buttons.Admin.SelectUser
       App.Bot.Buttons.Keyboards
       App.Bot.Buttons.User.AccountMenu
+      App.Bot.Buttons.User.ChoseStatistics
+      App.Bot.Buttons.User.Confirm
       App.Bot.Buttons.User.Help
       App.Bot.Buttons.User.MainMenu
       App.Bot.Buttons.User.ShowInstAccounts
+      App.Bot.Execution.Admin.AdminMenu
+      App.Bot.Execution.Admin.SelectUser
+      App.Bot.Execution.Admin.ShowUser
       App.Bot.Execution.Users.Help
       App.Bot.Execution.Users.Login
+      App.Bot.Execution.Users.Logout
       App.Bot.Execution.Users.MainMenu
       App.Bot.Execution.Users.ShowAccounts
-      App.Bot.Execution.Users.Statistics
+      App.Bot.Execution.Users.Statistics.Back
+      App.Bot.Execution.Users.Statistics.GetStatistics
+      App.Bot.Execution.Users.Statistics.Save
+      App.Bot.Execution.Users.Statistics.Start
+      App.Bot.Execution.Users.Statistics.Stop
+      App.Bot.Execution.Users.Statistics.Subscription
       App.Bot.GetUpdates
       App.Bot.Messages.FlowMessages
       App.Bot.Messages.MessagesBody
       App.Bot.ParseUpdates
-      App.Bot.Selecting.Admin.AccountsMenu
-      App.Bot.Selecting.Admin.MessageFromBot
+      App.Bot.Selecting.Admin.AdminMenu
       App.Bot.Selecting.Admin.SelectingTgUser
+      App.Bot.Selecting.MessageFromUser
       App.Bot.Selecting.Users.AccountMenu
       App.Bot.Selecting.Users.API
+      App.Bot.Selecting.Users.Confirm
       App.Bot.Selecting.Users.HelpMenu
       App.Bot.Selecting.Users.ListOfAccounts
       App.Bot.Selecting.Users.MainMenu
-      App.Bot.Selecting.Users.MessageFromUser
+      App.Bot.Selecting.Users.Statistics
       App.Scripts.Auth.API
-      App.Scripts.Socket.API
-      App.Scripts.Socket.App
-      App.Scripts.Socket.Connection
+      App.Scripts.Info.API
       App.Scripts.Statistics.API
       Common.Config
       Common.Environment
       Common.Error
       Common.Exception.ConfigError
+      Common.Exception.LogicError
       Common.Exception.MongoError
       Common.Exception.RedisError
       Common.Exception.SocketError
       Common.Exception.TelegramError
       Common.Exception.ThreadsError
       Common.Flow
-      Common.FlowEnv
       Common.Json
-      MongoDB.Queries
+      Common.Redis
+      Common.TelegramUserStatus
+      Communication.Sockets.API
+      Communication.Sockets.App
+      Communication.Sockets.Connection
+      Communication.Sockets.Socket
+      Communication.Sockets.Stream
+      Communication.ThreadManager.Manager
+      MongoDB.Queries.Accounts
+      MongoDB.Queries.Common
+      MongoDB.Queries.Statistics
+      MongoDB.Queries.Usernames
       MongoDB.Transforms.InstAccount
+      MongoDB.Transforms.InstStatistics
       MongoDB.Transforms.TgUser
+      MongoDB.Transforms.Usernames
       Redis.Queries
       Telegram.API.Methods.CallTelegram
       Telegram.API.Methods.SendMessage
@@ -91,17 +116,23 @@ library
       Telegram.Types.Domain.Update
       Telegram.Types.Domain.User
       Telegram.Types.Methods.SendMessage
-      Types.Communication.Scripts.Auth
-      Types.Communication.Scripts.Statistics
+      Types.Communication.Auth.Request
+      Types.Communication.Auth.Response
+      Types.Communication.Error
+      Types.Communication.Info.Request
+      Types.Communication.Info.Response
+      Types.Communication.Statistics.Request
+      Types.Communication.Statistics.Response
+      Types.Domain.Admin
       Types.Domain.InstAccount
-      Types.Domain.Manager
-      Types.Domain.Socket
+      Types.Domain.InstStatistics
       Types.Domain.Statistic
       Types.Domain.Status.TgUsersStatus
       Types.Domain.Status.TgUserStatus
-      Types.Domain.Stream
       Types.Domain.TgUpdates
       Types.Domain.TgUser
+      Types.Domain.ThreadManager
+      Types.Domain.Usernames
   other-modules:
       Paths_Inst
   hs-source-dirs:

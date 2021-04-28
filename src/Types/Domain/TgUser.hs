@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Types.Domain.TgUser
   ( TgUser (..),
@@ -14,22 +15,21 @@ import Common.Json
   )
 import Data.Text (Text)
 import GHC.Generics (Generic)
-import Types.Domain.InstAccount (InstAccount)
+import Types.Domain.InstAccount (InstAccounts)
 import Prelude hiding (id)
 
 data TgUser
   = TgUser
       { id :: Text,
-        inst_accounts :: [InstAccount]
+        first_name :: Text,
+        username :: Maybe Text,
+        inst_accounts :: InstAccounts
       }
   deriving (Show, Eq, Generic)
 
-mkTgUser :: Text -> [InstAccount] -> TgUser
-mkTgUser id inst_accounts =
-  TgUser
-    { id = id,
-      inst_accounts = inst_accounts
-    }
+mkTgUser :: Text -> Text -> Maybe Text -> InstAccounts -> TgUser
+mkTgUser id first_name username inst_accounts =
+  TgUser {..}
 
 instance ToJSON TgUser where
   toJSON = toJson

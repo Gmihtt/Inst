@@ -2,13 +2,13 @@ module App.App (app) where
 
 import App.Bot.BotMain (run)
 import qualified App.Scripts.Auth.API as ScriptsAuth
+import qualified App.Scripts.Info.API as ScriptInfo
 import qualified App.Scripts.Statistics.API as ScriptsStatistics
 import qualified Common.Config as Config
 import Common.Environment (mkEnv)
 import Common.Error (Error (..))
-import Control.Concurrent (forkIO)
-import Control.Exception (Exception, SomeException, catch)
-import Control.Monad.Trans.Except (runExceptT)
+import Common.Flow (runFlow)
+import Control.Exception (catch)
 import qualified Database.MongoDB as MongoDB
 import qualified Database.Redis as Redis
 import Network.HTTP.Client (newManager)
@@ -16,9 +16,7 @@ import Network.HTTP.Client.TLS (tlsManagerSettings)
 import System.Log.Formatter (simpleLogFormatter)
 import System.Log.Handler (LogHandler (setFormatter))
 import qualified System.Log.Handler.Simple as Logger
-import qualified System.Log.Handler.Syslog as Logger
 import qualified System.Log.Logger as Logger
-import qualified System.Process as System
 import qualified Types.Domain.Status.TgUsersStatus as TgUsersStatus
 
 setCommonFormatter :: LogHandler a => a -> a
@@ -38,14 +36,16 @@ app =
         collection <- Config.getCollection
         authSocket <- Config.getAuthSocket
         statSocket <- Config.getStatSocket
+        infoSocket <- Config.getInfoSocket
         authManager <- ScriptsAuth.authConnection authSocket
         statManager <- ScriptsStatistics.statConnection statSocket
+        infoManager <- ScriptInfo.infoConnection infoSocket
         tgUsersStatus <- TgUsersStatus.empty
         let logName = "BotLogger.Main"
         logger logName
-        let env = mkEnv manager token pipe conn mongoDB collection authManager statManager tgUsersStatus logName
+        let env = mkEnv manager token pipe conn mongoDB collection authManager statManager infoManager tgUsersStatus logName
         print "App running..."
-        run Nothing env
+        runFlow (run Nothing) env
         MongoDB.close pipe
     )
     handler
@@ -59,4 +59,3 @@ app =
     handler :: Error -> IO ()
     handler err = do
       print err
-      print "hello"

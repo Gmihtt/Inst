@@ -5,9 +5,9 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "start": "node ./build/statsServer.js",
-    "login": "node ./build/loginServer.js",
-    "compile": "npx tsc"
+    "start": "node ./build/main.js",
+    "compile": "npx tsc && cp ./src/config.yaml ./build/config.yaml",
+    "cs": "npx tsc && cp ./src/config.yaml ./build/config.yaml && node ./build/main.js"
   },
   "author": "Daniel Dostanich <dostanichdaniel@gmail.com>",
   "license": "ISC",
@@ -15,12 +15,18 @@
     "async-mutex": "^0.2.6",
     "fs-extra": "^9.1.0",
     "jquery": "^3.5.1",
-    "puppeteer": "^5.3.1",
+    "js-yaml": "^4.0.0",
+    "node-fetch": "^2.6.1",
+    "puppeteer": "^8.0.0",
+    "puppeteer-extra": "^3.1.18",
+    "puppeteer-extra-plugin-block-resources": "^2.2.9",
+    "puppeteer-extra-plugin-stealth": "^2.7.6",
     "readline-promise": "^1.0.4",
     "ws": "^7.4.2"
   },
   "devDependencies": {
     "@types/fs-extra": "^9.0.6",
+    "@types/jquery": "^3.5.5",
     "@types/ws": "^7.4.0",
     "typescript": "^4.1.3"
   }

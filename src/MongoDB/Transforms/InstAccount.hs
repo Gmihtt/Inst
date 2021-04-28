@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module MongoDB.Transforms.InstAccount
   ( mkDocByInstAcc,
@@ -8,42 +9,37 @@ module MongoDB.Transforms.InstAccount
   )
 where
 
-import Data.Bson ((!?))
 import Data.Maybe (mapMaybe)
 import Database.MongoDB
-  ( (=:),
+  ( (!?),
+    (=:),
     Document,
     Value (..),
   )
 import Types.Domain.InstAccount
   ( InstAccount (..),
+    InstAccounts,
   )
 import Prelude hiding (id)
 
 mkDocByInstAcc :: InstAccount -> Document
-mkDocByInstAcc instAcc =
-  [ "id" =: String (id instAcc),
-    "login" =: String (login instAcc),
-    "password" =: String (password instAcc),
-    "subscription" =: Bool (subscription instAcc)
+mkDocByInstAcc InstAccount {..} =
+  [ "id" =: String id,
+    "login" =: String login,
+    "password" =: String password,
+    "subscription" =: Bool subscription
   ]
 
-mkDocsByInstAccs :: [InstAccount] -> [Document]
+mkDocsByInstAccs :: InstAccounts -> [Document]
 mkDocsByInstAccs = map mkDocByInstAcc
 
 mkInstAccByDoc :: Document -> Maybe InstAccount
 mkInstAccByDoc doc = do
-  inst_id <- doc !? "id"
-  inst_login <- doc !? "login"
-  inst_password <- doc !? "password"
-  inst_subscription <- doc !? "subscription"
-  pure
-    InstAccount
-      { id = inst_id,
-        login = inst_login,
-        password = inst_password,
-        subscription = inst_subscription
-      }
+  id <- doc !? "id"
+  login <- doc !? "login"
+  password <- doc !? "password"
+  subscription <- doc !? "subscription"
+  pure InstAccount {..}
 
-mkInstAccsByDocs :: [Document] -> [InstAccount]
+mkInstAccsByDocs :: [Document] -> InstAccounts
 mkInstAccsByDocs = mapMaybe mkInstAccByDoc

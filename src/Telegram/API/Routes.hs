@@ -7,13 +7,6 @@ module Telegram.API.Routes
   )
 where
 
-import Data.Aeson
-  ( FromJSON (parseJSON),
-    ToJSON (toJSON),
-    Value,
-    genericParseJSON,
-    genericToJSON,
-  )
 import Data.Text (Text)
 import Servant
 import Servant.Client (ClientM, client)

@@ -3,6 +3,9 @@ files/
 var/
 src/Temp.hs
 hie.yaml
+configs/
 Configs/
 .idea
 *.log
+configs/config.yaml
+Inst_key.pem

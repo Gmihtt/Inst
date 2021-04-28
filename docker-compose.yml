@@ -1,0 +1,40 @@
+version: "3"
+
+services:
+  server:
+
+    image: danieldostanich/instv14
+
+    stdin_open: true 
+    tty: true        
+
+    network_mode: host
+
+    depends_on:
+            - mongo
+            - redis
+    
+    command:  /bin/bash 
+
+  mongo:
+
+    image: mongo:latest
+    
+    stdin_open: true 
+    tty: true       
+
+    environment:
+            MONGO_INITDB_DATABASE: accounts
+    
+    ports:
+      - 27017:27017
+
+  redis:
+  
+    stdin_open: true 
+    tty: true       
+
+    image: redis:latest
+
+    ports:
+      - 6379:6379

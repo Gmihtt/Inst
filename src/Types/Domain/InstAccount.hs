@@ -1,7 +1,9 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Types.Domain.InstAccount
   ( InstAccount (..),
+    InstAccounts,
     AccountStatus (..),
     mkInstAccount,
     mkAccountStatus,
@@ -18,6 +20,8 @@ import Data.Text (Text)
 import GHC.Generics (Generic)
 import Prelude hiding (id)
 
+type InstAccounts = [InstAccount]
+
 data InstAccount
   = InstAccount
       { id :: Text,
@@ -28,13 +32,8 @@ data InstAccount
   deriving (Show, Eq, Generic)
 
 mkInstAccount :: Text -> Text -> Text -> Bool -> InstAccount
-mkInstAccount inst_id inst_login inst_password subs =
-  InstAccount
-    { id = inst_id,
-      login = inst_login,
-      password = inst_password,
-      subscription = subs
-    }
+mkInstAccount id login password subscription =
+  InstAccount {..}
 
 instance ToJSON InstAccount where
   toJSON = toJson

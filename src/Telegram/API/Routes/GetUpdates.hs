@@ -7,7 +7,6 @@ module Telegram.API.Routes.GetUpdates
 where
 
 import qualified Data.Text as T
-import Network.HTTP.Client (newManager)
 import Servant
 import Telegram.Types.Communication.Response (Response)
 import Telegram.Types.Domain.Update (Updates)

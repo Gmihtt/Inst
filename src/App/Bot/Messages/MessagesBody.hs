@@ -18,6 +18,20 @@ module App.Bot.Messages.MessagesBody
     stopMsg,
     todoMsg,
     publicAccount,
+    doubleAuth,
+    susCode,
+    incorrectCode,
+    confirmLogout,
+    logout,
+    continueStat,
+    lastCountUsersNotFound,
+    choseStatistics,
+    failInstIdOrPrivate,
+    adminMenu,
+    selectUser,
+    selectAdmin,
+    enterUsername,
+    smthMessage
   )
 where
 
@@ -26,17 +40,17 @@ import Telegram.Types.Domain.Message (Message, mkMessage)
 
 mainMenu :: Message -> Message
 mainMenu =
-  mkMessage $
+  mkMessage
     "Это базовое меню, вы можете перейти к выбору перейти выбрать инстаграмм аккаунты или попросить помощь"
 
 login :: Message -> Message
 login =
-  mkMessage $
-    "Пожалуйста отключите двухступенчатую аутентификацию и введите логин от инстаграм аккаунта"
+  mkMessage
+    "Введите логин от инстаграм аккаунта"
 
 password :: Message -> Message
 password =
-  mkMessage $
+  mkMessage
     "Введите пароль"
 
 success :: Message -> Message
@@ -61,7 +75,7 @@ oldMsg =
 
 stat :: Message -> Int -> Message
 stat msg num =
-  mkMessage ("Статистика по вашему инстаграм аккаунту : " <> (pack $ show num)) msg
+  mkMessage ("Статистика по вашему инстаграм аккаунту : " <> pack (show num)) msg
 
 showInstAccs :: Message -> Message
 showInstAccs =
@@ -91,6 +105,62 @@ todoMsg :: Message -> Message
 todoMsg =
   mkMessage "эта функция ещё не реализована"
 
+doubleAuth :: Message -> Message
+doubleAuth = 
+  mkMessage "Введите код от двухфакторной аутентификации"
+
+susCode :: Message -> Message
+susCode =
+  mkMessage "Вам на почту или телефон должен был прийти код, введите код"
+
+incorrectCode :: Message -> Message
+incorrectCode =
+  mkMessage "Либо вы прислали неверный код, либо попробуйте зарегестироваться позже"
+
 publicAccount :: Message -> Message
 publicAccount =
-  mkMessage "Получилось зайти в ваш аккаунт, но он открытый, пока вы его не закроете не получится собирать статистику"
+  mkMessage "Ваш аккаунт открытый, пока вы его не закроете не получится собирать статистику"
+
+confirmLogout :: Message -> Message
+confirmLogout =
+  mkMessage "Подвертидте выход"
+
+continueStat :: Message -> Message
+continueStat =
+  mkMessage "Вы желаете продолжить предыдущий сбор статистики?"
+
+lastCountUsersNotFound :: Message -> Message
+lastCountUsersNotFound =
+  mkMessage "Не удалось найти данные о вашем прошлом сборе статистики"
+
+choseStatistics :: Message -> Message
+choseStatistics =
+  mkMessage "Выберите какую статистику хотитет получить"
+
+failInstIdOrPrivate :: Message -> Message
+failInstIdOrPrivate =
+  mkMessage "Не удалось получить данные вашего инстаграмм аккаунта"
+
+logout :: Message -> Message
+logout =
+  mkMessage "Вы успешно вышли из аккаунта"
+
+adminMenu :: Message -> Message
+adminMenu =
+  mkMessage "Это базовое меню администратор"
+
+selectUser :: Message -> Message
+selectUser =
+  mkMessage "Если пользователь зарегестирован в базе, то вы можете найти его по его username в telegram или instagram"
+
+selectAdmin :: Message -> Message
+selectAdmin =
+  mkMessage "Выберете администратора по его telegram username"
+
+enterUsername :: Message -> Message
+enterUsername =
+  mkMessage "Введите username"
+
+smthMessage :: (Show a) => a -> Message -> Message
+smthMessage a =
+  mkMessage (pack $ show a)
