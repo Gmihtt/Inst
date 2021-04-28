@@ -27,7 +27,7 @@ export async function saveHTML(name: string, page: puppeteer.Page) {
 let screenCounter = 1;
 export async function screenErrorStats(page: puppeteer.Page): Promise<number> {
     let counter = screenCounter++;
-    //await page.screenshot({path: path.resolve(__dirname, `statsErrors/${counter}.png`)});
+    await page.screenshot({path: path.resolve(__dirname, `statsErrors/${counter}.png`)});
     return counter;
 }
 

@@ -3,9 +3,7 @@ import path = require('path');
 import {createBrowser} from "./browserCreation";
 import * as File from './file'
 
-const fs = require('fs-extra');
-
-const TIMEOUT: number = 5000;
+const TIMEOUT: number = 8000;
 
 export interface StatsRequest {
     status: string; //Start | Stop | Logout
@@ -26,7 +24,7 @@ export interface StatsResponse {
 
 
 export async function getFollowers(id: string): Promise<StatsResponse> {
-    const isLogged: boolean = await fs.pathExists(path.resolve(__dirname, `cookies/${id}`));
+    const isLogged: boolean = await File.isUserLoggedInBot(id);
     if (!isLogged) {
         return {
             inst_id: id,
@@ -94,12 +92,10 @@ export async function getFollowers(id: string): Promise<StatsResponse> {
         }
 
     } catch (e) {
-        let screenNum = File.screenErrorStats(page);
-        let htmlNum = File.saveHTMLStats(page);
         return {
             inst_id: id,
             error: {
-                error_message: e.message + `. Check ${screenNum}.png, ${htmlNum}.html`,
+                error_message: e.message,
                 error_code: 'OTHER_ERROR_1'
             }
         }
