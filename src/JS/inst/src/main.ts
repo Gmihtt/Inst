@@ -2,7 +2,6 @@ import ws = require('ws');
 import {runLoginServer} from "./loginServer";
 import {runStatsServer} from "./statsServer";
 import {runInfoServer} from "./infoServer";
-import * as Proxy from "./proxyTester";
 import fs = require('fs-extra');
 import path = require('path');
 
@@ -14,7 +13,7 @@ import path = require('path');
     await fs.mkdirp(path.resolve(__dirname, 'cookies'));
     await fs.mkdirp(path.resolve(__dirname, 'errors'));
     await fs.mkdirp(path.resolve(__dirname, 'statsErrors'));
-})().then(Proxy.checkProxyAndSetVar).then(
+})().then(
     () => {
         console.log("Proxy OK");
 
@@ -33,7 +32,8 @@ import path = require('path');
         runLoginServer(loginServer);
         runStatsServer(statsServer);
         runInfoServer(infoServer);
+    },
+    (error) => {
+        console.log(`Some error occurred:  ${error.message}. Terminating...`);
     }
-).catch((error: Error) => {
-    console.log(`Some error occurred:  ${error.message}. Terminating...`);
-});
+);
