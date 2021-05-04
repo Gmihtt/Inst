@@ -5,6 +5,7 @@ import {createBrowser} from "./browserCreation";
 import fs from "fs-extra";
 //const fetchNode = require('node-fetch');
 import * as File from './file';
+import * as Random from './random'
 
 export interface LoginRequest {
     status: string; // Login | DoubleAuth | Sus | PhoneCheck
@@ -169,7 +170,7 @@ export class Login {
 
         await this.fillInputsAndSubmit(username, code);
 
-        await this.page.waitForTimeout(5000);
+        await this.page.waitForTimeout(Random.getRandomDelay(5000, 30));
     }
 
     public async doubleAuth(username: string, code: string): Promise<LoginResponse> {
@@ -181,7 +182,9 @@ export class Login {
     }
 
     private async doubleAuthAction(username: string, code: string): Promise<void> {
-        await this.page.type('[name=verificationCode]', code);
+        await this.page.type('[name=verificationCode]', code, {
+            delay: Random.getRandomDelay(400, 30),
+        });
 
         await this.page.addScriptTag({path: require.resolve('jquery')});
         await this.page.evaluate(() => {
@@ -190,7 +193,7 @@ export class Login {
         });
         await this.page.click('.followerGettingApp');
 
-        await this.page.waitForTimeout(8000);
+        await this.page.waitForTimeout(Random.getRandomDelay(8000, 30));
     }
 
     public async sus(username: string, code: string): Promise<LoginResponse> {
@@ -202,7 +205,9 @@ export class Login {
     }
 
     private async susAction(username: string, code: string): Promise<void> {
-        await this.page.type('[aria-label="Security code"]', code);
+        await this.page.type('[aria-label="Security code"]', code, {
+            delay: Random.getRandomDelay(400, 30),
+        });
 
         await this.page.addScriptTag({path: require.resolve('jquery')});
         await this.page.evaluate(() => {
@@ -210,7 +215,7 @@ export class Login {
         });
         await this.page.click('.submitButton');
 
-        await this.page.waitForTimeout(8000);
+        await this.page.waitForTimeout(Random.getRandomDelay(8000, 30));
     }
 
     private async runChecks(checks: Checks): Promise<CheckResult> {
@@ -238,7 +243,9 @@ export class Login {
     }
 
     private async runPhoneCheck(username: string, code: string): Promise<void> {
-        await this.page.type('[name="tel"]', code);
+        await this.page.type('[name="tel"]', code, {
+            delay: Random.getRandomDelay(400, 30),
+        });
 
         await this.page.addScriptTag({path: require.resolve('jquery')});
         await this.page.evaluate(() => {
@@ -246,7 +253,7 @@ export class Login {
         });
         await this.page.click('.submitButton');
 
-        await this.page.waitForTimeout(8000);
+        await this.page.waitForTimeout(Random.getRandomDelay(8000, 30));
     }
 
 
@@ -275,7 +282,7 @@ export class Login {
         if (await this.page.$('.cookiesAcceptInst') != null) {
             await this.page.click('.cookiesAcceptInst');
         }
-        await this.page.waitForTimeout(2000);
+        await this.page.waitForTimeout(Random.getRandomDelay(2000, 30));
     }
 
 
@@ -296,7 +303,7 @@ export class Login {
             throw new Error(`User wasn't logged in.`)
         }
         await this.clickSaveInfoButton();
-        await this.page.waitForTimeout(3000);
+        await this.page.waitForTimeout(Random.getRandomDelay(3000, 30));
         const userIdAndPrivacy = await this.getIdAndPrivacy(username);
         this.instId = userIdAndPrivacy.inst_id;
         if (await File.isUserLoggedInBot(this.instId)) {
@@ -356,10 +363,14 @@ export class Login {
 
     private async fillInputsAndSubmit(username: string, password: string) {
         await this.page.waitForSelector('[name=username]');
-        await this.page.type('[name=username]', username);
-        await this.page.type('[name=password]', password);
+        await this.page.type('[name=username]', username, {
+            delay: Random.getRandomDelay(150, 30),
+        });
+        await this.page.type('[name=password]', password, {
+            delay: Random.getRandomDelay(250, 30),
+        });
         await this.page.click('[type=submit]');
-        await this.page.waitForTimeout(7000);
+        await this.page.waitForTimeout(Random.getRandomDelay(7000, 30));
         if ((await this.page.$$('button[disabled=""]')).length != 0) {
             throw new Error(`Instagram exception: button is inactive`);
         }

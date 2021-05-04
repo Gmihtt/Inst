@@ -2,6 +2,7 @@ import puppeteer = require('puppeteer');
 import path = require('path');
 import {createBrowser} from "./browserCreation";
 import * as File from './file'
+import * as Random from './random'
 
 const TIMEOUT: number = 8000;
 
@@ -41,7 +42,7 @@ export async function getFollowers(id: string): Promise<StatsResponse> {
 
     try {
         await page.goto('https://www.instagram.com/');
-        await page.waitForTimeout(TIMEOUT);
+        await page.waitForTimeout(Random.getRandomDelay(TIMEOUT, 30));
 
 
         if (!(await isUserLoggedInInst(page))) {
