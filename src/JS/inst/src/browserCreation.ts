@@ -2,7 +2,7 @@ import puppeteer = require('puppeteer');
 
 export interface Proxy {
     ip: string,
-    port_http: string,
+    port_http: number,
     username: string,
     password: string,
 }

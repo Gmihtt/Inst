@@ -4,7 +4,7 @@ import path = require('path');
 (async () =>{
     let pr: BR.Proxy = {
         ip: '109.94.219.89',
-        port_http: '49465',
+        port_http: 49465,
         username: '8sjR2Gfi',
         password: 'qgFW6UV2',
     };
