@@ -7,6 +7,7 @@ module Common.Config
     getAuthSocket,
     getStatSocket,
     getInfoSocket,
+    getProxyApiKey,
   )
 where
 
@@ -53,3 +54,6 @@ getDataBase = getValue "mongo_db"
 
 getCollection :: IO Text
 getCollection = getValue "mongo_collection"
+
+getProxyApiKey :: IO Text
+getProxyApiKey = getValue "proxy_api_key"

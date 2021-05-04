@@ -12,12 +12,16 @@ module Common.Error
     throwLogicError,
     printDebug,
     printError,
+    throwProxyErr,
+    throwCheckIPErr,
   )
 where
 
+import Common.Exception.CheckIPError as Error
 import Common.Exception.ConfigError as Error
 import Common.Exception.LogicError as Error
 import Common.Exception.MongoError as Error
+import Common.Exception.ProxyError as Error
 import Common.Exception.RedisError as Error
 import Common.Exception.SocketError as Error (SocketError (..))
 import Common.Exception.TelegramError as Error
@@ -36,6 +40,8 @@ data Error
   | Socket Error.SocketError
   | Threads Error.ThreadsError
   | Logic Error.LogicError
+  | Proxy Error.ProxyError
+  | CheckIP Error.CheckIPError
   deriving (Show)
 
 instance Exception Error
@@ -50,6 +56,12 @@ throwConfigErr err = throwError . Config $ Error.ConfigError err
 
 throwRedisErr :: String -> IO a
 throwRedisErr err = throwError . Redis $ Error.RedisError err
+
+throwProxyErr :: String -> IO a
+throwProxyErr err = throwError . Proxy $ Error.ProxyError err
+
+throwCheckIPErr :: String -> IO a
+throwCheckIPErr err = throwError . CheckIP $ Error.CheckIPError err
 
 throwMongoErr :: String -> IO a
 throwMongoErr err = throwError . Mongo $ Error.MongoError err

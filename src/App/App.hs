@@ -1,11 +1,16 @@
-module App.App (app) where
+{-# LANGUAGE RecordWildCards #-}
+
+module App.App
+  ( app,
+  )
+where
 
 import App.Bot.BotMain (run)
 import qualified App.Scripts.Auth.API as ScriptsAuth
 import qualified App.Scripts.Info.API as ScriptInfo
 import qualified App.Scripts.Statistics.API as ScriptsStatistics
 import qualified Common.Config as Config
-import Common.Environment (mkEnv)
+import Common.Environment (Environment (..))
 import Common.Error (Error (..))
 import Common.Flow (runFlow)
 import Control.Exception (catch)
@@ -17,6 +22,7 @@ import System.Log.Formatter (simpleLogFormatter)
 import System.Log.Handler (LogHandler (setFormatter))
 import qualified System.Log.Handler.Simple as Logger
 import qualified System.Log.Logger as Logger
+import qualified Types.Domain.ProxyStatus as ProxyStatus
 import qualified Types.Domain.Status.TgUsersStatus as TgUsersStatus
 
 setCommonFormatter :: LogHandler a => a -> a
@@ -37,13 +43,15 @@ app =
         authSocket <- Config.getAuthSocket
         statSocket <- Config.getStatSocket
         infoSocket <- Config.getInfoSocket
+        proxyApiKey <- Config.getProxyApiKey
+        proxyManager <- ProxyStatus.initProxyStatus
         authManager <- ScriptsAuth.authConnection authSocket
-        statManager <- ScriptsStatistics.statConnection statSocket
+        statisticsManager <- ScriptsStatistics.statConnection statSocket
         infoManager <- ScriptInfo.infoConnection infoSocket
         tgUsersStatus <- TgUsersStatus.empty
         let logName = "BotLogger.Main"
         logger logName
-        let env = mkEnv manager token pipe conn mongoDB collection authManager statManager infoManager tgUsersStatus logName
+        let env = Environment {..}
         print "App running..."
         runFlow (run Nothing) env
         MongoDB.close pipe

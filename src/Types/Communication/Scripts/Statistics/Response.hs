@@ -1,6 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
 
-module Types.Communication.Statistics.Response where
+module Types.Communication.Scripts.Statistics.Response where
 
 import Common.Json
   ( FromJSON (..),
@@ -10,7 +10,7 @@ import Common.Json
   )
 import Data.Text (Text)
 import GHC.Generics (Generic)
-import Types.Communication.Error ( Error )
+import Types.Communication.Error (Error)
 
 data Response
   = Response

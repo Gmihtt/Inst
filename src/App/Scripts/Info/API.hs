@@ -2,15 +2,15 @@
 
 module App.Scripts.Info.API where
 
-import Common.Error (printError, throwSocketErr)
+import Common.Error (throwSocketErr)
 import qualified Communication.Sockets.API as SocketAPI
+import Control.Concurrent (threadDelay)
+import Control.Concurrent.MVar (newEmptyMVar, putMVar, takeMVar)
 import Control.Monad.IO.Class (liftIO)
 import Data.Aeson (decode, encode)
-import Control.Concurrent.MVar (newEmptyMVar, putMVar, takeMVar)
-import Control.Concurrent (threadDelay)
 import Data.Text (Text)
-import qualified Types.Communication.Info.Request as RequestInfo
-import qualified Types.Communication.Info.Response as ResponseInfo
+import qualified Types.Communication.Scripts.Info.Request as RequestInfo
+import qualified Types.Communication.Scripts.Info.Response as ResponseInfo
 import qualified Types.Domain.ThreadManager as Manager
 
 infoConnection :: SocketAPI.Socket -> IO Manager.InfoManager

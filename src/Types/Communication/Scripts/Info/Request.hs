@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE RecordWildCards #-}
 
-module Types.Communication.Info.Request where
+module Types.Communication.Scripts.Info.Request where
 
 import Common.Json
   ( FromJSON (..),

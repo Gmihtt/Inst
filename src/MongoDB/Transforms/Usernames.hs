@@ -10,7 +10,7 @@ import Database.MongoDB
     Document,
     Value (..),
   )
-import Types.Domain.Usernames ( Usernames(..) )
+import Types.Domain.Usernames (Usernames (..))
 import Prelude hiding (id)
 
 mkDocByUsernames :: Usernames -> Document

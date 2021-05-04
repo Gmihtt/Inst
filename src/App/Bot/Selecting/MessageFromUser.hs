@@ -4,8 +4,8 @@ module App.Bot.Selecting.MessageFromUser where
 
 import qualified App.Bot.Execution.Users.Login as Login
 import qualified App.Bot.Messages.FlowMessages as Messages
-import qualified App.Scripts.Statistics.API as StatAPI
 import qualified App.Scripts.Info.API as InfoAPI
+import qualified App.Scripts.Statistics.API as StatAPI
 import qualified Common.Environment as Environment
 import Common.Flow (Flow, getEnvironment)
 import qualified Common.Redis as Common
@@ -17,11 +17,10 @@ import qualified MongoDB.Queries.Accounts as Mongo
 import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.Message as Message
 import qualified Telegram.Types.Domain.User as User
-import qualified Types.Communication.Statistics.Request as RequestStat
-import qualified  Types.Communication.Info.Request as InfoRequest
+import qualified Types.Communication.Scripts.Info.Request as InfoRequest
+import qualified Types.Communication.Scripts.Statistics.Request as RequestStat
 import qualified Types.Domain.InstAccount as InstAccount
 import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
-import qualified Types.Domain.ThreadManager as Manager
 
 messageFromUser :: Message.Message -> Flow (Response Message.Message)
 messageFromUser msg = do
@@ -74,18 +73,18 @@ choseAction _ _ (TgUserStatus.TgAdmin status) =
     TgUserStatus.SelectTgUser -> undefined
 choseAction msg user (TgUserStatus.TgUser status) =
   case status of
-    TgUserStatus.AddAccountLogin -> Login.login msg user text
-    TgUserStatus.AddAccountPassword username -> do
+    TgUserStatus.AddAccountLogin proxyLoad countTry -> Login.login proxyLoad countTry msg user text
+    TgUserStatus.AddAccountPassword proxyLoad countTry username -> do
       if T.length text > 5
-        then Login.password msg user username text
+        then Login.password proxyLoad countTry msg user username text
         else do
           Common.updateUserStatus
             user
             (TgUserStatus.TgUser TgUserStatus.MainMenu)
           Messages.failAuthMsg msg
-    TgUserStatus.AddDoubleAuth username password -> Login.doubleAuth msg user username password text
-    TgUserStatus.AddSusCode username password -> Login.sus msg user username password text
-    TgUserStatus.PhoneCheck username password -> Login.phoneCheck msg user username password text
+    TgUserStatus.AddDoubleAuth proxyLoad countTry username password -> Login.doubleAuth proxyLoad countTry msg user username password text
+    TgUserStatus.AddSusCode proxyLoad countTry username password -> Login.sus proxyLoad countTry msg user username password text
+    TgUserStatus.PhoneCheck proxyLoad countTry username password -> Login.phoneCheck proxyLoad countTry msg user username password text
     _ -> Messages.strangeMessage msg
   where
     text = fromMaybe "" $ Message.text msg

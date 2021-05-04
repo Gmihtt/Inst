@@ -50,6 +50,7 @@ dependencies:
 - network
 - containers
 - hslogger
+- servant-multipart
 
 library:
   source-dirs: src
