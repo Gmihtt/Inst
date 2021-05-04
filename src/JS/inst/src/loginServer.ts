@@ -1,6 +1,7 @@
 import ws = require('ws');
 
 import {Login, LoginRequest, LoginResponse} from "./login";
+import {Proxy} from "./browserCreation";
 
 
 const doubleAuthLogins = new Map();
@@ -21,7 +22,7 @@ export function runLoginServer(server: ws.Server) {
             switch (userData.status) {
                 case 'Login': {
                     try {
-                        let browserData = await Login.getBrowserAndPage();
+                        let browserData = await Login.getBrowserAndPage(userData.proxy as Proxy);
                         let login = new Login(browserData);
 
                         const loginInfo: LoginResponse = await login.login(userData.username, userData.body);

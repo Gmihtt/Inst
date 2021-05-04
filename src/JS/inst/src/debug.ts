@@ -1,6 +1,17 @@
-import * as Random from './random'
+import * as BR from './browserCreation'
+import path = require('path');
 
-for (let i = 0; i < 100; i++){
-    console.log(Random.getRandomDelay(8887, -5));
-}
+(async () =>{
+    let pr: BR.Proxy = {
+        ip: '109.94.219.89',
+        port_http: '49465',
+        username: '8sjR2Gfi',
+        password: 'qgFW6UV2',
+    };
 
+    let browser = await BR.createBrowser(path.resolve(__dirname, `loginDirs/userDir${10}`), pr);
+
+    const page = (await browser.pages())[0];
+
+    await page.waitForTimeout(10000000);
+})()

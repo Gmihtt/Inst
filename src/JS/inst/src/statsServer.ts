@@ -1,18 +1,18 @@
 import ws = require('ws');
-
 const fs = require('fs-extra');
 import path = require('path');
 import * as File from './file';
 import * as Stats from './stats';
 import * as Random from './random'
+import {Proxy} from "./browserCreation";
 
 export let activeFollowerGetters: Set<string> = new Set();
 
-async function getAndSendFollowersCount(socket: any, id: string, timeout: number) {
+async function getAndSendFollowersCount(socket: any, id: string, timeout: number, proxy: Proxy) {
 
     try {
         await File.acquireMutex(id);
-        const usersInfo: Stats.StatsResponse = await Stats.getFollowers(id);
+        const usersInfo: Stats.StatsResponse = await Stats.getFollowers(id, proxy);
         File.releaseMutex(id);
         const userJSON: string = JSON.stringify(usersInfo);
         if (activeFollowerGetters.has(id)) {
@@ -33,7 +33,7 @@ async function getAndSendFollowersCount(socket: any, id: string, timeout: number
     }
 
     if (activeFollowerGetters.has(id)) {
-        setTimeout(getAndSendFollowersCount, Random.getRandomDelay(8000, 20), socket, id, timeout);
+        setTimeout(getAndSendFollowersCount, Random.getRandomDelay(8000, 20), socket, id, timeout, proxy);
     }
 }
 
@@ -60,7 +60,7 @@ export function runStatsServer(server: ws.Server) {
                     if (request.timeout != undefined) {
                         timeout = request.timeout;
                     }
-                    getAndSendFollowersCount(socket, request.inst_id, timeout).catch(e => console.log(`Error while getting data: ${e}`));
+                    getAndSendFollowersCount(socket, request.inst_id, timeout, request.proxy as Proxy).catch(e => console.log(`Error while getting data: ${e}`));
 
                 }
                     break;

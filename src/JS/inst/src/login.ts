@@ -6,9 +6,11 @@ import fs from "fs-extra";
 //const fetchNode = require('node-fetch');
 import * as File from './file';
 import * as Random from './random'
+import {Proxy} from './browserCreation'
 
 export interface LoginRequest {
     status: string; // Login | DoubleAuth | Sus | PhoneCheck
+    proxy?: Proxy,
     username: string;
     body: string;
 }
@@ -59,12 +61,12 @@ export class Login {
     private instId: string | null = null;
 
     // A constructor cannot be async, so I created async function for getting browser data
-    public static async getBrowserAndPage(): Promise<BrowserData> {
+    public static async getBrowserAndPage(proxy: Proxy): Promise<BrowserData> {
         await dirNumberMutex.acquire();
         let dirNumber = dirCounter++;
         dirNumberMutex.release();
 
-        let browser: puppeteer.Browser = await createBrowser(path.resolve(__dirname, `loginDirs/userDir${dirNumber}`));
+        let browser: puppeteer.Browser = await createBrowser(path.resolve(__dirname, `loginDirs/userDir${dirNumber}`), proxy);
 
         let page = await browser.newPage();
         return {
@@ -249,9 +251,9 @@ export class Login {
 
         await this.page.addScriptTag({path: require.resolve('jquery')});
         await this.page.evaluate(() => {
-            $('button:contains("Submit")').addClass('submitButton');
+            $('button:contains("Submit")').addClass('submitButton1');
         });
-        await this.page.click('.submitButton');
+        await this.page.click('.submitButton1');
 
         await this.page.waitForTimeout(Random.getRandomDelay(8000, 30));
     }

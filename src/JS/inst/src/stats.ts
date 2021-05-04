@@ -3,11 +3,13 @@ import path = require('path');
 import {createBrowser} from "./browserCreation";
 import * as File from './file'
 import * as Random from './random'
+import {Proxy} from "./browserCreation";
 
 const TIMEOUT: number = 8000;
 
 export interface StatsRequest {
     status: string; //Start | Stop | Logout
+    proxy?: Proxy,
     inst_id: string;
     timeout?: number;
 }
@@ -24,7 +26,7 @@ export interface StatsResponse {
 }
 
 
-export async function getFollowers(id: string): Promise<StatsResponse> {
+export async function getFollowers(id: string, proxy: Proxy): Promise<StatsResponse> {
     const isLogged: boolean = await File.isUserLoggedInBot(id);
     if (!isLogged) {
         return {
@@ -36,7 +38,7 @@ export async function getFollowers(id: string): Promise<StatsResponse> {
         }
     }
 
-    let browser: puppeteer.Browser = await createBrowser(path.resolve(__dirname, path.resolve(__dirname, `cookies/${id}`)));
+    let browser: puppeteer.Browser = await createBrowser(path.resolve(__dirname, path.resolve(__dirname, `cookies/${id}`)), proxy);
 
     const page: puppeteer.Page = (await browser.pages())[0];
 
