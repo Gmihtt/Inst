@@ -6,7 +6,6 @@ import Data.Text (Text)
 import GHC.Generics (Generic)
 import Prelude hiding (id)
 
-
 data Usernames
   = Usernames
       { instUsername :: Text,
@@ -16,5 +15,5 @@ data Usernames
   deriving (Show, Eq)
 
 mkUsernames :: Text -> Maybe Text -> Text -> Usernames
-mkUsernames instUsername tgUsername tgId = 
+mkUsernames instUsername tgUsername tgId =
   Usernames {..}

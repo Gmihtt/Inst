@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a3c6dbe21ab92156f1e2846ba72b9b2d10dc73063f503f8c6213741487666798
+-- hash: 6e735e550094317996eaa9e13cbdcc8f01fdc9549e2679a373b7f2f9d9ff0573
 
 name:           Inst
 version:        0.1.0.0
@@ -71,9 +71,11 @@ library
       Common.Config
       Common.Environment
       Common.Error
+      Common.Exception.CheckIPError
       Common.Exception.ConfigError
       Common.Exception.LogicError
       Common.Exception.MongoError
+      Common.Exception.ProxyError
       Common.Exception.RedisError
       Common.Exception.SocketError
       Common.Exception.TelegramError
@@ -82,6 +84,7 @@ library
       Common.Json
       Common.Redis
       Common.TelegramUserStatus
+      Common.Transforms
       Communication.Sockets.API
       Communication.Sockets.App
       Communication.Sockets.Connection
@@ -90,18 +93,31 @@ library
       Communication.ThreadManager.Manager
       MongoDB.Queries.Accounts
       MongoDB.Queries.Common
+      MongoDB.Queries.ProxyLoad
       MongoDB.Queries.Statistics
       MongoDB.Queries.Usernames
       MongoDB.Transforms.InstAccount
       MongoDB.Transforms.InstStatistics
+      MongoDB.Transforms.Proxy
+      MongoDB.Transforms.ProxyLoad
       MongoDB.Transforms.TgUser
       MongoDB.Transforms.Usernames
       Redis.Queries
+      Services.CheckIP.CallCheckIP
+      Services.CheckIP.Routes
+      Services.Proxy.CallProxy
+      Services.Proxy.GetAllProxy
+      Services.Proxy.Routes
       Telegram.API.Methods.CallTelegram
+      Telegram.API.Methods.GetUpdates
+      Telegram.API.Methods.SendDocument
       Telegram.API.Methods.SendMessage
+      Telegram.API.Methods.SendPhoto
       Telegram.API.Routes
       Telegram.API.Routes.GetUpdates
+      Telegram.API.Routes.SendDocument
       Telegram.API.Routes.SendMessage
+      Telegram.API.Routes.SendPhoto
       Telegram.Types.Communication.Response
       Telegram.Types.Domain.CallbackQuery
       Telegram.Types.Domain.Chat
@@ -115,17 +131,25 @@ library
       Telegram.Types.Domain.MessageEntity
       Telegram.Types.Domain.Update
       Telegram.Types.Domain.User
+      Telegram.Types.Methods.GetUpdates
+      Telegram.Types.Methods.SendDocument
       Telegram.Types.Methods.SendMessage
-      Types.Communication.Auth.Request
-      Types.Communication.Auth.Response
+      Telegram.Types.Methods.SendPhoto
+      Types.Communication.CheckIP.GeoIP
       Types.Communication.Error
-      Types.Communication.Info.Request
-      Types.Communication.Info.Response
-      Types.Communication.Statistics.Request
-      Types.Communication.Statistics.Response
+      Types.Communication.Proxy.ListOfProxy
+      Types.Communication.Scripts.Auth.Request
+      Types.Communication.Scripts.Auth.Response
+      Types.Communication.Scripts.Info.Request
+      Types.Communication.Scripts.Info.Response
+      Types.Communication.Scripts.Statistics.Request
+      Types.Communication.Scripts.Statistics.Response
       Types.Domain.Admin
       Types.Domain.InstAccount
       Types.Domain.InstStatistics
+      Types.Domain.Proxy
+      Types.Domain.ProxyLoad
+      Types.Domain.ProxyStatus
       Types.Domain.Statistic
       Types.Domain.Status.TgUsersStatus
       Types.Domain.Status.TgUserStatus
@@ -160,6 +184,7 @@ library
     , process
     , servant
     , servant-client
+    , servant-multipart
     , servant-server
     , text
     , time
@@ -202,6 +227,7 @@ executable Inst-exe
     , process
     , servant
     , servant-client
+    , servant-multipart
     , servant-server
     , text
     , time
@@ -248,6 +274,7 @@ test-suite Inst-test
     , process
     , servant
     , servant-client
+    , servant-multipart
     , servant-server
     , text
     , time

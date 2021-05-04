@@ -6,15 +6,14 @@ module Telegram.API.Routes.GetUpdates
   )
 where
 
-import qualified Data.Text as T
+import Data.Text (Text)
 import Servant
 import Telegram.Types.Communication.Response (Response)
 import Telegram.Types.Domain.Update (Updates)
+import qualified Telegram.Types.Methods.GetUpdates as Method
 
 type GetUpdates =
-  Capture "token" T.Text
+  Capture "token" Text
     :> "getUpdates"
-    :> QueryParam "offset" Integer
-    :> QueryParam "limit" Int
-    :> QueryParam "timeout" Int
+    :> ReqBody '[JSON] Method.GetUpdates
     :> Get '[JSON] (Response Updates)

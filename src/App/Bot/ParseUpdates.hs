@@ -3,6 +3,7 @@
 module App.Bot.ParseUpdates where
 
 import qualified App.Bot.Messages.FlowMessages as Messages
+import qualified App.Bot.Selecting.MessageFromUser as MessageFromUser
 import qualified App.Bot.Selecting.Users.API as UserAPI
 import Common.Error (throwTgErr)
 import Common.Flow (Flow, getEnvironment, runFlow)
@@ -18,7 +19,6 @@ import qualified Telegram.Types.Domain.Update as Update
 import qualified Telegram.Types.Domain.User as User
 import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
 import qualified Types.Domain.TgUpdates as TgUpdates
-import qualified App.Bot.Selecting.MessageFromUser as MessageFromUser
 
 execute :: TgUpdates.ListOfUpdates -> Flow ()
 execute updates = do
