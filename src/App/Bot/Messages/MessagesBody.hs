@@ -31,7 +31,8 @@ module App.Bot.Messages.MessagesBody
     selectUser,
     selectAdmin,
     enterUsername,
-    smthMessage
+    smthMessage,
+    timeBlockMessage,
   )
 where
 
@@ -106,7 +107,7 @@ todoMsg =
   mkMessage "эта функция ещё не реализована"
 
 doubleAuth :: Message -> Message
-doubleAuth = 
+doubleAuth =
   mkMessage "Введите код от двухфакторной аутентификации"
 
 susCode :: Message -> Message
@@ -164,3 +165,7 @@ enterUsername =
 smthMessage :: (Show a) => a -> Message -> Message
 smthMessage a =
   mkMessage (pack $ show a)
+
+timeBlockMessage :: Int -> Message -> Message
+timeBlockMessage time =
+  mkMessage $ "В сможете зарегестрироваться не раньше чем через " <> pack (show time) <> " минут"

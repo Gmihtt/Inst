@@ -3,20 +3,19 @@
 module App.Scripts.Statistics.API where
 
 import Common.Error
-    ( printDebug,
-      printError,
-      throwSocketErr,
-      printDebug,
-      throwLogicError )
+  ( printDebug,
+    printDebug,
+    throwLogicError,
+    throwSocketErr,
+  )
 import qualified Communication.Sockets.API as SocketAPI
 import Control.Monad.IO.Class (liftIO)
 import Data.Aeson (decode, encode)
 import Data.ByteString.Lazy (ByteString)
-import qualified Data.Text as T
 import Data.Maybe (fromMaybe)
 import qualified Types.Communication.Error as Error
-import qualified Types.Communication.Statistics.Request as RequestStat
-import qualified Types.Communication.Statistics.Response as ResponseStat
+import qualified Types.Communication.Scripts.Statistics.Request as RequestStat
+import qualified Types.Communication.Scripts.Statistics.Response as ResponseStat
 import qualified Types.Domain.Statistic as Statistic
 import qualified Types.Domain.ThreadManager as Manager
 
@@ -34,11 +33,12 @@ mkStatistics bsBody mbStat = do
   case eUsers of
     Right users ->
       pure $ maybe (Right $ addUsers users Statistic.empty) (fmap (addUsers users)) mbStat
+    Left err -> pure $ Left err
   where
     addUsers users stat = foldr Statistic.addUser stat users
     getUsers value =
-      let mbError = (Error.parseCriticalError . Error.error_code) =<< ResponseStat.error value in
-      pure $ maybe (Right . fromMaybe [] $ ResponseStat.users value) Left mbError
+      let mbError = ResponseStat.error value
+       in pure $ maybe (Right . fromMaybe [] $ ResponseStat.users value) Left mbError
 
 sendMsg :: Manager.StatisticsManager -> RequestStat.Request -> IO ()
 sendMsg manager req = do

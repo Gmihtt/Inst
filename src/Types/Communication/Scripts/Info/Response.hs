@@ -1,6 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
 
-module Types.Communication.Info.Response where
+module Types.Communication.Scripts.Info.Response where
 
 import Common.Json
   ( FromJSON (..),

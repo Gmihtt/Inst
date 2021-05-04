@@ -3,10 +3,10 @@
 module Types.Domain.Statistic where
 
 import Data.Foldable (toList)
+import Data.Maybe (isJust)
 import qualified Data.Sequence as Seq
 import Data.Sequence ((|>))
 import qualified Data.Set as Set
-import Data.Maybe ( isJust )
 import Data.Text (Text)
 
 data Statistic

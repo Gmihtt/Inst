@@ -30,6 +30,7 @@ module App.Bot.Messages.FlowMessages
     selectAdmin,
     enterUsername,
     smthMessage,
+    timeBlockMessage,
   )
 where
 
@@ -40,7 +41,7 @@ import Data.Text (Text)
 import qualified Data.Text as Text
 import Telegram.API.Methods.SendMessage (sendMessage)
 import Telegram.Types.Communication.Response (Response (..))
-import Telegram.Types.Domain.Message (Message (Message))
+import Telegram.Types.Domain.Message (Message)
 
 mainMenu :: Message -> Flow (Response Message)
 mainMenu msg = sendMessage (Just Keyboard.mainMenuKeyboard) (Messages.mainMenu msg)
@@ -161,8 +162,12 @@ selectAdmin msg =
 
 enterUsername :: Message -> Flow (Response Message)
 enterUsername msg =
-  sendMessage Nothing (Messages.enterUsername  msg)
+  sendMessage Nothing (Messages.enterUsername msg)
 
 smthMessage :: (Show a) => a -> Message -> Flow (Response Message)
 smthMessage a msg =
   sendMessage Nothing (Messages.smthMessage a msg)
+
+timeBlockMessage :: Int -> Message -> Flow (Response Message)
+timeBlockMessage time msg =
+  sendMessage Nothing (Messages.timeBlockMessage time msg)

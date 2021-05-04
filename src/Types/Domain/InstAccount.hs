@@ -4,9 +4,7 @@
 module Types.Domain.InstAccount
   ( InstAccount (..),
     InstAccounts,
-    AccountStatus (..),
     mkInstAccount,
-    mkAccountStatus,
   )
 where
 
@@ -18,6 +16,7 @@ import Common.Json
   )
 import Data.Text (Text)
 import GHC.Generics (Generic)
+import Types.Domain.Proxy
 import Prelude hiding (id)
 
 type InstAccounts = [InstAccount]
@@ -27,12 +26,13 @@ data InstAccount
       { id :: Text,
         login :: Text,
         password :: Text,
-        subscription :: Bool
+        subscription :: Bool,
+        proxy :: Proxy
       }
   deriving (Show, Eq, Generic)
 
-mkInstAccount :: Text -> Text -> Text -> Bool -> InstAccount
-mkInstAccount id login password subscription =
+mkInstAccount :: Text -> Text -> Text -> Bool -> Proxy -> InstAccount
+mkInstAccount id login password subscription proxy =
   InstAccount {..}
 
 instance ToJSON InstAccount where
@@ -40,10 +40,3 @@ instance ToJSON InstAccount where
 
 instance FromJSON InstAccount where
   parseJSON = parseJson
-
-data AccountStatus = NewAccount | Logged
-  deriving (Show)
-
-mkAccountStatus :: String -> AccountStatus
-mkAccountStatus "Logged" = Logged
-mkAccountStatus _ = NewAccount

@@ -17,21 +17,21 @@ data Admin
 
 mkHighAdmin :: Text -> Admin
 mkHighAdmin id =
-  Admin {
-    id = id,
-    privilege = High
-  }
+  Admin
+    { id = id,
+      privilege = High
+    }
 
 mkMediumAdmin :: Text -> Admin
 mkMediumAdmin id =
-  Admin {
-    id = id,
-    privilege = Medium
-  }
+  Admin
+    { id = id,
+      privilege = Medium
+    }
 
 mkLowAdmin :: Text -> Admin
 mkLowAdmin id =
-  Admin {
-    id = id,
-    privilege = Low
-  }
+  Admin
+    { id = id,
+      privilege = Low
+    }

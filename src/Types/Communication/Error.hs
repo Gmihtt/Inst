@@ -12,14 +12,15 @@ import Common.Json
 import Data.Text (Text)
 import GHC.Generics (Generic)
 
-data ErrorCode 
-  = USER_IS_NOT_LOGGED 
-  | FETCHING_ERROR 
-  | NO_USER_DIR 
-  | LOGOUT_FAILURE 
-  | LOGOUT_NO_USER 
-  | OTHER_ERROR_1 
-  | OTHER_ERROR_2 deriving (Show, Eq, Generic)
+data ErrorCode
+  = USER_IS_NOT_LOGGED
+  | FETCHING_ERROR
+  | NO_USER_DIR
+  | LOGOUT_FAILURE
+  | LOGOUT_NO_USER
+  | OTHER_ERROR_1
+  | OTHER_ERROR_2
+  deriving (Show, Eq, Generic)
 
 instance ToJSON ErrorCode where
   toJSON = toJson

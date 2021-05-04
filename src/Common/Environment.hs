@@ -1,8 +1,5 @@
-{-# LANGUAGE RecordWildCards #-}
-
 module Common.Environment
   ( Environment (..),
-    mkEnv,
   )
 where
 
@@ -10,6 +7,7 @@ import Data.Text (Text)
 import Database.MongoDB.Connection (Pipe)
 import Database.Redis (Connection)
 import Network.HTTP.Client (Manager)
+import qualified Types.Domain.ProxyStatus as ProxyStatus
 import qualified Types.Domain.Status.TgUsersStatus as TgUsersStatus
 import qualified Types.Domain.ThreadManager as Manager
 
@@ -24,22 +22,8 @@ data Environment
         authManager :: Manager.AuthManager,
         statisticsManager :: Manager.StatisticsManager,
         infoManager :: Manager.InfoManager,
+        proxyManager :: ProxyStatus.ProxyStatus,
         tgUsersStatus :: TgUsersStatus.TgUsersStatus,
-        logName :: String
+        logName :: String,
+        proxyApiKey :: Text
       }
-
-mkEnv ::
-  Manager ->
-  Text ->
-  Pipe ->
-  Connection ->
-  Text ->
-  Text ->
-  Manager.AuthManager ->
-  Manager.StatisticsManager ->
-  Manager.InfoManager ->
-  TgUsersStatus.TgUsersStatus ->
-  String ->
-  Environment
-mkEnv manager token pipe conn mongoDB collection authManager statisticsManager infoManager tgUsersStatus logName =
-  Environment {..}

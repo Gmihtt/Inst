@@ -1,13 +1,13 @@
 module App.Bot.Execution.Users.Statistics.Save where
 
-import qualified Common.Environment as Environment
-import qualified Telegram.Types.Domain.Message as Message
 import qualified App.Bot.Messages.FlowMessages as Messages
+import qualified Common.Environment as Environment
 import Common.Flow (Flow, getEnvironment)
 import Control.Monad.IO.Class (liftIO)
 import Data.Text (Text)
 import Data.Time (getCurrentTime)
 import qualified MongoDB.Queries.Statistics as Mongo
+import qualified Telegram.Types.Domain.Message as Message
 import qualified Types.Domain.InstStatistics as InstStatistics
 import qualified Types.Domain.Statistic as Statistic
 import qualified Types.Domain.ThreadManager as Manager

@@ -1,18 +1,16 @@
 {-# LANGUAGE DeriveGeneric #-}
 
-module Types.Communication.Auth.Response where
+module Types.Communication.Scripts.Auth.Response where
 
 import Common.Json
   ( FromJSON (..),
     ToJSON (..),
     parseJson,
-    parseJsonDrop,
     toJson,
-    toJsonDrop,
   )
 import Data.Text (Text)
 import GHC.Generics (Generic)
-import Types.Communication.Error ( Error )
+import Types.Communication.Error (Error)
 
 data Auth = DoubleAuth | Sus | PhoneCheck | Success | Error deriving (Show, Eq, Generic)
 

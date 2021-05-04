@@ -7,29 +7,27 @@ import qualified Data.List as List
 import Data.Text (Text)
 import qualified Database.MongoDB as Mongo
 import Database.MongoDB ((=:))
-import MongoDB.Queries.Common (callDB)
+import qualified MongoDB.Queries.Common as QMongo
+import qualified MongoDB.Queries.Usernames as QUsernames
 import qualified MongoDB.Transforms.TgUser as Transforms
-import qualified MongoDB.Transforms.Usernames as Transforms
 import qualified Types.Domain.InstAccount as InstAccount
 import qualified Types.Domain.TgUser as TgUser
 import qualified Types.Domain.Usernames as Usernames
-import qualified MongoDB.Queries.Usernames as QUsernames
 import Prelude hiding (id)
 
 updateInstAccs :: Text -> TgUser.TgUser -> Flow ()
-updateInstAccs tgId val = do
-  callDB (Mongo.upsert (Mongo.select ["id" =: tgId] "accounts") (Transforms.mkDocByTgUser val))
-  QUsernames.insertUsernames tgId val
-
+updateInstAccs tgId tgUser = do
+  QMongo.upsert (Mongo.select ["id" =: tgId] "accounts") (Transforms.mkDocByTgUser tgUser)
+  QUsernames.insertUsernames tgId tgUser
 
 findTgUserById :: Text -> Flow (Maybe TgUser.TgUser)
 findTgUserById tg_id = do
-  res <- callDB (Mongo.findOne (Mongo.select ["id" =: tg_id] "accounts"))
+  res <- QMongo.findOne (Mongo.select ["id" =: tg_id] "accounts")
   pure $ Transforms.mkTgUserByDoc =<< res
 
 findTgUserByUsername :: Text -> Flow (Maybe TgUser.TgUser)
 findTgUserByUsername tgUsername = do
-  res <- callDB (Mongo.findOne (Mongo.select ["username" =: tgUsername] "accounts"))
+  res <- QMongo.findOne (Mongo.select ["username" =: tgUsername] "accounts")
   pure $ Transforms.mkTgUserByDoc =<< res
 
 findInstAccsByTgId :: Text -> Flow [InstAccount.InstAccount]
@@ -73,4 +71,4 @@ deleteInstAccount tg_id login = do
 
 deleteTgUser :: Text -> Flow ()
 deleteTgUser tg_id = do
-  callDB $ Mongo.deleteOne (Mongo.select ["id" =: tg_id] "accounts")
+  QMongo.deleteOne (Mongo.select ["id" =: tg_id] "accounts")

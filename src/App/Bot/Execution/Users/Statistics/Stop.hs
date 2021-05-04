@@ -9,7 +9,7 @@ import Control.Monad.IO.Class (liftIO)
 import Data.Text (Text)
 import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.Message as Message
-import qualified Types.Communication.Statistics.Request as RequestStat
+import qualified Types.Communication.Scripts.Statistics.Request as RequestStat
 
 execute :: Message.Message -> Text -> Flow (Response Message.Message)
 execute msg instId = do

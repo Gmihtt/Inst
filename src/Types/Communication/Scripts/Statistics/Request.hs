@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE RecordWildCards #-}
 
-module Types.Communication.Statistics.Request where
+module Types.Communication.Scripts.Statistics.Request where
 
 import Common.Json
   ( FromJSON (..),
@@ -11,6 +11,7 @@ import Common.Json
   )
 import Data.Text (Text)
 import GHC.Generics (Generic)
+import Types.Domain.Proxy (Proxy)
 
 data Action
   = Start
@@ -28,7 +29,8 @@ data Request
   = Request
       { inst_id :: Text,
         status :: Action,
-        timeout :: Maybe Integer
+        timeout :: Maybe Integer,
+        proxy :: Maybe Proxy
       }
   deriving (Show, Eq, Generic)
 
@@ -38,11 +40,12 @@ instance ToJSON Request where
 instance FromJSON Request where
   parseJSON = parseJson
 
-mkStartReq :: Text -> Request
-mkStartReq inst_id =
+mkStartReq :: Text -> Proxy -> Request
+mkStartReq inst_id proxy =
   Request
     { status = Start,
       timeout = Just 20000,
+      proxy = Just proxy,
       ..
     }
 
@@ -51,6 +54,7 @@ mkStopReq inst_id =
   Request
     { status = Stop,
       timeout = Just 20000,
+      proxy = Nothing,
       ..
     }
 
@@ -59,5 +63,6 @@ mkLogoutReq inst_id =
   Request
     { status = Logout,
       timeout = Just 20000,
+      proxy = Nothing,
       ..
     }
