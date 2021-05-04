@@ -2,11 +2,9 @@ import ws = require('ws');
 
 const fs = require('fs-extra');
 import path = require('path');
-
-import * as File from "./file";
-
-import * as Stats from "./stats";
-
+import * as File from './file';
+import * as Stats from './stats';
+import * as Random from './random'
 
 export let activeFollowerGetters: Set<string> = new Set();
 
@@ -35,7 +33,7 @@ async function getAndSendFollowersCount(socket: any, id: string, timeout: number
     }
 
     if (activeFollowerGetters.has(id)) {
-        setTimeout(getAndSendFollowersCount, timeout, socket, id, timeout);
+        setTimeout(getAndSendFollowersCount, Random.getRandomDelay(8000, 20), socket, id, timeout);
     }
 }
 

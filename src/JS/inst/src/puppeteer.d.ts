@@ -33,7 +33,7 @@ declare module "puppeteer" {
 
         addScriptTag(options: any): Promise<any>;
 
-        type(selector: string, text: string): Promise<any>;
+        type(selector: string, text: string, options: object): Promise<any>;
 
         authenticate(credentials: Credentials): Promise<void>;
 

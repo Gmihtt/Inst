@@ -7,7 +7,8 @@
   "scripts": {
     "start": "node ./build/main.js",
     "compile": "npx tsc && cp ./src/config.yaml ./build/config.yaml",
-    "cs": "npx tsc && cp ./src/config.yaml ./build/config.yaml && node ./build/main.js"
+    "cs": "npx tsc && cp ./src/config.yaml ./build/config.yaml && node ./build/main.js",
+    "debug": "npx tsc && node ./build/debug.js"
   },
   "author": "Daniel Dostanich <dostanichdaniel@gmail.com>",
   "license": "ISC",
