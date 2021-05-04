@@ -111,6 +111,15 @@ export function runLoginServer(server: ws.Server) {
                     }
                 }
                     break;
+                default: {
+                    let errorInfo: LoginResponse = {
+                        status: 'Error',
+                        username: userData.username,
+                        error_message: `THERE'S NO SUCH CASE: ${userData.status}`
+                    };
+                    sendWithLog(socket, errorInfo);
+                }
+                    break;
             }
         })
     });

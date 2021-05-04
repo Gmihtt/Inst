@@ -102,6 +102,17 @@ export function runStatsServer(server: ws.Server) {
                     }
                 }
                     break;
+                default: {
+                    let errorInfo: Stats.StatsResponse = {
+                        inst_id: request.inst_id,
+                        error: {
+                            error_message: `THERE'S NO SUCH CASE: ${request.status}`,
+                            error_code: 'OTHER_ERROR_2',
+                        }
+                    };
+                    sendWithLog(socket, errorInfo);
+                }
+                    break;
             }
         });
     });
