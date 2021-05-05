@@ -277,6 +277,7 @@ export class Login {
 
 
     private async clickAcceptCookies(): Promise<void> {
+        console.log('script');
         await this.page.addScriptTag({path: require.resolve('jquery')});
         console.log('evaluate');
         await this.page.evaluate(() => {
