@@ -26,7 +26,7 @@ getProxyLoad proxyStatus = do
   curTime <- Time.getCurrentTime
   let diffTime = Time.diffUTCTime curTime time - fiveMinute
   pure $
-    if diffTime < 0
+    if diffTime > 0
       then Right (proxyLoad, countTry)
       else Left $ round (diffTime / 60)
 

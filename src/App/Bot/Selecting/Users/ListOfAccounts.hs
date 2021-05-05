@@ -19,18 +19,7 @@ listOfAccounts :: CallbackQuery.CallbackQuery -> Message -> Flow (Response Messa
 listOfAccounts callBack msg =
   case CallbackQuery.callback_data callBack of
     "Add" -> do
-      env <- getEnvironment
-      let proxyManager = Environment.proxyManager env
-      eProxyLoad <- liftIO $ ProxyStatus.getProxyLoad proxyManager
-      case eProxyLoad of
-        Left time -> Messages.timeBlockMessage time msg
-        Right (proxyLoad, countTry) -> do
-          if countTry >= 10
-            then do
-              liftIO $ ProxyStatus.addProxyLoad proxyLoad 0 proxyManager
-              Messages.timeBlockMessage 5 msg
-            else do
-              ShowAccounts.addAccount proxyLoad countTry msg user
+      tryGetProxy user msg
     "Back" -> ShowAccounts.back msg user
     username -> do
       let uId = T.pack $ show userId
@@ -39,3 +28,19 @@ listOfAccounts callBack msg =
   where
     user = CallbackQuery.callback_from callBack
     userId = User.id user
+
+tryGetProxy :: User.User -> Message -> Flow (Response Message)
+tryGetProxy user msg = do
+  env <- getEnvironment
+  let proxyManager = Environment.proxyManager env
+  Messages.waitMessage msg 
+  eProxyLoad <- liftIO $ ProxyStatus.getProxyLoad proxyManager
+  case eProxyLoad of
+    Left time -> Messages.timeBlockMessage time msg
+    Right (proxyLoad, countTry) -> do
+      if countTry >= 10
+        then do
+          liftIO $ ProxyStatus.addProxyLoad proxyLoad 0 proxyManager
+          Messages.timeBlockMessage 5 msg
+        else
+          ShowAccounts.addAccount proxyLoad countTry msg user
