@@ -22,9 +22,11 @@ export function runLoginServer(server: ws.Server) {
             switch (userData.status) {
                 case 'Login': {
                     try {
+                        console.log('start');
                         let browserData = await Login.getBrowserAndPage(userData.proxy as Proxy);
+                        console.log('got browser');
                         let login = new Login(browserData);
-
+                        console.log('after');
                         const loginInfo: LoginResponse = await login.login(userData.username, userData.body);
 
                         if (loginInfo.status === 'DoubleAuth') {
