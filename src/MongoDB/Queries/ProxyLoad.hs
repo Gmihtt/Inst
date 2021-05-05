@@ -4,6 +4,7 @@ module MongoDB.Queries.ProxyLoad where
 
 import Common.Flow (Flow)
 import Data.Maybe (mapMaybe)
+import Database.MongoDB ((=:))
 import qualified Database.MongoDB as Mongo
 import qualified MongoDB.Queries.Common as QMongo
 import qualified MongoDB.Transforms.Proxy as Transforms
@@ -17,7 +18,7 @@ insertManyProxyLoad = QMongo.insertMany "proxy_load" . map Transforms.mkDocByPro
 updateProxyLoad :: ProxyLoad.ProxyLoad -> Flow ()
 updateProxyLoad proxyLoad = do
   let dcProxy = Transforms.mkDocByProxy $ ProxyLoad.proxy proxyLoad
-  QMongo.upsert (Mongo.select dcProxy "proxy_load") (Transforms.mkDocByProxyLoad proxyLoad)
+  QMongo.upsert (Mongo.select ["proxy" =: dcProxy] "proxy_load" ) (Transforms.mkDocByProxyLoad proxyLoad)
 
 findOneProxyLoadByProxy :: Proxy.Proxy -> Flow (Maybe ProxyLoad.ProxyLoad)
 findOneProxyLoadByProxy proxy = do

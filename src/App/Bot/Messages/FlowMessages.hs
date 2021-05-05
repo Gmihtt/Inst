@@ -31,6 +31,7 @@ module App.Bot.Messages.FlowMessages
     enterUsername,
     smthMessage,
     timeBlockMessage,
+    waitMessage
   )
 where
 
@@ -171,3 +172,7 @@ smthMessage a msg =
 timeBlockMessage :: Int -> Message -> Flow (Response Message)
 timeBlockMessage time msg =
   sendMessage Nothing (Messages.timeBlockMessage time msg)
+
+waitMessage :: Message -> Flow (Response Message)
+waitMessage msg =
+  sendMessage Nothing (Messages.waitMessage msg)

@@ -4,6 +4,7 @@ import qualified App.Bot.GetUpdates as GetUpdates
 import qualified App.Bot.ParseUpdates as ParseUpdates
 import qualified Common.Environment as Environment
 import Common.Flow (Flow, getEnvironment)
+import Common.Error (printDebug)
 import Control.Monad.IO.Class (liftIO)
 import qualified MongoDB.Queries.ProxyLoad as Mongo
 import Services.CheckIP.CallCheckIP (checkIP)
@@ -25,9 +26,11 @@ updateProxyLoad = do
   let goodProxy = map fst $ filter snd checkedProxy
   proxyLoad <- Mongo.getAllProxyLoad
   let oldProxy = map ProxyLoad.proxy proxyLoad
-  let newProxy = filter (`elem` oldProxy) goodProxy
+  let newProxy = filter (`notElem` oldProxy) goodProxy
   let newProxyPayload = map ProxyLoad.mkProxyLoadByProxy newProxy
   env <- getEnvironment
   let proxyManager = Environment.proxyManager env
-  liftIO $ ProxyStatus.addProxyLoads (newProxyPayload ++ proxyLoad) proxyManager
+  let listOfProxy = take 1 $ newProxyPayload ++ proxyLoad
+  liftIO $ printDebug listOfProxy
+  liftIO $ ProxyStatus.addProxyLoads listOfProxy proxyManager
   Mongo.insertManyProxyLoad $ map ProxyLoad.mkProxyLoadByProxy newProxy

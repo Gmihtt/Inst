@@ -11,11 +11,12 @@ import Common.Json
 import Data.Text (Text)
 import GHC.Generics (Generic)
 import Prelude hiding (id)
+import Data.Int(Int64)
 
 data Proxy
   = Proxy
       { ip :: Text,
-        port_http :: Text,
+        port_http :: Int64,
         username :: Text,
         password :: Text
       }

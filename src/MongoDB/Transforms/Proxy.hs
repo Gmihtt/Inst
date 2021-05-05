@@ -15,7 +15,7 @@ import Prelude hiding (id)
 mkDocByProxy :: Proxy -> Document
 mkDocByProxy Proxy {..} =
   [ "ip" =: String ip,
-    "port_http" =: String port_http,
+    "port_http" =: Int64 port_http,
     "username" =: String username,
     "password" =: String password
   ]
@@ -24,6 +24,6 @@ mkProxyByDoc :: Document -> Maybe Proxy
 mkProxyByDoc doc = do
   ip <- doc !? "ip"
   port_http <- doc !? "port_http"
-  username <- doc !? "first_name"
+  username <- doc !? "username"
   password <- doc !? "password"
   pure $ Proxy {..}
