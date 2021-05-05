@@ -168,11 +168,11 @@ export class Login {
 
     private async loginAction(username: string, code: string): Promise<void> {
         await this.page.goto('https://www.instagram.com/accounts/login/');
-
+        console.log('after goto');
         await this.clickAcceptCookies();
-
+        console.log('after cookies');
         await this.fillInputsAndSubmit(username, code);
-
+        console.log('after type');
         await this.page.waitForTimeout(Random.getRandomDelay(5000, 30));
     }
 
