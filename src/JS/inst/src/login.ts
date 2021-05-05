@@ -86,14 +86,15 @@ export class Login {
         let isCheck: boolean = false;
         let wasError: boolean = false;
         try {
+            console.log('before action');
             await action.call(this, username, code);
-
+            console.log('before checks');
             const check = await this.runChecks(checks);
 
             if (check != CheckResult.ok) {
                 isCheck = true;
             }
-
+            console.log('before sending');
             if (checks.doubleAuth && check === CheckResult.doubleAuth) {
                 return {
                     status: 'DoubleAuth',
