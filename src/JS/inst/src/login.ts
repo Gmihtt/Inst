@@ -278,13 +278,16 @@ export class Login {
 
     private async clickAcceptCookies(): Promise<void> {
         await this.page.addScriptTag({path: require.resolve('jquery')});
+        console.log('evaluate');
         await this.page.evaluate(() => {
             $('button:contains("Accept")').addClass('cookiesAcceptInst');
             $('button:contains("Принять")').addClass('cookiesAcceptInst');
         });
+        console.log('if');
         if (await this.page.$('.cookiesAcceptInst') != null) {
             await this.page.click('.cookiesAcceptInst');
         }
+        console.log('timeout');
         await this.page.waitForTimeout(Random.getRandomDelay(2000, 30));
     }
 
