@@ -7,7 +7,6 @@ import * as File from './file';
 import * as Random from './random'
 import {Proxy} from './browserCreation'
 
- const jQueryAdress = 'https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js';
 
 export interface LoginRequest {
     status: string; // Login | DoubleAuth | Sus | PhoneCheck
@@ -190,7 +189,7 @@ export class Login {
             delay: Random.getRandomDelay(400, 30),
         });
 
-        await this.page.addScriptTag({url: jQueryAdress});
+        await this.page.addScriptTag({path: require.resolve('jquery')});
         await this.page.evaluate(() => {
             $('button:contains("Confirm")').addClass('followerGettingApp');
             $('button:contains("Подтвердить")').addClass('followerGettingApp');
@@ -213,7 +212,7 @@ export class Login {
             delay: Random.getRandomDelay(400, 30),
         });
 
-        await this.page.addScriptTag({url: jQueryAdress});
+        await this.page.addScriptTag({path: require.resolve('jquery')});
         await this.page.evaluate(() => {
             $('button:contains("Submit")').addClass('submitButton');
         });
@@ -251,7 +250,7 @@ export class Login {
             delay: Random.getRandomDelay(400, 30),
         });
 
-        await this.page.addScriptTag({url: jQueryAdress});
+        await this.page.addScriptTag({path: require.resolve('jquery')});
         await this.page.evaluate(() => {
             $('button:contains("Submit")').addClass('submitButton1');
         });
@@ -262,7 +261,7 @@ export class Login {
 
 
     private async isPhoneCheck(): Promise<boolean> {
-        await this.page.addScriptTag({url: jQueryAdress});
+        await this.page.addScriptTag({path: require.resolve('jquery')});
         await this.page.evaluate(() => {
             $('button:contains("Send Confirmation")').addClass('phoneCheck');
         });
@@ -279,7 +278,7 @@ export class Login {
 
     private async clickAcceptCookies(): Promise<void> {
         console.log('script');
-        await this.page.addScriptTag({url: jQueryAdress});
+        await this.page.addScriptTag({path: require.resolve('jquery')});
         console.log('evaluate');
         await this.page.evaluate(() => {
             $('button:contains("Accept")').addClass('cookiesAcceptInst');
@@ -332,7 +331,7 @@ export class Login {
         /*
         <button name="choice" value="0" class="_5f5mN    -fzfL    KUBKM      yZn4P   ">This Was Me</button>
         */
-        await this.page.addScriptTag({url: jQueryAdress});
+        await this.page.addScriptTag({path: require.resolve('jquery')});
         await this.page.evaluate(() => {
             $('button:contains("This Was Me")').addClass('thisWasMe');
         });
@@ -342,7 +341,7 @@ export class Login {
     }
 
     private async isSus() {
-        await this.page.addScriptTag({url: jQueryAdress});
+        await this.page.addScriptTag({path: require.resolve('jquery')});
         await this.page.evaluate(() => {
             $('button:contains("Send Security Code")').addClass('suspicious');
         });
@@ -358,7 +357,7 @@ export class Login {
 
 
     private async clickSaveInfoButton() {
-        await this.page.addScriptTag({url: jQueryAdress});
+        await this.page.addScriptTag({path: require.resolve('jquery')});
         await this.page.evaluate(() => {
             $('button:contains("Save Info")').addClass('saveInfoButton');
             //$('button:contains("Подтвердить")').addClass('followerGettingApp');
