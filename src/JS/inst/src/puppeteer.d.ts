@@ -14,6 +14,12 @@ declare module "puppeteer" {
         password: string;
     }
 
+    interface Viewport{
+        width: number,
+        height: number,
+
+    }
+
     interface Page {
         goto(url: string): Promise<HTTPResponse>;
 
@@ -42,6 +48,8 @@ declare module "puppeteer" {
         waitForNavigation(options?: any): Promise<HTTPResponse>;
 
         waitForSelector(selector: string, options?: any): Promise<any>;
+
+        setViewport(viewport: Viewport): Promise<void>;
     }
 
     interface HTTPResponse {
