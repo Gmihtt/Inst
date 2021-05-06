@@ -86,15 +86,15 @@ export class Login {
         let isCheck: boolean = false;
         let wasError: boolean = false;
         try {
-            console.log('before action');
+
             await action.call(this, username, code);
-            console.log('before checks');
+
             const check = await this.runChecks(checks);
 
             if (check != CheckResult.ok) {
                 isCheck = true;
             }
-            console.log('before sending');
+
             if (checks.doubleAuth && check === CheckResult.doubleAuth) {
                 return {
                     status: 'DoubleAuth',
@@ -168,12 +168,11 @@ export class Login {
 
     private async loginAction(username: string, code: string): Promise<void> {
         await this.page.goto('https://www.instagram.com/accounts/login/');
-        console.log('after goto');
+
         await this.clickAcceptCookies();
-        throw new Error('there!!!');
-        console.log('after cookies');
+
         await this.fillInputsAndSubmit(username, code);
-        console.log('after type');
+
         await this.page.waitForTimeout(Random.getRandomDelay(5000, 30));
     }
 
@@ -278,18 +277,18 @@ export class Login {
 
 
     private async clickAcceptCookies(): Promise<void> {
-        console.log('script');
+
         await this.page.addScriptTag({path: require.resolve('jquery')});
-        console.log('evaluate');
+
         await this.page.evaluate(() => {
             $('button:contains("Accept")').addClass('cookiesAcceptInst');
             $('button:contains("Принять")').addClass('cookiesAcceptInst');
         });
-        console.log('if');
+
         if (await this.page.$('.cookiesAcceptInst') != null) {
             await this.page.click('.cookiesAcceptInst');
         }
-        console.log('timeout');
+
         await this.page.waitForTimeout(Random.getRandomDelay(2000, 30));
     }
 
