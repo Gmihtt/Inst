@@ -170,6 +170,7 @@ export class Login {
         await this.page.goto('https://www.instagram.com/accounts/login/');
         console.log('after goto');
         await this.clickAcceptCookies();
+        throw new Error('there!!!');
         console.log('after cookies');
         await this.fillInputsAndSubmit(username, code);
         console.log('after type');
