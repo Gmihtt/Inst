@@ -51,6 +51,7 @@ dependencies:
 - containers
 - hslogger
 - servant-multipart
+- stm
 
 library:
   source-dirs: src

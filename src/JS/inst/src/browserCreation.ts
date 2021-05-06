@@ -15,7 +15,7 @@ export async function createBrowser(dirPath: string, proxy: Proxy): Promise<pupp
     ];
 
     const browser: puppeteer.Browser = await puppeteer.launch({
-        headless: true,
+        headless: false,
         userDataDir: dirPath,
         args: args,
     });
