@@ -21,7 +21,7 @@ export async function createBrowser(dirPath: string, proxy: Proxy): Promise<pupp
         args: args,
     });
 
-    const page: puppeteer.Page = await browser.newPage();
+    const page: puppeteer.Page = (await browser.pages())[0];
 
     await page.authenticate({
         username: proxy.username,

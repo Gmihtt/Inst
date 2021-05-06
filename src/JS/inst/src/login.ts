@@ -69,7 +69,7 @@ export class Login {
 
         let browser: puppeteer.Browser = await createBrowser(path.resolve(__dirname, `loginDirs/userDir${dirNumber}`), proxy);
 
-        let page = await browser.newPage();
+        let page = (await browser.pages())[0]
         return {
             browser: browser,
             page: page,
