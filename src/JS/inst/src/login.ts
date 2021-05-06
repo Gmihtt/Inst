@@ -279,7 +279,6 @@ export class Login {
 
     private async clickAcceptCookies(): Promise<void> {
         console.log('script');
-        await File.screenError('suka1', this.page);
         await this.page.addScriptTag({url: jQueryAdress});
         console.log('evaluate');
         await this.page.evaluate(() => {
