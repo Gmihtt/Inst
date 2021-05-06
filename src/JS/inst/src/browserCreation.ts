@@ -30,5 +30,10 @@ export async function createBrowser(dirPath: string, proxy: Proxy): Promise<pupp
 
     await page.waitForTimeout(1500);
 
+    await page.setViewport({
+        width: 1024,
+        height: 768,
+    });
+
     return browser;
 }
