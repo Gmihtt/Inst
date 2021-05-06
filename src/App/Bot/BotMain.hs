@@ -30,7 +30,7 @@ updateProxyLoad = do
   let newProxyPayload = map ProxyLoad.mkProxyLoadByProxy newProxy
   env <- getEnvironment
   let proxyManager = Environment.proxyManager env
-  let listOfProxy = take 1 $ newProxyPayload ++ proxyLoad
+  let listOfProxy = tail $ newProxyPayload ++ proxyLoad
   liftIO $ printDebug listOfProxy
   liftIO $ ProxyStatus.addProxyLoads listOfProxy proxyManager
   Mongo.insertManyProxyLoad $ map ProxyLoad.mkProxyLoadByProxy newProxy
