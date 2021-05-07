@@ -91,7 +91,7 @@ function getGroupInfoData(group: Array<string>, admin: string): InfoResponse {
 function getAllInfoData(admin: string): InfoResponse {
     const usersInfo: Array<UserInfo> = [];
     let activeUsers: number = 0;
-    for (let user of StatsServer.activeFollowerGetters) {
+    for (let user of StatsServer.activeFollowerGetters.keys()) {
         activeUsers++;
         usersInfo.push({
             id: user,

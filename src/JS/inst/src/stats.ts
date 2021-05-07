@@ -5,7 +5,6 @@ import * as File from './file'
 import * as Random from './random'
 import {Proxy} from "./browserCreation";
 
-const TIMEOUT: number = 8000;
 
 export interface StatsRequest {
     status: string; //Start | Stop | Logout
@@ -25,17 +24,33 @@ export interface StatsResponse {
     error?: Error;
 }
 
+export interface BrowserData {
+    browser: puppeteer.Browser,
+    page: puppeteer.Page,
+}
 
-export async function getFollowers(id: string, proxy: Proxy): Promise<StatsResponse> {
-    const isLogged: boolean = await File.isUserLoggedInBot(id);
-    if (!isLogged) {
+export interface BrowserState {
+    state: 'browser',
+    browserData: BrowserData,
+}
+
+export interface ErrorBrowser {
+    state: 'error'
+    errorMessage: string,
+    errorCode: string,
+}
+
+export type BrowserCreation = BrowserState | ErrorBrowser;
+
+
+export async function getInstPageBrowser(id: string, proxy: Proxy): Promise<BrowserCreation> {
+
+    if (!await File.isUserLoggedInBot(id)) {
         return {
-            inst_id: id,
-            error: {
-                error_message: "User directory doesn't exist",
-                error_code: 'NO_USER_DIR'
-            }
-        }
+            state: 'error',
+            errorMessage: "User directory doesn't exist",
+            errorCode: 'NO_USER_DIR',
+        };
     }
 
     let browser: puppeteer.Browser = await createBrowser(path.resolve(__dirname, path.resolve(__dirname, `cookies/${id}`)), proxy);
@@ -44,22 +59,43 @@ export async function getFollowers(id: string, proxy: Proxy): Promise<StatsRespo
 
     try {
         await page.goto('https://www.instagram.com/');
-        await page.waitForTimeout(Random.getRandomDelay(TIMEOUT, 30));
-
+        await page.waitForTimeout(Random.getRandomDelay(8000, 30));
 
         if (!(await isUserLoggedInInst(page))) {
             let screenNum = File.screenErrorStats(page);
             let htmlNum = File.saveHTMLStats(page);
             return {
-                inst_id: id,
-                error: {
-                    error_message: `User isn't logged in. Check ${screenNum}.png, ${htmlNum}.html`,
-                    error_code: 'USER_IS_NOT_LOGGED',
-                }
+                state: 'error',
+                errorMessage: `User isn't logged in. Check ${screenNum}.png, ${htmlNum}.html`,
+                errorCode: 'USER_IS_NOT_LOGGED',
+
             }
         }
 
+        return {
+            state: 'browser',
+            browserData: {
+                browser: browser,
+                page: page,
+            },
+        };
 
+    } catch (e) {
+        await browser.close();
+
+        return {
+            state: 'error',
+            errorMessage: e.message,
+            errorCode: 'OTHER_ERROR_3'
+        }
+    }
+
+}
+
+export async function getFollowers(id: string, browserData: BrowserData): Promise<StatsResponse> {
+    const page = browserData.page;
+
+    try {
         let responseObject: any = await page.evaluate(async () => {
             try {
                 const response: Response = await fetch(`https://www.instagram.com/accounts/activity/?__a=1&include_reel=true`);
@@ -102,8 +138,6 @@ export async function getFollowers(id: string, proxy: Proxy): Promise<StatsRespo
                 error_code: 'OTHER_ERROR_1'
             }
         }
-    } finally {
-        await browser.close();
     }
 }
 
