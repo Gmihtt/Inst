@@ -33,14 +33,8 @@ tryGetProxy :: User.User -> Message -> Flow (Response Message)
 tryGetProxy user msg = do
   env <- getEnvironment
   let proxyManager = Environment.proxyManager env
-  Messages.waitMessage msg 
+  Messages.waitMessage msg
   eProxyLoad <- liftIO $ ProxyStatus.getProxyLoad proxyManager
   case eProxyLoad of
     Left time -> Messages.timeBlockMessage time msg
-    Right (proxyLoad, countTry) -> do
-      if countTry >= 10
-        then do
-          liftIO $ ProxyStatus.addProxyLoad proxyLoad 0 proxyManager
-          Messages.timeBlockMessage 5 msg
-        else
-          ShowAccounts.addAccount proxyLoad countTry msg user
+    Right proxy -> ShowAccounts.addAccount proxy msg user

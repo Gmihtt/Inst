@@ -33,7 +33,7 @@ module App.Bot.Messages.MessagesBody
     enterUsername,
     smthMessage,
     timeBlockMessage,
-    waitMessage 
+    waitMessage,
   )
 where
 
@@ -172,5 +172,5 @@ timeBlockMessage time =
   mkMessage $ "В сможете зарегестрироваться не раньше чем через " <> pack (show time) <> " минут"
 
 waitMessage :: Message -> Message
-waitMessage = 
+waitMessage =
   mkMessage "Может пройти до 5 минут, пока вы сможете зарегестироваться"

@@ -73,18 +73,18 @@ choseAction _ _ (TgUserStatus.TgAdmin status) =
     TgUserStatus.SelectTgUser -> undefined
 choseAction msg user (TgUserStatus.TgUser status) =
   case status of
-    TgUserStatus.AddAccountLogin proxyLoad countTry -> Login.login proxyLoad countTry msg user text
-    TgUserStatus.AddAccountPassword proxyLoad countTry username -> do
+    TgUserStatus.AddAccountLogin proxy -> Login.login proxy msg user text
+    TgUserStatus.AddAccountPassword proxy username -> do
       if T.length text > 5
-        then Login.password proxyLoad countTry msg user username text
+        then Login.password proxy msg user username text
         else do
           Common.updateUserStatus
             user
             (TgUserStatus.TgUser TgUserStatus.MainMenu)
           Messages.failAuthMsg msg
-    TgUserStatus.AddDoubleAuth proxyLoad countTry username password -> Login.doubleAuth proxyLoad countTry msg user username password text
-    TgUserStatus.AddSusCode proxyLoad countTry username password -> Login.sus proxyLoad countTry msg user username password text
-    TgUserStatus.PhoneCheck proxyLoad countTry username password -> Login.phoneCheck proxyLoad countTry msg user username password text
+    TgUserStatus.AddDoubleAuth proxy username password -> Login.doubleAuth proxy msg user username password text
+    TgUserStatus.AddSusCode proxy username password -> Login.sus proxy msg user username password text
+    TgUserStatus.PhoneCheck proxy username password -> Login.phoneCheck proxy msg user username password text
     _ -> Messages.strangeMessage msg
   where
     text = fromMaybe "" $ Message.text msg

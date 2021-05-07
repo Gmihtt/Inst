@@ -18,7 +18,7 @@ insertManyProxyLoad = QMongo.insertMany "proxy_load" . map Transforms.mkDocByPro
 updateProxyLoad :: ProxyLoad.ProxyLoad -> Flow ()
 updateProxyLoad proxyLoad = do
   let dcProxy = Transforms.mkDocByProxy $ ProxyLoad.proxy proxyLoad
-  QMongo.upsert (Mongo.select ["proxy" =: dcProxy] "proxy_load" ) (Transforms.mkDocByProxyLoad proxyLoad)
+  QMongo.upsert (Mongo.select ["proxy" =: dcProxy] "proxy_load") (Transforms.mkDocByProxyLoad proxyLoad)
 
 findOneProxyLoadByProxy :: Proxy.Proxy -> Flow (Maybe ProxyLoad.ProxyLoad)
 findOneProxyLoadByProxy proxy = do

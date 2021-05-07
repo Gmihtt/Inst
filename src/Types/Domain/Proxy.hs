@@ -8,10 +8,10 @@ import Common.Json
     parseJson,
     toJson,
   )
+import Data.Int (Int64)
 import Data.Text (Text)
 import GHC.Generics (Generic)
 import Prelude hiding (id)
-import Data.Int(Int64)
 
 data Proxy
   = Proxy

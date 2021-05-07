@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 6e735e550094317996eaa9e13cbdcc8f01fdc9549e2679a373b7f2f9d9ff0573
+-- hash: a0d73cd68260fa2e710db0a4cc46cafc1c651a1235aaa9b0dfa0f5b6127f89e0
 
 name:           Inst
 version:        0.1.0.0
@@ -186,6 +186,7 @@ library
     , servant-client
     , servant-multipart
     , servant-server
+    , stm
     , text
     , time
     , transformers
@@ -229,6 +230,7 @@ executable Inst-exe
     , servant-client
     , servant-multipart
     , servant-server
+    , stm
     , text
     , time
     , transformers
@@ -276,6 +278,7 @@ test-suite Inst-test
     , servant-client
     , servant-multipart
     , servant-server
+    , stm
     , text
     , time
     , transformers

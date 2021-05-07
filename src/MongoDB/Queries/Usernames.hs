@@ -7,7 +7,6 @@ import Data.Text (Text)
 import qualified Database.MongoDB as Mongo
 import Database.MongoDB ((=:))
 import qualified MongoDB.Queries.Common as QMongo
-import qualified MongoDB.Transforms.TgUser as Transforms
 import qualified MongoDB.Transforms.Usernames as Transforms
 import qualified Types.Domain.InstAccount as InstAccount
 import qualified Types.Domain.TgUser as TgUser

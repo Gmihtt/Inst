@@ -16,7 +16,7 @@ export async function createBrowser(dirPath: string, proxy: Proxy): Promise<pupp
     console.log('proxy: ' + `--proxy-server=${proxy.ip}:${proxy.port_http}`);
 
     const browser: puppeteer.Browser = await puppeteer.launch({
-        headless: true,
+        headless: false,
         userDataDir: dirPath,
         args: args,
     });

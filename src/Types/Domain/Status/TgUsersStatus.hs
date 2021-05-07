@@ -1,7 +1,7 @@
 module Types.Domain.Status.TgUsersStatus where
 
-import qualified Control.Concurrent.Map as Map
 import Control.Concurrent.MVar
+import qualified Control.Concurrent.Map as Map
 import Data.Text (Text)
 import Types.Domain.Status.TgUserStatus (TgUserStatus)
 
