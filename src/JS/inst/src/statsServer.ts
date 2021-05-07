@@ -5,7 +5,6 @@ import path = require('path');
 import * as File from './file';
 import * as Stats from './stats';
 import * as Random from './random'
-import {Proxy} from "./browserCreation";
 
 type GetterState = 'Working' | 'Stopping' | 'LoggingOut';
 
@@ -78,7 +77,7 @@ export function runStatsServer(server: ws.Server) {
                             timeout = request.timeout;
                         }
 
-                        const browserCreation: Stats.BrowserCreation = await Stats.getInstPageBrowser(request.inst_id, request.proxy as Proxy);
+                        const browserCreation: Stats.BrowserCreation = await Stats.getInstPageBrowser(request.inst_id, request.proxy);
 
                         if (browserCreation.state == 'browser') {
                             activeFollowerGetters.set(request.inst_id, 'Working');
@@ -137,17 +136,6 @@ export function runStatsServer(server: ws.Server) {
                         }
                     }
 
-                        break;
-                    default: {
-                        const errorInfo: Stats.StatsResponse = {
-                            inst_id: request.inst_id,
-                            error: {
-                                error_message: `THERE'S NO SUCH CASE: ${request.status}`,
-                                error_code: 'OTHER_ERROR_2',
-                            }
-                        };
-                        sendWithLog(socket, errorInfo);
-                    }
                         break;
                 }
             }

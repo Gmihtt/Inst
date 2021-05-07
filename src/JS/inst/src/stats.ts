@@ -5,13 +5,19 @@ import * as File from './file'
 import * as Random from './random'
 import {Proxy} from "./browserCreation";
 
-
-export interface StatsRequest {
-    status: string; //Start | Stop | Logout
-    proxy?: Proxy,
+export interface StatsStart{
+    status: 'Start';
+    proxy: Proxy;
     inst_id: string;
     timeout?: number;
 }
+
+export interface StatsOther{
+    status: 'Stop' | 'Logout';
+    inst_id: string;
+}
+
+export type StatsRequest = StatsStart | StatsOther;
 
 export interface Error {
     error_message?: string;
