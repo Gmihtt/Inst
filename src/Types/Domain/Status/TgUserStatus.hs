@@ -1,7 +1,7 @@
 module Types.Domain.Status.TgUserStatus where
 
 import Data.Text (Text)
-import Types.Domain.ProxyLoad
+import Types.Domain.ProxyStatus
 
 data TgUserStatus = TgUser UserStatus | TgAdmin AdminStatus deriving (Show)
 
@@ -11,17 +11,15 @@ type Password = Text
 
 type InstId = Text
 
-type CountTry = Int
-
 data UserStatus
   = MainMenu
   | Help
   | ListOfAccounts
-  | AddAccountLogin ProxyLoad CountTry
-  | AddAccountPassword ProxyLoad CountTry Username
-  | AddDoubleAuth ProxyLoad CountTry Username Password
-  | AddSusCode ProxyLoad CountTry Username Password
-  | PhoneCheck ProxyLoad CountTry Username Password
+  | AddAccountLogin ProxyParams
+  | AddAccountPassword ProxyParams Username
+  | AddDoubleAuth ProxyParams Username Password
+  | AddSusCode ProxyParams Username Password
+  | PhoneCheck ProxyParams Username Password
   | AccountMenu InstId
   | WaitStart InstId
   | ChoseStatistics InstId

@@ -3,8 +3,8 @@ module App.Bot.BotMain where
 import qualified App.Bot.GetUpdates as GetUpdates
 import qualified App.Bot.ParseUpdates as ParseUpdates
 import qualified Common.Environment as Environment
-import Common.Flow (Flow, getEnvironment)
 import Common.Error (printDebug)
+import Common.Flow (Flow, getEnvironment)
 import Control.Monad.IO.Class (liftIO)
 import qualified MongoDB.Queries.ProxyLoad as Mongo
 import Services.CheckIP.CallCheckIP (checkIP)
@@ -30,7 +30,7 @@ updateProxyLoad = do
   let newProxyPayload = map ProxyLoad.mkProxyLoadByProxy newProxy
   env <- getEnvironment
   let proxyManager = Environment.proxyManager env
-  let listOfProxy = tail $ newProxyPayload ++ proxyLoad
+  let listOfProxy = newProxyPayload ++ proxyLoad
   liftIO $ printDebug listOfProxy
   liftIO $ ProxyStatus.addProxyLoads listOfProxy proxyManager
   Mongo.insertManyProxyLoad $ map ProxyLoad.mkProxyLoadByProxy newProxy

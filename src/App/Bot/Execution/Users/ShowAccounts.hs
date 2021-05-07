@@ -7,7 +7,7 @@ import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.Message as Message
 import qualified Telegram.Types.Domain.User as User
 import qualified Types.Domain.InstAccount as InstAccount
-import qualified Types.Domain.ProxyLoad as ProxyLoad
+import qualified Types.Domain.ProxyStatus as Proxy
 import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
 import Prelude hiding (id)
 
@@ -18,9 +18,9 @@ selectedAcc msg user instAcc = do
   Common.updateUserStatus user status
   Message.accountMenu msg
 
-addAccount :: ProxyLoad.ProxyLoad -> Int -> Message.Message -> User.User -> Flow (Response Message.Message)
-addAccount proxyLoad countTry msg user = do
-  let status = TgUserStatus.TgUser $ TgUserStatus.AddAccountLogin proxyLoad countTry
+addAccount :: Proxy.ProxyParams -> Message.Message -> User.User -> Flow (Response Message.Message)
+addAccount proxy msg user = do
+  let status = TgUserStatus.TgUser $ TgUserStatus.AddAccountLogin proxy
   Common.updateUserStatus user status
   Message.loginMsg msg
 

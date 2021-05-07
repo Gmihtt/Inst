@@ -31,7 +31,7 @@ module App.Bot.Messages.FlowMessages
     enterUsername,
     smthMessage,
     timeBlockMessage,
-    waitMessage
+    waitMessage,
   )
 where
 

@@ -33,88 +33,84 @@ import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
 import qualified Types.Domain.TgUser as TgUser
 import Prelude hiding (id)
 
-login :: ProxyLoad.ProxyLoad -> Int -> Message.Message -> User.User -> Text -> Flow (Response Message.Message)
-login proxyLoad countTry msg user accLogin = do
+login :: ProxyStatus.ProxyParams -> Message.Message -> User.User -> Text -> Flow (Response Message.Message)
+login proxy msg user accLogin = do
   instAccs <- Common.getInstAccs (User.id user)
   let res = List.find ((accLogin ==) . InstAccount.login) instAccs
   case res of
     Just _ -> Message.repeatLoggingMsg msg
     Nothing -> do
-      let status = TgUserStatus.TgUser $ TgUserStatus.AddAccountPassword proxyLoad countTry accLogin
+      let status = TgUserStatus.TgUser $ TgUserStatus.AddAccountPassword proxy accLogin
       Common.updateUserStatus user status
       Message.passwordMsg msg
 
-password :: ProxyLoad.ProxyLoad -> Int -> Message.Message -> User.User -> Text -> Text -> Flow (Response Message.Message)
-password proxyLoad countTry msg user accLogin accPassword = do
-  let proxy = ProxyLoad.proxy proxyLoad
+password :: ProxyStatus.ProxyParams -> Message.Message -> User.User -> Text -> Text -> Flow (Response Message.Message)
+password proxyP msg user accLogin accPassword = do
+  let proxy = ProxyStatus.getProxy proxyP
   res <- ScriptsAuth.authLogin accLogin accPassword proxy
   liftIO $ printDebug res
-  statusHandler proxyLoad countTry msg user accLogin accPassword res
+  statusHandler proxyP msg user accLogin accPassword res
 
 doubleAuth ::
-  ProxyLoad.ProxyLoad ->
-  Int ->
+  ProxyStatus.ProxyParams ->
   Message.Message ->
   User.User ->
   Text ->
   Text ->
   Text ->
   Flow (Response Message.Message)
-doubleAuth proxyLoad countTry msg user accLogin accPassword accCode = do
+doubleAuth proxy msg user accLogin accPassword accCode = do
   res <- ScriptsAuth.doubleAuth accLogin accCode
   liftIO $ printDebug res
-  statusHandler proxyLoad countTry msg user accLogin accPassword res
+  statusHandler proxy msg user accLogin accPassword res
 
 sus ::
-  ProxyLoad.ProxyLoad ->
-  Int ->
+  ProxyStatus.ProxyParams ->
   Message.Message ->
   User.User ->
   Text ->
   Text ->
   Text ->
   Flow (Response Message.Message)
-sus proxyLoad countTry msg user accLogin accPassword accCode = do
+sus proxy msg user accLogin accPassword accCode = do
   res <- ScriptsAuth.susCode accLogin accCode
   liftIO $ printDebug res
-  statusHandler proxyLoad countTry msg user accLogin accPassword res
+  statusHandler proxy msg user accLogin accPassword res
 
 phoneCheck ::
-  ProxyLoad.ProxyLoad ->
-  Int ->
+  ProxyStatus.ProxyParams ->
   Message.Message ->
   User.User ->
   Text ->
   Text ->
   Text ->
   Flow (Response Message.Message)
-phoneCheck proxyLoad countTry msg user accLogin accPassword accCode = do
+phoneCheck proxy msg user accLogin accPassword accCode = do
   res <- ScriptsAuth.phoneCheck accLogin accCode
   liftIO $ printDebug res
-  statusHandler proxyLoad countTry msg user accLogin accPassword res
+  statusHandler proxy msg user accLogin accPassword res
 
 statusHandler ::
-  ProxyLoad.ProxyLoad ->
-  Int ->
+  ProxyStatus.ProxyParams ->
   Message.Message ->
   User.User ->
   Text ->
   Text ->
   Either Text ResponseAuth.Response ->
   Flow (Response Message.Message)
-statusHandler proxyLoad countTry msg user accLogin accPassword eRes = do
+statusHandler proxy msg user accLogin accPassword eRes = do
   res <- either cricitalCase pure eRes
   case ResponseAuth.status res of
     ResponseAuth.DoubleAuth -> do
-      let status = TgUserStatus.TgUser $ TgUserStatus.AddDoubleAuth proxyLoad countTry accLogin accPassword
+      let status = TgUserStatus.TgUser $ TgUserStatus.AddDoubleAuth proxy accLogin accPassword
       Common.updateUserStatus user status
       Message.doubleAuth msg
     ResponseAuth.Sus -> do
-      let status = TgUserStatus.TgUser $ TgUserStatus.AddSusCode proxyLoad countTry accLogin accPassword
+      let status = TgUserStatus.TgUser $ TgUserStatus.AddSusCode proxy accLogin accPassword
       Common.updateUserStatus user status
       Message.susCode msg
     ResponseAuth.PhoneCheck -> do
-      let status = TgUserStatus.TgUser $ TgUserStatus.PhoneCheck proxyLoad countTry accLogin accPassword
+      let status = TgUserStatus.TgUser $ TgUserStatus.PhoneCheck proxy accLogin accPassword
       Common.updateUserStatus user status
       Message.susCode msg
     ResponseAuth.Error -> errorCase
@@ -122,7 +118,7 @@ statusHandler proxyLoad countTry msg user accLogin accPassword eRes = do
       case (ResponseAuth.inst_id res, ResponseAuth.is_private res) of
         (Just instId, Just private) -> do
           if private then Message.successAuthMsg msg else Message.publicAccount msg
-          saveAccAndUser proxyLoad countTry instId accLogin accPassword user
+          saveAccAndUser proxy instId accLogin accPassword user
           Message.accountMenu msg
         _ -> do
           liftIO $ printDebug $
@@ -135,22 +131,22 @@ statusHandler proxyLoad countTry msg user accLogin accPassword eRes = do
   where
     cricitalCase err = do
       Message.smthMessage err msg
-      updateProxyLoad proxyLoad countTry
+      addProxyTry proxy
       liftIO . throwLogicError $ T.unpack err
     errorCase = do
       let status = TgUserStatus.TgUser TgUserStatus.ListOfAccounts
       Common.updateUserStatus user status
       Message.failAuthMsg msg
       instAccs <- Common.getInstAccs userId
-      updateProxyLoad proxyLoad countTry
+      addProxyTry proxy
       Message.showInstAccs msg (map InstAccount.login instAccs)
     userId = User.id user
 
-saveAccAndUser :: ProxyLoad.ProxyLoad -> Int -> Text -> Text -> Text -> User.User -> Flow Bool
-saveAccAndUser proxyLoad countTry instId accLogin accPassword user = do
+saveAccAndUser :: ProxyStatus.ProxyParams -> Text -> Text -> Text -> User.User -> Flow Bool
+saveAccAndUser proxyP instId accLogin accPassword user = do
   let userId = User.id user
   instAccs <- Common.getInstAccs userId
-  let proxy = ProxyLoad.proxy proxyLoad
+  let proxy = ProxyStatus.getProxy proxyP
   let newInstAcc = InstAccount.mkInstAccount instId accLogin accPassword False proxy
   let uId = T.pack $ show userId
   let userFirstName = User.first_name user
@@ -159,14 +155,20 @@ saveAccAndUser proxyLoad countTry instId accLogin accPassword user = do
   Mongo.updateInstAccs uId tgUser
   let status = TgUserStatus.TgUser $ TgUserStatus.AccountMenu instId
   Common.putInstAccs userId
-  updateProxyLoad proxyLoad countTry
+  updateProxyStatus proxyP
   Common.updateUserStatus user status
 
-updateProxyLoad :: ProxyLoad.ProxyLoad -> Int -> Flow ()
-updateProxyLoad proxyLoad countTry = do
-  env <- getEnvironment
-  let proxyManager = Environment.proxyManager env
+updateProxyStatus :: ProxyStatus.ProxyParams -> Flow ()
+updateProxyStatus proxyP = do
+  let proxyLoad = ProxyStatus.proxyLoad proxyP
   let newLoad = ProxyLoad.load proxyLoad + 1
   let newProxyLoad = proxyLoad {ProxyLoad.load = newLoad}
-  liftIO $ ProxyStatus.addProxyLoad newProxyLoad (countTry + 1) proxyManager
+  let newProxyParams = proxyP {ProxyStatus.proxyLoad = newProxyLoad}
+  addProxyTry newProxyParams
   Mongo.updateProxyLoad newProxyLoad
+
+addProxyTry :: ProxyStatus.ProxyParams -> Flow ()
+addProxyTry proxy = do
+  env <- getEnvironment
+  let proxyManager = Environment.proxyManager env
+  liftIO $ ProxyStatus.addProxyLoad proxy proxyManager

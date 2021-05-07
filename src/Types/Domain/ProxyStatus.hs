@@ -5,35 +5,48 @@ module Types.Domain.ProxyStatus where
 import qualified Control.Concurrent.Chan as Chan
 import qualified Data.Time as Time
 import Data.Time.Calendar.OrdinalDate (fromOrdinalDate)
-import Types.Domain.ProxyLoad (ProxyLoad)
+import Types.Domain.Proxy
+import Types.Domain.ProxyLoad (ProxyLoad, proxy)
+
+type Minute = Int
 
 data ProxyParams
   = ProxyParams
       { proxyLoad :: ProxyLoad,
-        countTry :: Int,
+        countTry :: Minute,
         time :: Time.UTCTime
       }
   deriving (Show)
+
+getProxy :: ProxyParams -> Proxy
+getProxy pp = proxy $ proxyLoad pp
 
 type ProxyStatus = Chan.Chan ProxyParams
 
 initProxyStatus :: IO ProxyStatus
 initProxyStatus = Chan.newChan
 
-getProxyLoad :: ProxyStatus -> IO (Either Int (ProxyLoad, Int))
-getProxyLoad proxyStatus = do
-  ProxyParams {..} <- Chan.readChan proxyStatus
+getProxyLoad :: ProxyStatus -> IO (Either Minute ProxyParams)
+getProxyLoad ps = do
+  pp@ProxyParams {..} <- Chan.readChan ps
   curTime <- Time.getCurrentTime
   let diffTime = Time.diffUTCTime curTime time - fiveMinute
   pure $
-    if diffTime > 0
-      then Right (proxyLoad, countTry)
-      else Left $ round (diffTime / 60)
+    if diffTime >= 0
+      then Right pp
+      else Left $ round (diffTime / 60) * (-1)
 
-addProxyLoad :: ProxyLoad -> Int -> ProxyStatus -> IO ()
-addProxyLoad proxyLoad countTry ps = do
-  time <- Time.getCurrentTime
-  Chan.writeChan ps ProxyParams {..}
+addProxyLoad :: ProxyParams -> ProxyStatus -> IO ()
+addProxyLoad pp ps = do
+  if countTry pp >= 10
+    then do
+      time <- Time.getCurrentTime
+      let newCountTry = 0
+      let newPp = pp {countTry = newCountTry, time = time}
+      Chan.writeChan ps newPp
+    else do
+      let newPp = pp {countTry = countTry pp + 1}
+      Chan.writeChan ps newPp
 
 addProxyLoads :: [ProxyLoad] -> ProxyStatus -> IO ()
 addProxyLoads proxyLoads ps = do
