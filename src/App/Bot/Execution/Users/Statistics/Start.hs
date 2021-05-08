@@ -20,20 +20,17 @@ import qualified Types.Communication.Scripts.Statistics.Request as RequestStat
 import qualified Types.Domain.InstAccount as InstAccount
 import qualified Types.Domain.InstStatistics as InstStatistics
 import qualified Types.Domain.Statistic as Statistic
-import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
 import qualified Types.Domain.ThreadManager as Manager
 
 checkStart :: Message.Message -> User.User -> Text -> Flow (Response Message.Message)
 checkStart msg user instId = do
-  let status = TgUserStatus.TgUser $ TgUserStatus.WaitStart instId
-  Common.updateUserStatus user status
+  Common.setWaitStart user instId
   Messages.continueStat msg
 
 start :: Bool -> Message.Message -> User.User -> Text -> Flow (Response Message.Message)
 start False msg user instId = do
   sendStartMsg user instId
-  let status = TgUserStatus.TgUser $ TgUserStatus.AccountMenu instId
-  Common.updateUserStatus user status
+  Common.setAccountMenu user instId
   Messages.start msg
 start True msg user instId = do
   env <- getEnvironment
@@ -44,8 +41,7 @@ start True msg user instId = do
       sendStartMsg user instId
       let statistics = Right . Statistic.initWithLastUsers $ InstStatistics.lastCountUsers instStat
       liftIO $ Manager.addTask instId statistics statManager
-      let status = TgUserStatus.TgUser $ TgUserStatus.AccountMenu instId
-      Common.updateUserStatus user status
+      Common.setAccountMenu user instId
       Messages.start msg
     Nothing -> do
       Messages.lastCountUsersNotFound msg

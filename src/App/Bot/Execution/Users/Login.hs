@@ -16,7 +16,7 @@ import Common.Error (printDebug, throwLogicError)
 import Common.Flow (Flow, getEnvironment)
 import qualified Common.Redis as Common
 import qualified Common.TelegramUserStatus as Common
-import Control.Monad.IO.Class (MonadIO (liftIO))
+import Control.Monad.IO.Class (liftIO)
 import qualified Data.List as List
 import Data.Text (Text)
 import qualified Data.Text as T
@@ -29,7 +29,6 @@ import qualified Types.Communication.Scripts.Auth.Response as ResponseAuth
 import qualified Types.Domain.InstAccount as InstAccount
 import qualified Types.Domain.ProxyLoad as ProxyLoad
 import qualified Types.Domain.ProxyStatus as ProxyStatus
-import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
 import qualified Types.Domain.TgUser as TgUser
 import Prelude hiding (id)
 
@@ -40,8 +39,7 @@ login proxy msg user accLogin = do
   case res of
     Just _ -> Message.repeatLoggingMsg msg
     Nothing -> do
-      let status = TgUserStatus.TgUser $ TgUserStatus.AddAccountPassword proxy accLogin
-      Common.updateUserStatus user status
+      Common.setAddAccountPassword user proxy accLogin
       Message.passwordMsg msg
 
 password :: ProxyStatus.ProxyParams -> Message.Message -> User.User -> Text -> Text -> Flow (Response Message.Message)
@@ -102,16 +100,13 @@ statusHandler proxy msg user accLogin accPassword eRes = do
   res <- either cricitalCase pure eRes
   case ResponseAuth.status res of
     ResponseAuth.DoubleAuth -> do
-      let status = TgUserStatus.TgUser $ TgUserStatus.AddDoubleAuth proxy accLogin accPassword
-      Common.updateUserStatus user status
+      Common.setAddDoubleAuth user proxy accLogin accPassword
       Message.doubleAuth msg
     ResponseAuth.Sus -> do
-      let status = TgUserStatus.TgUser $ TgUserStatus.AddSusCode proxy accLogin accPassword
-      Common.updateUserStatus user status
+      Common.setAddSusCode user proxy accLogin accPassword
       Message.susCode msg
     ResponseAuth.PhoneCheck -> do
-      let status = TgUserStatus.TgUser $ TgUserStatus.PhoneCheck proxy accLogin accPassword
-      Common.updateUserStatus user status
+      Common.setPhoneCheck user proxy accLogin accPassword
       Message.susCode msg
     ResponseAuth.Error -> errorCase
     ResponseAuth.Success ->
@@ -130,12 +125,12 @@ statusHandler proxy msg user accLogin accPassword eRes = do
           errorCase
   where
     cricitalCase err = do
+      Common.setListOfAccounts user
       Message.smthMessage err msg
       addProxyTry proxy
       liftIO . throwLogicError $ T.unpack err
     errorCase = do
-      let status = TgUserStatus.TgUser TgUserStatus.ListOfAccounts
-      Common.updateUserStatus user status
+      Common.setListOfAccounts user
       Message.failAuthMsg msg
       instAccs <- Common.getInstAccs userId
       addProxyTry proxy
@@ -153,10 +148,9 @@ saveAccAndUser proxyP instId accLogin accPassword user = do
   let username = User.username user
   let tgUser = TgUser.mkTgUser uId userFirstName username (newInstAcc : instAccs)
   Mongo.updateInstAccs uId tgUser
-  let status = TgUserStatus.TgUser $ TgUserStatus.AccountMenu instId
   Common.putInstAccs userId
   updateProxyStatus proxyP
-  Common.updateUserStatus user status
+  Common.setAccountMenu user instId
 
 updateProxyStatus :: ProxyStatus.ProxyParams -> Flow ()
 updateProxyStatus proxyP = do

@@ -7,6 +7,7 @@ import qualified App.Bot.Execution.Users.Statistics.GetStatistics as GetStatisti
 import qualified App.Bot.Messages.FlowMessages as Messages
 import Common.Flow (Flow)
 import Data.Text (Text)
+import qualified Common.TelegramUserStatus as Common
 import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.CallbackQuery as CallbackQuery
 import Telegram.Types.Domain.Message (Message)
@@ -19,6 +20,8 @@ statistics callBack msg instId =
     "7 Days" -> GetStatistics.weekStatistics msg user instId
     "30 Days" -> GetStatistics.monthStatistics msg user instId
     "Back" -> Back.backToAccountMenu msg user instId
-    _ -> Messages.strangeMessage msg
+    _ -> do
+      Common.setChoseStatistics user instId
+      Messages.strangeMessage msg
   where
     user = CallbackQuery.callback_from callBack

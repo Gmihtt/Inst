@@ -42,14 +42,10 @@ checkStatus msg user = do
       maybe setMainMenu (choseAction msg user) status
   where
     setHelpMenu = do
-      Common.updateUserStatus
-        user
-        (TgUserStatus.TgUser TgUserStatus.Help)
+      Common.setHelp user
       Messages.helpMessage msg
     setMainMenu = do
-      Common.updateUserStatus
-        user
-        (TgUserStatus.TgUser TgUserStatus.MainMenu)
+      Common.setMainMenu user
       Messages.mainMenu msg
     reboot = do
       env <- getEnvironment
@@ -63,7 +59,7 @@ checkStatus msg user = do
     admin = do
       env <- getEnvironment
       let infoManager = Environment.infoManager env
-      res <- liftIO $ InfoAPI.sendAndReceiveMsg "1" infoManager $ InfoRequest.mkAllStatusReq "1"
+      res <- liftIO $ InfoAPI.sendAndReceiveMsg "" infoManager $ InfoRequest.mkAllStatusReq ""
       Messages.smthMessage res msg
     userId = User.id user
 
@@ -78,13 +74,13 @@ choseAction msg user (TgUserStatus.TgUser status) =
       if T.length text > 5
         then Login.password proxy msg user username text
         else do
-          Common.updateUserStatus
-            user
-            (TgUserStatus.TgUser TgUserStatus.MainMenu)
+          Common.setMainMenu user
           Messages.failAuthMsg msg
     TgUserStatus.AddDoubleAuth proxy username password -> Login.doubleAuth proxy msg user username password text
     TgUserStatus.AddSusCode proxy username password -> Login.sus proxy msg user username password text
     TgUserStatus.PhoneCheck proxy username password -> Login.phoneCheck proxy msg user username password text
-    _ -> Messages.strangeMessage msg
+    _ -> do
+      Common.setMainMenu user
+      Messages.strangeMessage msg
   where
     text = fromMaybe "" $ Message.text msg

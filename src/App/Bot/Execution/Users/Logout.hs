@@ -19,12 +19,10 @@ import qualified Telegram.Types.Domain.Message as Message
 import qualified Telegram.Types.Domain.User as User
 import qualified Types.Communication.Scripts.Statistics.Request as RequestStat
 import qualified Types.Domain.InstAccount as InstAccount
-import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
 
 confirmLogout :: Message.Message -> User.User -> Text -> Flow (Response Message.Message)
-confirmLogout msg user login = do
-  let status = TgUserStatus.TgUser $ TgUserStatus.Logout login
-  Common.updateUserStatus user status
+confirmLogout msg user accLogin = do
+  Common.setLogout user accLogin
   Messages.confirmLogout msg
 
 logout :: Message.Message -> User.User -> Text -> Flow (Response Message.Message)
@@ -51,13 +49,11 @@ logout msg user instId = do
 
 backListOfAccounts :: Message.Message -> User.User -> Flow (Response Message.Message)
 backListOfAccounts msg user = do
-  let status = TgUserStatus.TgUser TgUserStatus.ListOfAccounts
-  Common.updateUserStatus user status
+  Common.setListOfAccounts user
   instAccs <- Common.getInstAccs (User.id user)
   Messages.showInstAccs msg (map InstAccount.login instAccs)
 
 backAccountMenu :: Message.Message -> User.User -> Text -> Flow (Response Message.Message)
 backAccountMenu msg user instId = do
-  let status = TgUserStatus.TgUser $ TgUserStatus.AccountMenu instId
-  Common.updateUserStatus user status
+  Common.setAccountMenu user instId
   Messages.accountMenu msg

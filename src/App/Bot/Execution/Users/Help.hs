@@ -6,10 +6,8 @@ import qualified Common.TelegramUserStatus as Common
 import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.Message as Message
 import qualified Telegram.Types.Domain.User as User
-import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
 
 back :: Message.Message -> User.User -> Flow (Response Message.Message)
 back msg user = do
-  let status = TgUserStatus.TgUser TgUserStatus.MainMenu
-  Common.updateUserStatus user status
+  Common.setMainMenu user
   Message.mainMenu msg

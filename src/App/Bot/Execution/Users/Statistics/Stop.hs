@@ -12,14 +12,12 @@ import qualified Telegram.Types.Domain.User as User
 import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.Message as Message
 import qualified Types.Communication.Scripts.Statistics.Request as RequestStat
-import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
 
 execute :: Message.Message -> User.User -> Text -> Flow (Response Message.Message)
 execute msg user instId = do
   env <- getEnvironment
   let statManager = Environment.statisticsManager env
-  let status = TgUserStatus.TgUser $ TgUserStatus.AccountMenu instId
-  Common.updateUserStatus user status
+  Common.setAccountMenu user instId
   liftIO $ API.sendMsg statManager (RequestStat.mkStopReq instId)
   Save.execute msg instId
   Messages.stop msg

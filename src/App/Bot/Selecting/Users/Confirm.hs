@@ -5,6 +5,7 @@ module App.Bot.Selecting.Users.Confirm where
 import qualified App.Bot.Execution.Users.Logout as Logout
 import qualified App.Bot.Execution.Users.Statistics.Start as Start
 import qualified App.Bot.Messages.FlowMessages as Messages
+import qualified Common.TelegramUserStatus as Common
 import Common.Flow (Flow)
 import Control.Monad.IO.Class (liftIO)
 import Data.Text (Text)
@@ -18,7 +19,9 @@ logout callBack msg instId = do
   case CallbackQuery.callback_data callBack of
     "Yes" -> Logout.logout msg user instId
     "No" -> Logout.backAccountMenu msg user instId
-    _ -> Messages.strangeMessage msg
+    _ -> do
+      Common.setLogout user instId
+      Messages.strangeMessage msg
   where
     user = CallbackQuery.callback_from callBack
 
@@ -28,6 +31,8 @@ start callBack msg instId = do
   case CallbackQuery.callback_data callBack of
     "Yes" -> Start.start True msg user instId
     "No" -> Start.start False msg user instId
-    _ -> Messages.strangeMessage msg
+    _ -> do
+      Common.setWaitStart user instId
+      Messages.strangeMessage msg
   where
     user = CallbackQuery.callback_from callBack

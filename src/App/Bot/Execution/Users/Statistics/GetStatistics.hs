@@ -17,12 +17,11 @@ import qualified Telegram.Types.Domain.User as User
 import qualified Types.Communication.Error as Error
 import qualified Types.Domain.InstStatistics as InstStatistics
 import qualified Types.Domain.Statistic as Statistic
-import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
 import qualified Types.Domain.ThreadManager as Manager
 
 choseStatistics :: Message.Message -> User.User -> Text -> Flow (Response Message.Message)
 choseStatistics msg user instId = do
-  setChoseStatistics user instId
+  Common.setChoseStatistics user instId
   Messages.choseStatistics msg
 
 oneStatistics :: Message.Message -> User.User -> Text -> Flow (Response Message.Message)
@@ -30,7 +29,7 @@ oneStatistics msg user instId = do
   eCurStatistics <- currentStatistics instId
   case eCurStatistics of
     Right curStatistics -> do
-      setChoseStatistics user instId
+      Common.setChoseStatistics user instId
       Messages.sendStat msg curStatistics
     Left err -> Messages.smthMessage err msg
 
@@ -56,7 +55,7 @@ groupStatistics msg user instId group = do
       time <- liftIO getCurrentTime
       instStatistics <- Mongo.findInstStatById instId
       let monthStat = fromIntegral $ maybe 0 (group time) instStatistics
-      setChoseStatistics user instId
+      Common.setChoseStatistics user instId
       Messages.sendStat msg $ curStatistics + monthStat
     Left err -> Messages.smthMessage err msg
 
@@ -67,8 +66,3 @@ currentStatistics instId = do
   mbStat <- liftIO $ Manager.findTask instId manager
   let value = maybe (Right 0) (Statistic.getSize <$>) mbStat
   pure value
-
-setChoseStatistics :: User.User -> Text -> Flow Bool
-setChoseStatistics user instId = do
-  let status = TgUserStatus.TgUser $ TgUserStatus.ChoseStatistics instId
-  Common.updateUserStatus user status

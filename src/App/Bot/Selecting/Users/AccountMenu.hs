@@ -12,7 +12,9 @@ import qualified App.Bot.Messages.FlowMessages as Messages
 import Common.Flow (Flow)
 import Data.Text (Text)
 import Telegram.Types.Communication.Response (Response (..))
+import qualified Common.TelegramUserStatus as Common
 import qualified Telegram.Types.Domain.CallbackQuery as CallbackQuery
+import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
 import Telegram.Types.Domain.Message (Message)
 
 accountMenu :: CallbackQuery.CallbackQuery -> Message -> Text -> Flow (Response Message)
@@ -24,6 +26,8 @@ accountMenu callBack msg instId =
     "Statistics" -> GetStatistics.choseStatistics msg user instId
     "Logout" -> Logout.confirmLogout msg user instId
     "Back" -> Back.backToListAccounts msg user
-    _ -> Messages.strangeMessage msg
+    _ -> do
+      Common.setAccountMenu user instId
+      Messages.strangeMessage msg
   where
     user = CallbackQuery.callback_from callBack

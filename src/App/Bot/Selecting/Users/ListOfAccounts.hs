@@ -12,6 +12,7 @@ import qualified MongoDB.Queries.Accounts as Mongo
 import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.CallbackQuery as CallbackQuery
 import Telegram.Types.Domain.Message (Message)
+import qualified Common.TelegramUserStatus as Common
 import qualified Telegram.Types.Domain.User as User
 import qualified Types.Domain.ProxyStatus as ProxyStatus
 
@@ -24,7 +25,7 @@ listOfAccounts callBack msg =
     username -> do
       let uId = T.pack $ show userId
       mbInstAcc <- Mongo.findInstAccountByLogin uId username
-      maybe (Messages.strangeMessage msg) (ShowAccounts.selectedAcc msg user) mbInstAcc
+      maybe (Common.setListOfAccounts user >> Messages.strangeMessage msg) (ShowAccounts.selectedAcc msg user) mbInstAcc
   where
     user = CallbackQuery.callback_from callBack
     userId = User.id user
