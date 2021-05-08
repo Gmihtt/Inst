@@ -18,7 +18,7 @@ execute :: Message.Message -> User.User -> Text -> Flow (Response Message.Messag
 execute msg user instId = do
   env <- getEnvironment
   let statManager = Environment.statisticsManager env
-  let status = TgUserStatus.TgUser TgUserStatus.ListOfAccounts
+  let status = TgUserStatus.TgUser $ TgUserStatus.AccountMenu instId
   Common.updateUserStatus user status
   liftIO $ API.sendMsg statManager (RequestStat.mkStopReq instId)
   Save.execute msg instId
