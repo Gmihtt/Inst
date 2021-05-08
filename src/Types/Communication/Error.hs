@@ -20,6 +20,7 @@ data ErrorCode
   | LOGOUT_NO_USER
   | OTHER_ERROR_1
   | OTHER_ERROR_2
+  | LOGIC_ERROR
   deriving (Show, Eq, Generic)
 
 instance ToJSON ErrorCode where
