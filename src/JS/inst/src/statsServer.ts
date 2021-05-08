@@ -81,6 +81,7 @@ export function runStatsServer(server: ws.Server) {
 
                         if (browserCreation.state == 'browser') {
                             activeFollowerGetters.set(request.inst_id, 'Working');
+                            await File.acquireMutex(request.inst_id);
                             workerHandler(socket, request.inst_id, timeout, browserCreation.browserData).catch(e => console.log(`THIS ERROR SHOULD NEVER OCCUR!!: ${e}`));
                         } else {
                             const errorObj: Stats.StatsResponse = {

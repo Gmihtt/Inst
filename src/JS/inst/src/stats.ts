@@ -5,48 +5,51 @@ import * as File from './file'
 import * as Random from './random'
 import {Proxy} from "./browserCreation";
 
-export interface StatsStart{
-    status: 'Start';
-    proxy: Proxy;
-    inst_id: string;
-    timeout?: number;
+export interface StatsStart {
+    status: 'Start'
+    proxy: Proxy
+    inst_id: string
+    timeout?: number
 }
 
-export interface StatsOther{
-    status: 'Stop' | 'Logout';
-    inst_id: string;
+export interface StatsOther {
+    status: 'Stop' | 'Logout'
+    inst_id: string
 }
 
-export type StatsRequest = StatsStart | StatsOther;
+export type StatsRequest = StatsStart | StatsOther
+
+type ErrorCode = 'USER_IS_NOT_LOGGED' | 'FETCHING_ERROR' | 'NO_USER_DIR' | 'LOGOUT_FAILURE' | 'LOGOUT_NO_USER' |
+    'OTHER_ERROR_1' | 'OTHER_ERROR_2' | 'LOGIC_ERROR'
 
 export interface Error {
-    error_message?: string;
-    error_code?: string; // USER_IS_NOT_LOGGED | FETCHING_ERROR  | NO_USER_DIR | LOGOUT_FAILURE | LOGOUT_NO_USER | OTHER_ERROR_1 | OTHER_ERROR_2
+    error_message: string
+    error_code: ErrorCode
 }
 
 export interface StatsResponse {
-    inst_id: string;
-    users?: Array<string>;
-    error?: Error;
+    inst_id: string
+    users?: Array<string>
+    error?: Error
 }
 
 export interface BrowserData {
-    browser: puppeteer.Browser,
-    page: puppeteer.Page,
+    browser: puppeteer.Browser
+    page: puppeteer.Page
 }
 
 export interface BrowserState {
-    state: 'browser',
-    browserData: BrowserData,
+    state: 'browser'
+    browserData: BrowserData
 }
 
-export interface ErrorBrowser {
+export interface ErrorState {
     state: 'error'
-    errorMessage: string,
-    errorCode: string,
+    errorMessage: string
+    errorCode: ErrorCode
 }
 
-export type BrowserCreation = BrowserState | ErrorBrowser;
+export type BrowserCreation = BrowserState | ErrorState;
 
 
 export async function getInstPageBrowser(id: string, proxy: Proxy): Promise<BrowserCreation> {
@@ -92,7 +95,7 @@ export async function getInstPageBrowser(id: string, proxy: Proxy): Promise<Brow
         return {
             state: 'error',
             errorMessage: e.message,
-            errorCode: 'OTHER_ERROR_3'
+            errorCode: 'OTHER_ERROR_1'
         }
     }
 
