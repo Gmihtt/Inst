@@ -8,20 +8,41 @@ import * as Random from './random'
 import {Proxy} from './browserCreation'
 
 
-export interface LoginRequest {
-    status: string; // Login | DoubleAuth | Sus | PhoneCheck
-    proxy?: Proxy,
-    username: string;
-    body: string;
+interface LoginRequestState{
+    status: 'Login'
+    proxy: Proxy
+    username: string
+    body: string
 }
 
-export interface LoginResponse {
-    username: string;
-    status: string; // DoubleAuth | Sus | Success | PhoneCheck | Error
-    is_private?: boolean;
-    inst_id?: string;
-    error_message?: string;
+interface OtherRequestState{
+    status: 'DoubleAuth' | 'Sus' | 'PhoneCheck'
+    username: string
+    body: string
 }
+
+export type LoginRequest = LoginRequestState | OtherRequestState
+
+interface SuccessResponse{
+    status: 'Success'
+    username: string
+    is_private: boolean
+    inst_id: string
+}
+
+interface ErrorResponse{
+    status: 'Error'
+    username: string
+    error_message: string
+}
+
+interface CheckResponse{
+    status: 'DoubleAuth' | 'Sus' | 'PhoneCheck'
+    username: string
+}
+
+export type LoginResponse = SuccessResponse | ErrorResponse | CheckResponse
+
 
 interface UserIdAndPrivacy {
     inst_id: string;
