@@ -62,6 +62,10 @@ enum CheckResult {
     sus,
 }
 
+interface UserData{
+    username: string
+    code: string
+}
 
 export interface BrowserData {
     browser: puppeteer.Browser;
@@ -69,7 +73,7 @@ export interface BrowserData {
     dirNumber: number;
 }
 
-type Action = (username: string, code: string) => Promise<void>;
+type Action = (data: UserData) => Promise<void>;
 
 
 let dirNumberMutex = new Mutex();
@@ -108,7 +112,10 @@ export class Login {
         let wasError: boolean = false;
         try {
 
-            await action.call(this, username, code);
+            await action.call(this, {
+                username: username,
+                code: code,
+            });
 
             const check = await this.runChecks(checks);
 
@@ -187,12 +194,12 @@ export class Login {
         });
     }
 
-    private async loginAction(username: string, code: string): Promise<void> {
+    private async loginAction(data: UserData): Promise<void> {
         await this.page.goto('https://www.instagram.com/accounts/login/');
 
         await this.clickAcceptCookies();
 
-        await this.fillInputsAndSubmit(username, code);
+        await this.fillInputsAndSubmit(data.username, data.code);
 
         await this.page.waitForTimeout(Random.getRandomDelay(5000, 30));
     }
@@ -205,8 +212,8 @@ export class Login {
         });
     }
 
-    private async doubleAuthAction(username: string, code: string): Promise<void> {
-        await this.page.type('[name=verificationCode]', code, {
+    private async doubleAuthAction(data: UserData): Promise<void> {
+        await this.page.type('[name=verificationCode]', data.code, {
             delay: Random.getRandomDelay(400, 30),
         });
 
@@ -228,8 +235,8 @@ export class Login {
         });
     }
 
-    private async susAction(username: string, code: string): Promise<void> {
-        await this.page.type('[aria-label="Security code"]', code, {
+    private async susAction(data: UserData): Promise<void> {
+        await this.page.type('[aria-label="Security code"]', data.code, {
             delay: Random.getRandomDelay(400, 30),
         });
 
@@ -266,8 +273,8 @@ export class Login {
         });
     }
 
-    private async runPhoneCheck(username: string, code: string): Promise<void> {
-        await this.page.type('[name="tel"]', code, {
+    private async runPhoneCheck(data: UserData): Promise<void> {
+        await this.page.type('[name="tel"]', data.code, {
             delay: Random.getRandomDelay(400, 30),
         });
 
