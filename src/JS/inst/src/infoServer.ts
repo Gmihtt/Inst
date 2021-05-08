@@ -2,21 +2,30 @@ import ws = require('ws');
 import * as StatsServer from "./statsServer";
 
 interface UserInfo {
-    id: string;
-    is_active: boolean;
+    id: string
+    is_active: boolean
 }
 
-interface InfoRequest {
-    status: string; // UserStatus | GroupStatus | AllStatus
-    admin_id: string;
-    inst_ids?: Array<string>;
+interface AllRequest{
+    status: 'AllStatus'
+    admin_id: string,
 }
+
+interface OtherRequest{
+    status: 'UserStatus' | 'GroupStatus'
+    admin_id: string
+    inst_ids: Array<string>
+}
+
+type InfoRequest = AllRequest | OtherRequest
+
+type Response = 'User' | 'Group' | 'All'
 
 interface InfoResponse {
-    status: string; //User | Group | All
-    admin_id: string;
-    users_info: Array<UserInfo>;
-    user_count_active?: number;
+    status: Response
+    admin_id: string
+    users_info: Array<UserInfo>
+    user_count_active?: number
 }
 
 export function runInfoServer(server: ws.Server) {
@@ -34,12 +43,12 @@ export function runInfoServer(server: ws.Server) {
 
             switch (request.status) {
                 case 'UserStatus': {
-                    let result = getUserInfoData(request.inst_ids?.[0] as string, request.admin_id);
+                    let result = getUserInfoData(request.inst_ids?.[0], request.admin_id);
                     sendWithLog(socket, result);
                 }
                     break;
                 case 'GroupStatus': {
-                    let result = getGroupInfoData(request.inst_ids as Array<string>, request.admin_id);
+                    let result = getGroupInfoData(request.inst_ids, request.admin_id);
                     sendWithLog(socket, result);
                 }
                     break;
