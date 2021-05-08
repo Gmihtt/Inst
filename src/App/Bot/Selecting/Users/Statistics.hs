@@ -6,8 +6,8 @@ import qualified App.Bot.Execution.Users.Statistics.Back as Back
 import qualified App.Bot.Execution.Users.Statistics.GetStatistics as GetStatistics
 import qualified App.Bot.Messages.FlowMessages as Messages
 import Common.Flow (Flow)
-import Data.Text (Text)
 import qualified Common.TelegramUserStatus as Common
+import Data.Text (Text)
 import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.CallbackQuery as CallbackQuery
 import Telegram.Types.Domain.Message (Message)

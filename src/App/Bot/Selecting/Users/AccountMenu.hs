@@ -10,12 +10,12 @@ import qualified App.Bot.Execution.Users.Statistics.Stop as Stop
 import qualified App.Bot.Execution.Users.Statistics.Subscription as Subscription
 import qualified App.Bot.Messages.FlowMessages as Messages
 import Common.Flow (Flow)
+import qualified Common.TelegramUserStatus as Common
 import Data.Text (Text)
 import Telegram.Types.Communication.Response (Response (..))
-import qualified Common.TelegramUserStatus as Common
 import qualified Telegram.Types.Domain.CallbackQuery as CallbackQuery
-import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
 import Telegram.Types.Domain.Message (Message)
+import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
 
 accountMenu :: CallbackQuery.CallbackQuery -> Message -> Text -> Flow (Response Message)
 accountMenu callBack msg instId =

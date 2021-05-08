@@ -5,8 +5,8 @@ module App.Bot.Selecting.Users.Confirm where
 import qualified App.Bot.Execution.Users.Logout as Logout
 import qualified App.Bot.Execution.Users.Statistics.Start as Start
 import qualified App.Bot.Messages.FlowMessages as Messages
-import qualified Common.TelegramUserStatus as Common
 import Common.Flow (Flow)
+import qualified Common.TelegramUserStatus as Common
 import Control.Monad.IO.Class (liftIO)
 import Data.Text (Text)
 import Telegram.Types.Communication.Response (Response (..))

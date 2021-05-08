@@ -1,7 +1,7 @@
 module Types.Domain.Status.TgUserStatus where
 
 import Data.Text (Text)
-import Types.Domain.ProxyStatus ( ProxyParams )
+import Types.Domain.ProxyStatus (ProxyParams)
 
 data TgUserStatus = TgUser UserStatus | TgAdmin AdminStatus deriving (Show)
 
