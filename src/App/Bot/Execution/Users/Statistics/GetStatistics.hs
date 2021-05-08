@@ -22,8 +22,7 @@ import qualified Types.Domain.ThreadManager as Manager
 
 choseStatistics :: Message.Message -> User.User -> Text -> Flow (Response Message.Message)
 choseStatistics msg user instId = do
-  let status = TgUserStatus.TgUser $ TgUserStatus.ChoseStatistics instId
-  Common.updateUserStatus user status
+  setChoseStatistics user instId
   Messages.choseStatistics msg
 
 oneStatistics :: Message.Message -> User.User -> Text -> Flow (Response Message.Message)
@@ -31,8 +30,8 @@ oneStatistics msg user instId = do
   eCurStatistics <- currentStatistics instId
   case eCurStatistics of
     Right curStatistics -> do
+      setChoseStatistics user instId
       Messages.sendStat msg curStatistics
-      choseStatistics msg user instId
     Left err -> Messages.smthMessage err msg
 
 dayStatistics :: Message.Message -> User.User -> Text -> Flow (Response Message.Message)
@@ -57,8 +56,8 @@ groupStatistics msg user instId group = do
       time <- liftIO getCurrentTime
       instStatistics <- Mongo.findInstStatById instId
       let monthStat = fromIntegral $ maybe 0 (group time) instStatistics
+      setChoseStatistics user instId
       Messages.sendStat msg $ curStatistics + monthStat
-      choseStatistics msg user instId
     Left err -> Messages.smthMessage err msg
 
 currentStatistics :: Text -> Flow (Either Error.Error Int)
@@ -68,3 +67,8 @@ currentStatistics instId = do
   mbStat <- liftIO $ Manager.findTask instId manager
   let value = maybe (Right 0) (Statistic.getSize <$>) mbStat
   pure value
+
+setChoseStatistics :: User.User -> Text -> Flow Bool
+setChoseStatistics user instId = do
+  let status = TgUserStatus.TgUser $ TgUserStatus.ChoseStatistics instId
+  Common.updateUserStatus user status
