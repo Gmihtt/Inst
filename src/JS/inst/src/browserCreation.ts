@@ -13,7 +13,7 @@ export async function createBrowser(dirPath: string, proxy: Proxy): Promise<pupp
         '--lang=en-GB',
         `--proxy-server=${proxy.ip}:${proxy.port_http}`,
     ];
-    console.log('proxy: ' + `--proxy-server=${proxy.ip}:${proxy.port_http}`);
+    console.log(`proxy: ${proxy.ip}:${proxy.port_http}`);
 
     const browser: puppeteer.Browser = await puppeteer.launch({
         headless: false,

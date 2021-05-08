@@ -22,13 +22,9 @@ export function runLoginServer(server: ws.Server) {
             switch (userData.status) {
                 case 'Login': {
                     try {
-                        console.log('start');
                         let browserData = await Login.getBrowserAndPage(userData.proxy as Proxy);
-                        console.log('got browser');
                         let login = new Login(browserData);
-                        console.log('created class');
                         const loginInfo: LoginResponse = await login.login(userData.username, userData.body);
-                        console.log('before maps');
                         if (loginInfo.status === 'DoubleAuth') {
                             doubleAuthLogins.set(loginInfo.username, login);
                         } else if (loginInfo.status === 'Sus') {

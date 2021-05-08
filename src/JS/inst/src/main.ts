@@ -15,8 +15,6 @@ import path = require('path');
     await fs.mkdirp(path.resolve(__dirname, 'statsErrors'));
 })().then(
     () => {
-        console.log("Proxy OK");
-
         const loginServer = new ws.Server({
             port: 5012,
         });
@@ -32,6 +30,8 @@ import path = require('path');
         runLoginServer(loginServer);
         runStatsServer(statsServer);
         runInfoServer(infoServer);
+
+        console.log('Servers started');
     },
     (error) => {
         console.log(`Some error occurred:  ${error.message}. Terminating...`);
