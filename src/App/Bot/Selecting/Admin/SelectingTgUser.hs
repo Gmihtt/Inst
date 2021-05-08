@@ -18,7 +18,7 @@ selectMenu :: CallbackQuery.CallbackQuery -> Message -> Text -> Flow (Response M
 selectMenu callBack msg instId =
   case CallbackQuery.callback_data callBack of
     "Найти по telegram" -> Start.checkStart msg user instId
-    "Найти по instagram" -> Stop.execute msg instId
+    "Найти по instagram" -> Stop.execute msg user instId
     "Назад" -> Subscription.execute msg
     _ -> Messages.strangeMessage msg
   where

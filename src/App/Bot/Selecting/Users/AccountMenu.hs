@@ -19,7 +19,7 @@ accountMenu :: CallbackQuery.CallbackQuery -> Message -> Text -> Flow (Response 
 accountMenu callBack msg instId =
   case CallbackQuery.callback_data callBack of
     "Start" -> Start.checkStart msg user instId
-    "Stop" -> Stop.execute msg instId
+    "Stop" -> Stop.execute msg user instId
     "Subscription" -> Subscription.execute msg
     "Statistics" -> GetStatistics.choseStatistics msg user instId
     "Logout" -> Logout.confirmLogout msg user instId
