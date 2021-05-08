@@ -1,6 +1,6 @@
 import ws = require('ws');
 
-import {Login, LoginRequest, LoginResponse} from "./login";
+import {Login, LoginRequest, LoginResponse, deleteUserDir, BrowserData} from "./login";
 
 
 const doubleAuthLogins = new Map();
@@ -20,8 +20,21 @@ export function runLoginServer(server: ws.Server) {
             const userData: LoginRequest = JSON.parse(message.toString());
             switch (userData.status) {
                 case 'Login': {
+                    const dirNumber = await Login.getNewDirNumber();
+                    let browserData: null | BrowserData = null;
                     try {
-                        let browserData = await Login.getBrowserAndPage(userData.proxy);
+                        browserData = await Login.getBrowserAndPage(userData.proxy, dirNumber);
+                    } catch (e) {
+                        await deleteUserDir(dirNumber);
+                        let errorInfo: LoginResponse = {
+                            status: 'Error',
+                            username: userData.username,
+                            error_message: "Failure to start/close browser or filesystem failure: " + e.message,
+                        }
+                        sendWithLog(socket, errorInfo);
+                    }
+
+                    if (browserData != null) {
                         let login = new Login(browserData);
                         const loginInfo: LoginResponse = await login.login(userData.username, userData.body);
                         if (loginInfo.status === 'DoubleAuth') {
@@ -33,15 +46,8 @@ export function runLoginServer(server: ws.Server) {
                         }
 
                         sendWithLog(socket, loginInfo);
-                    } catch (e) {
-                        // TODO DELETE USER DIR
-                        let errorInfo: LoginResponse = {
-                            status: 'Error',
-                            username: userData.username,
-                            error_message: "Failure to start/close browser or filesystem failure: " + e.message,
-                        }
-                        sendWithLog(socket, errorInfo);
                     }
+
                 }
                     break;
                 case 'DoubleAuth': {

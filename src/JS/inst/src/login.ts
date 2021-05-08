@@ -76,20 +76,25 @@ export interface BrowserData {
 type Action = (data: UserData) => Promise<void>;
 
 
-let dirNumberMutex = new Mutex();
-let dirCounter: number = 0;
 
 export class Login {
+    private static dirNumberMutex = new Mutex();
+    private static dirCounter: number = 0;
+
     private readonly browser: puppeteer.Browser;
     private readonly page: puppeteer.Page;
     private readonly dirNumber: number;
     private instId: string | null = null;
 
+    public static async getNewDirNumber(): Promise<number>{
+        await Login.dirNumberMutex.acquire();
+        let dirNumber = Login.dirCounter++;
+        Login.dirNumberMutex.release();
+        return dirNumber;
+    }
+
     // A constructor cannot be async, so I created async function for getting browser data
-    public static async getBrowserAndPage(proxy: Proxy): Promise<BrowserData> {
-        await dirNumberMutex.acquire();
-        let dirNumber = dirCounter++;
-        dirNumberMutex.release();
+    public static async getBrowserAndPage(proxy: Proxy, dirNumber: number): Promise<BrowserData> {
 
         let browser: puppeteer.Browser = await createBrowser(path.resolve(__dirname, `loginDirs/userDir${dirNumber}`), proxy);
 
@@ -180,7 +185,7 @@ export class Login {
                 await File.copyUserDirIntoCookiesDir(this.dirNumber, this.instId as string);
             }
             if (justFinishing) {
-                await this.removeUserDir();
+                await deleteUserDir(this.dirNumber);
             }
         }
     }
@@ -347,9 +352,7 @@ export class Login {
         return userIdAndPrivacy;
     }
 
-    private async removeUserDir() {
-        await fs.remove(path.resolve(__dirname, `loginDirs/userDir${this.dirNumber}`));
-    }
+
 
     private async isDoubleAuth() {
         return await this.page.$('#verificationCodeDescription') != null;
@@ -434,3 +437,6 @@ export class Login {
     }
 }
 
+export async function deleteUserDir(dirNumber: number) {
+    await fs.remove(path.resolve(__dirname, `loginDirs/userDir${dirNumber}`));
+}
