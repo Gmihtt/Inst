@@ -11,7 +11,6 @@ import Servant
 import Servant.Multipart
 import Telegram.Types.Communication.Response (Response)
 import qualified Telegram.Types.Domain.Message as Message
-import Telegram.Types.Domain.Update (Updates)
 import qualified Telegram.Types.Methods.SendDocument as Method
 
 type SendDocument =

@@ -3,7 +3,6 @@ module App.Bot.Execution.Admin.SelectUser where
 import qualified App.Bot.Messages.FlowMessages as Message
 import Common.Error (throwLogicError)
 import Common.Flow (Flow)
-import qualified Common.Redis as Common
 import qualified Common.TelegramUserStatus as Common
 import Control.Monad.IO.Class (liftIO)
 import Data.Text (Text)

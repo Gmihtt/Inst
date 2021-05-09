@@ -15,7 +15,6 @@ import Data.Text (Text)
 import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.CallbackQuery as CallbackQuery
 import Telegram.Types.Domain.Message (Message)
-import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
 
 accountMenu :: CallbackQuery.CallbackQuery -> Message -> Text -> Flow (Response Message)
 accountMenu callBack msg instId =

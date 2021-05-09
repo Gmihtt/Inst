@@ -3,7 +3,6 @@
 module Types.Domain.Usernames where
 
 import Data.Text (Text)
-import GHC.Generics (Generic)
 import Prelude hiding (id)
 
 data Usernames

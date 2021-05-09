@@ -13,7 +13,6 @@ import Data.ByteString.Lazy (ByteString)
 import Data.Text (Text)
 import Servant
 import Servant.Client (ClientM, client)
-import Servant.Multipart
 import Telegram.API.Routes.GetUpdates (GetUpdates)
 import Telegram.API.Routes.SendDocument (SendDocument)
 import Telegram.API.Routes.SendMessage (SendMessage)

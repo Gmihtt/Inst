@@ -8,7 +8,7 @@ import Common.Json
   ( FromJSON (..),
     parseJson,
   )
-import Data.Text (Text, pack)
+import Data.Text (Text)
 import GHC.Generics (Generic)
 import Prelude hiding (id)
 

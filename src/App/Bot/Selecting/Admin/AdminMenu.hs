@@ -5,7 +5,6 @@ module App.Bot.Selecting.Admin.AdminMenu where
 import qualified App.Bot.Execution.Admin.AdminMenu as Admin
 import qualified App.Bot.Messages.FlowMessages as Messages
 import Common.Flow (Flow)
-import Data.Text (Text)
 import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.CallbackQuery as CallbackQuery
 import Telegram.Types.Domain.Message (Message)
@@ -15,6 +14,7 @@ adminMenu callBack msg =
   case CallbackQuery.callback_data callBack of
     "Управление пользователями" -> Admin.selectUser msg user
     "Управление администраторами" -> Admin.selectAdmin msg user
+    "Загруженность proxy" -> Admin.proxyLoad msg
     "Вернуться в меню пользователя" -> Admin.back msg user
     _ -> Messages.strangeMessage msg
   where

@@ -9,10 +9,7 @@ import Common.Json
     parseJson,
     toJson,
   )
-import Data.Maybe (fromMaybe)
-import Data.Text (Text)
 import GHC.Generics (Generic)
-import qualified Telegram.Types.Domain.Message as Message
 
 data GetUpdates
   = GetUpdates

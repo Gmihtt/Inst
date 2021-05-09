@@ -18,5 +18,6 @@ adminMenuKeyboard =
   mkInlineKeyboardMarkup
     [ [mkButton "Управление пользователями"],
       [mkButton "Управление администраторами"],
+      [mkButton "Загруженность proxy"],
       [mkButton "Вернуться в меню пользователя"]
     ]

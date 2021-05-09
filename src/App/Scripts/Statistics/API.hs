@@ -5,7 +5,6 @@ module App.Scripts.Statistics.API where
 import Common.Error
   ( printDebug,
     printDebug,
-    throwLogicError,
     throwSocketErr,
   )
 import qualified Communication.Sockets.API as SocketAPI

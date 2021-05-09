@@ -2,8 +2,6 @@
 
 module App.Bot.Selecting.Admin.SelectingTgUser where
 
-import qualified App.Bot.Execution.Users.Logout as Logout
-import qualified App.Bot.Execution.Users.Statistics.Back as Back
 import qualified App.Bot.Execution.Users.Statistics.Start as Start
 import qualified App.Bot.Execution.Users.Statistics.Stop as Stop
 import qualified App.Bot.Execution.Users.Statistics.Subscription as Subscription
@@ -19,6 +17,7 @@ selectMenu callBack msg instId =
   case CallbackQuery.callback_data callBack of
     "Найти по telegram" -> Start.checkStart msg user instId
     "Найти по instagram" -> Stop.execute msg user instId
+    "Количество активных пользователей" -> Stop.execute msg user instId
     "Назад" -> Subscription.execute msg
     _ -> Messages.strangeMessage msg
   where

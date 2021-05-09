@@ -1,20 +1,23 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module App.Bot.Execution.Admin.ShowUser where
 
-import qualified App.Bot.Messages.FlowMessages as Message
-import Common.Error (throwLogicError)
-import Common.Flow (Flow)
-import qualified Common.Redis as Common
-import qualified Common.TelegramUserStatus as Common
+import qualified Common.Environment as Environment
+import Common.Flow (Flow, getEnvironment)
 import Control.Monad.IO.Class (liftIO)
-import Data.Text (Text)
-import qualified MongoDB.Queries.Accounts as Mongo
+import Data.Maybe (fromMaybe)
 import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.Message as Message
+import qualified App.Bot.Messages.FlowMessages as Messages
 import qualified Telegram.Types.Domain.User as User
-import qualified Types.Domain.InstAccount as InstAccount
-import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
-import qualified Types.Domain.TgUser as TgUser
+import qualified Types.Communication.Scripts.Info.Request as InfoRequest
+import qualified Types.Communication.Scripts.Info.Response as InfoResponse
+import qualified App.Scripts.Info.API as InfoAPI
 
-showOneUser = undefined
-
-showAllUsers = undefined
+showAllUsers :: Message.Message -> Flow (Response Message.Message)
+showAllUsers msg = do
+  env <- getEnvironment
+  let infoManager = Environment.infoManager env
+  res <- liftIO $ InfoAPI.sendAndReceiveMsg "" infoManager $ InfoRequest.mkAllStatusReq ""
+  let (users, count) = (fromMaybe [] $ InfoResponse.users_info res, fromMaybe 0 $ InfoResponse.user_count_active res)
+  Messages.smthMessage (users, count) msg

@@ -7,18 +7,8 @@
 
 module Telegram.Types.Methods.SendPhoto where
 
-import Common.Json
-  ( FromJSON (..),
-    ToJSON (..),
-    parseJson,
-    toJson,
-  )
-import Data.Maybe (fromMaybe)
 import Data.Text (Text, pack)
-import GHC.Generics (Generic)
 import Servant.Multipart
-import qualified Telegram.Types.Domain.Chat as Chat
-import qualified Telegram.Types.Domain.Message as Message
 
 data Photo = Photo {path :: FilePath, photoType :: Text}
 
