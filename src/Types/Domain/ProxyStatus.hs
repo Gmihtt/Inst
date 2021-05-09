@@ -28,19 +28,13 @@ initProxyStatus = Chan.newChan
 
 getProxyLoad :: ProxyStatus -> IO (Either Minute ProxyParams)
 getProxyLoad ps = do
-  pps <- Chan.getChanContents ps
-  let pp@ProxyParams {..} = foldr1 getMinProxyLoad pps
+  pp@ProxyParams {..} <- Chan.readChan ps
   curTime <- Time.getCurrentTime
   let diffTime = Time.diffUTCTime curTime time - fiveMinute
   pure $
     if diffTime >= 0
       then Right pp
       else Left $ round (diffTime / 60) * (-1)
-  where
-    getMinProxyLoad pp1 pp2 =
-      let pl1 = proxyLoad pp1
-       in let pl2 = proxyLoad pp2
-           in if ProxyLoad.load pl1 >= ProxyLoad.load pl2 then pp2 else pp1
 
 addProxyLoad :: ProxyParams -> ProxyStatus -> IO ()
 addProxyLoad pp ps = do
