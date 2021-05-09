@@ -34,7 +34,7 @@ module App.Bot.Messages.MessagesBody
     smthMessage,
     timeBlockMessage,
     waitMessage,
-    proxyLoad
+    proxyLoad,
   )
 where
 
@@ -177,5 +177,5 @@ waitMessage =
   mkMessage "Может пройти до 5 минут, пока вы сможете зарегестироваться"
 
 proxyLoad :: [(Text, Text)] -> Message -> Message
-proxyLoad proxyLoads = 
-  mkMessage $ "Прокси          |  Загруженность\n" <> foldr (\(ip,load) b -> b <> ip <> " : " <> load <> "\n") "" proxyLoads
+proxyLoad proxyLoads =
+  mkMessage $ "Прокси          |  Загруженность\n" <> foldr (\(ip, load) b -> b <> ip <> " : " <> load <> "\n") "" proxyLoads

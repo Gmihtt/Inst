@@ -5,7 +5,7 @@ module Types.Domain.ProxyStatus where
 import qualified Control.Concurrent.Chan as Chan
 import qualified Data.Time as Time
 import Data.Time.Calendar.OrdinalDate (fromOrdinalDate)
-import Types.Domain.Proxy ( Proxy )
+import Types.Domain.Proxy (Proxy)
 import qualified Types.Domain.ProxyLoad as ProxyLoad
 
 type Minute = Int
@@ -29,7 +29,7 @@ initProxyStatus = Chan.newChan
 getProxyLoad :: ProxyStatus -> IO (Either Minute ProxyParams)
 getProxyLoad ps = do
   pps <- Chan.getChanContents ps
-  let pp@ProxyParams{..} = foldr1 getMinProxyLoad pps
+  let pp@ProxyParams {..} = foldr1 getMinProxyLoad pps
   curTime <- Time.getCurrentTime
   let diffTime = Time.diffUTCTime curTime time - fiveMinute
   pure $
@@ -37,11 +37,10 @@ getProxyLoad ps = do
       then Right pp
       else Left $ round (diffTime / 60) * (-1)
   where
-    getMinProxyLoad pp1 pp2 = 
-      let pl1 = proxyLoad pp1 in
-      let pl2 = proxyLoad pp2 in
-      if ProxyLoad.load pl1 >= ProxyLoad.load pl2 then pp2 else pp1
-
+    getMinProxyLoad pp1 pp2 =
+      let pl1 = proxyLoad pp1
+       in let pl2 = proxyLoad pp2
+           in if ProxyLoad.load pl1 >= ProxyLoad.load pl2 then pp2 else pp1
 
 addProxyLoad :: ProxyParams -> ProxyStatus -> IO ()
 addProxyLoad pp ps = do

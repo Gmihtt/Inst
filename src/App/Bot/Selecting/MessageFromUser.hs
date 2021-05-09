@@ -2,6 +2,8 @@
 
 module App.Bot.Selecting.MessageFromUser where
 
+import qualified App.Bot.Execution.Admin.AdminMenu as Admin
+import qualified App.Bot.Execution.Admin.ShowUser as Admin
 import qualified App.Bot.Execution.Users.Login as Login
 import qualified App.Bot.Messages.FlowMessages as Messages
 import qualified App.Scripts.Statistics.API as StatAPI
@@ -19,8 +21,6 @@ import qualified Telegram.Types.Domain.User as User
 import qualified Types.Communication.Scripts.Info.Request as InfoRequest
 import qualified Types.Communication.Scripts.Statistics.Request as RequestStat
 import qualified Types.Domain.InstAccount as InstAccount
-import qualified App.Bot.Execution.Admin.AdminMenu as Admin
-import qualified App.Bot.Execution.Admin.ShowUser as Admin
 import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
 
 messageFromUser :: Message.Message -> Flow (Response Message.Message)

@@ -6,7 +6,7 @@ module Services.CheckIP.Routes where
 import Data.Text (Text)
 import Servant
 import Servant.Client (ClientM, client)
-import Types.Communication.CheckIP.GeoIP ( GeoIP )
+import Types.Communication.CheckIP.GeoIP (GeoIP)
 
 type CheckIP =
   "json"

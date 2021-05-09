@@ -178,6 +178,6 @@ waitMessage :: Message -> Flow (Response Message)
 waitMessage msg =
   sendMessage Nothing (Messages.waitMessage msg)
 
-proxyLoad :: [(Text,Text)] -> Message -> Flow (Response Message)
+proxyLoad :: [(Text, Text)] -> Message -> Flow (Response Message)
 proxyLoad proxyLoads msg =
   sendMessage Nothing (Messages.proxyLoad proxyLoads msg)

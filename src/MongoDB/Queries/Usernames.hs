@@ -3,8 +3,8 @@
 module MongoDB.Queries.Usernames where
 
 import Common.Flow (Flow)
-import Data.Text (Text)
 import Data.Maybe (mapMaybe)
+import Data.Text (Text)
 import qualified Database.MongoDB as Mongo
 import Database.MongoDB ((=:))
 import qualified MongoDB.Queries.Common as QMongo
@@ -20,11 +20,11 @@ insertUsernames tgId val = do
   QMongo.insertMany "usernames" $ Transforms.mkDocByUsernames <$> usernames
   pure ()
   where
-    mkUsernames instAcc = 
-      let tgUsername = TgUser.username val in
-      let instId = InstAccount.id instAcc in
-      let instUsernames = InstAccount.login instAcc in
-      Usernames.mkUsernames instUsernames instId tgUsername tgId
+    mkUsernames instAcc =
+      let tgUsername = TgUser.username val
+       in let instId = InstAccount.id instAcc
+           in let instUsernames = InstAccount.login instAcc
+               in Usernames.mkUsernames instUsernames instId tgUsername tgId
 
 findUsernamesByInstUsernames :: Text -> Flow (Maybe Usernames.Usernames)
 findUsernamesByInstUsernames instUsername = do
