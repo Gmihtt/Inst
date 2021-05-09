@@ -178,4 +178,4 @@ waitMessage =
 
 proxyLoad :: [(Text, Text)] -> Message -> Message
 proxyLoad proxyLoads = 
-  mkMessage $ "Прокси     |  Загруженность" <> foldr (\(ip,load) b -> b <> ip <> " : " <> load <> "\n") "" proxyLoads
+  mkMessage $ "Прокси          |  Загруженность\n" <> foldr (\(ip,load) b -> b <> ip <> " : " <> load <> "\n") "" proxyLoads

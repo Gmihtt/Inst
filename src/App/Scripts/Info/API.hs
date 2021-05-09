@@ -2,7 +2,7 @@
 
 module App.Scripts.Info.API where
 
-import Common.Error (throwSocketErr)
+import Common.Error (printDebug, throwSocketErr)
 import qualified Communication.Sockets.API as SocketAPI
 import Control.Concurrent (threadDelay)
 import Control.Concurrent.MVar (newEmptyMVar, putMVar, takeMVar)
@@ -23,12 +23,14 @@ infoConnection socket = do
 
 sendAndReceiveMsg :: Text -> Manager.InfoManager -> RequestInfo.Request -> IO ResponseInfo.Response
 sendAndReceiveMsg key manager req = do
+  printDebug req
   Manager.sendMsg (encode req) manager
   script <- newEmptyMVar
   getMsg script
-  bsRes <- takeMVar script
+  res <- takeMVar script
   Manager.deleteTask key manager
-  pure bsRes
+  printDebug res
+  pure res
   where
     getMsg script = do
       sleepSecond

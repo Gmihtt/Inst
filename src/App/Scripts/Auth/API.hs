@@ -20,7 +20,6 @@ authLogin username password proxy = do
   env <- getEnvironment
   let authManager = Environment.authManager env
   let req = RequestAuth.mkRequestLogin username password proxy
-  liftIO $ printDebug req
   liftIO $ sendAndReceiveMsg username authManager req
 
 doubleAuth :: Text -> Text -> Flow (Either Text ResponseAuth.Response)
@@ -28,7 +27,6 @@ doubleAuth username code = do
   env <- getEnvironment
   let authManager = Environment.authManager env
   let req = RequestAuth.mkRequestDoubleAuth username code
-  liftIO $ printDebug req
   liftIO $ sendAndReceiveMsg username authManager req
 
 susCode :: Text -> Text -> Flow (Either Text ResponseAuth.Response)
@@ -36,7 +34,6 @@ susCode username code = do
   env <- getEnvironment
   let authManager = Environment.authManager env
   let req = RequestAuth.mkRequestSus username code
-  liftIO $ printDebug req
   liftIO $ sendAndReceiveMsg username authManager req
 
 phoneCheck :: Text -> Text -> Flow (Either Text ResponseAuth.Response)
@@ -44,7 +41,6 @@ phoneCheck username code = do
   env <- getEnvironment
   let authManager = Environment.authManager env
   let req = RequestAuth.mkRequestPhoneCheck username code
-  liftIO $ printDebug req
   liftIO $ sendAndReceiveMsg username authManager req
 
 authConnection :: SocketsAPI.Socket -> IO Manager.AuthManager
@@ -57,13 +53,15 @@ authConnection socket = do
 
 sendAndReceiveMsg :: Text -> Manager.AuthManager -> RequestAuth.Request -> IO (Either Text ResponseAuth.Response)
 sendAndReceiveMsg key manager req = do
+  printDebug req
   Manager.sendMsg (encode req) manager
   script <- newEmptyMVar
   getMsg script
-  bsRes <- takeMVar script
+  res <- takeMVar script
   Manager.deleteTask key manager
-  let bsError = (Error.parseCriticalError . Error.error_code) =<< ResponseAuth.error bsRes
-  pure $ maybe (Right bsRes) Left bsError
+  printDebug res
+  let bsError = (Error.parseCriticalError . Error.error_code) =<< ResponseAuth.error res
+  pure $ maybe (Right res) Left bsError
   where
     getMsg script = do
       sleepSecond

@@ -4,7 +4,6 @@ module App.Scripts.Statistics.API where
 
 import Common.Error
   ( printDebug,
-    printDebug,
     throwSocketErr,
   )
 import qualified Communication.Sockets.API as SocketAPI
@@ -28,6 +27,7 @@ statConnection socket = do
 mkStatistics :: ByteString -> Maybe (Either Error.Error Statistic.Statistic) -> IO (Either Error.Error Statistic.Statistic)
 mkStatistics bsBody mbStat = do
   value <- maybe (throwSocketErr $ "decode fail" <> show bsBody) pure (decode bsBody)
+  printDebug value
   eUsers <- getUsers value
   case eUsers of
     Right users ->
