@@ -103,8 +103,22 @@ export async function getInstPageBrowser(id: string, proxy: Proxy): Promise<Brow
 
 export async function getFollowers(id: string, browserData: BrowserData): Promise<StatsResponse> {
     const page = browserData.page;
-
     try {
+        await page.goto('https://www.instagram.com/');
+        await page.waitForTimeout(Random.getRandomDelay(5000, 30));
+
+        if (!(await isUserLoggedInInst(page))) {
+            let screenObj = await File.screenErrorStats(page);
+            let htmlObj = await File.saveHTMLStats(page);
+            return {
+                inst_id: id,
+                error: {
+                    error_message: `User isn't logged in. ${screenAndHtml(screenObj, htmlObj)}`,
+                    error_code: 'USER_IS_NOT_LOGGED',
+                }
+            }
+        }
+
         let responseObject: any = await page.evaluate(async () => {
             try {
                 const response: Response = await fetch(`https://www.instagram.com/accounts/activity/?__a=1&include_reel=true`);
