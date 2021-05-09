@@ -16,6 +16,7 @@ import Prelude hiding (id)
 mkDocByUsernames :: Usernames -> Document
 mkDocByUsernames Usernames {..} =
   [ "instUsername" =: String instUsername,
+    "instId" =: String instId,
     "tgUsername" =: String (fromMaybe "" tgUsername),
     "tgId" =: String tgId
   ]
@@ -23,6 +24,7 @@ mkDocByUsernames Usernames {..} =
 mkUsernamesByDoc :: Document -> Maybe Usernames
 mkUsernamesByDoc doc = do
   instUsername <- doc !? "instUsername"
+  instId <- doc !? "instId"
   tgUsername <- doc !? "tgUsername"
   tgId <- doc !? "tgId"
   pure $ Usernames {..}

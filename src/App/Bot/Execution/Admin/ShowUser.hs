@@ -7,12 +7,10 @@ import qualified App.Scripts.Info.API as InfoAPI
 import qualified Common.Environment as Environment
 import Common.Flow (Flow, getEnvironment)
 import Control.Monad.IO.Class (liftIO)
-import qualified Data.List as List
-import Data.Maybe (fromMaybe, isJust)
+import Data.Maybe (fromMaybe)
 import qualified MongoDB.Queries.Usernames as Mongo
 import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.Message as Message
-import qualified Telegram.Types.Domain.User as User
 import qualified Types.Communication.Scripts.Info.Request as InfoRequest
 import qualified Types.Communication.Scripts.Info.Response as InfoResponse
 import qualified Types.Domain.Usernames as Usernames
