@@ -44,7 +44,7 @@ mkStartReq :: Text -> Proxy -> Request
 mkStartReq inst_id proxy =
   Request
     { status = Start,
-      timeout = Just 20000,
+      timeout = Just 60000,
       proxy = Just proxy,
       ..
     }
@@ -53,7 +53,7 @@ mkStopReq :: Text -> Request
 mkStopReq inst_id =
   Request
     { status = Stop,
-      timeout = Just 20000,
+      timeout = Just 60000,
       proxy = Nothing,
       ..
     }
@@ -62,7 +62,7 @@ mkLogoutReq :: Text -> Request
 mkLogoutReq inst_id =
   Request
     { status = Logout,
-      timeout = Just 20000,
+      timeout = Just 60000,
       proxy = Nothing,
       ..
     }
