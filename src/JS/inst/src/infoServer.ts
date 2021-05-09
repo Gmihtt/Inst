@@ -1,5 +1,6 @@
 import ws = require('ws');
 import * as StatsServer from "./statsServer";
+import {Logger} from "./log";
 
 interface UserInfo {
     id: string
@@ -31,14 +32,14 @@ interface InfoResponse {
 export function runInfoServer(server: ws.Server) {
     server.on('connection', function connection(socket) {
 
-        console.log('Info: connection established');
+        Logger.info('Info: connection established');
 
         socket.onclose = () => {
-            console.log('Info: connection closed');
+            Logger.info('Info: connection closed');
         }
 
         socket.on('message', async function incoming(message: Buffer) {
-            console.log(`Info: ${message.toString()}`);
+            Logger.info(`Info: ${message.toString()}`);
             const request: InfoRequest = JSON.parse(message.toString());
 
             switch (request.status) {
@@ -117,6 +118,6 @@ function getAllInfoData(admin: string): InfoResponse {
 
 function sendWithLog(socket: any, data: object) {
     const dataJSON = JSON.stringify(data);
-    console.log(`Stats sent: ${dataJSON}`);
+    Logger.info(`Stats sent: ${dataJSON}`);
     socket.send(Buffer.from(dataJSON));
 }

@@ -1,6 +1,7 @@
 import ws = require('ws');
 
 import {Login, LoginRequest, LoginResponse, deleteUserDir, BrowserData} from "./login";
+import {Logger} from "./log";
 
 
 const doubleAuthLogins = new Map();
@@ -9,14 +10,14 @@ const phoneCheckLogins = new Map();
 
 export function runLoginServer(server: ws.Server) {
     server.on('connection', function connection(socket) {
-        console.log('Login: connection established');
+        Logger.info('Login: connection established');
 
         socket.onclose = () => {
-            console.log('Login: connection finished');
+            Logger.info('Login: connection finished');
         }
 
         socket.on('message', async function incoming(message: Buffer) {
-            console.log(`Login: ${message.toString()}`);
+            Logger.info(`Login: ${message.toString()}`);
             const userData: LoginRequest = JSON.parse(message.toString());
             switch (userData.status) {
                 case 'Login': {
@@ -122,6 +123,6 @@ export function runLoginServer(server: ws.Server) {
 
 function sendWithLog(socket: any, data: object) {
     const dataJSON = JSON.stringify(data);
-    console.log(`Login sent: ${dataJSON}`);
+    Logger.info(`Login sent: ${dataJSON}`);
     socket.send(Buffer.from(dataJSON));
 }

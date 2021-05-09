@@ -15,28 +15,66 @@ let mutexes: Map<string, Mutex> = new Map();
     }
 })();
 
-export async function screenError(name: string, page: puppeteer.Page) {
-    await page.screenshot({path: path.resolve(__dirname, `errors/${name}`)});
+export async function screenError(name: string, page: puppeteer.Page): Promise<string> {
+    try {
+        await page.screenshot({path: path.resolve(__dirname, `errors/${name}`)});
+        return 'Ok';
+    } catch (e) {
+        return e.message;
+    }
 }
 
-export async function saveHTML(name: string, page: puppeteer.Page) {
-    const code = await page.content();
-    await fs.outputFile(path.resolve(__dirname, `errors/${name}`), code);
+export async function saveHTML(name: string, page: puppeteer.Page): Promise<string> {
+    try {
+        const code = await page.content();
+        await fs.outputFile(path.resolve(__dirname, `errors/${name}`), code);
+        return 'Ok';
+    } catch (e) {
+        return e.message;
+    }
+}
+
+export interface StatsScreen{
+    counter: number
+    message: string
 }
 
 let screenCounter = 1;
-export async function screenErrorStats(page: puppeteer.Page): Promise<number> {
+
+export async function screenErrorStats(page: puppeteer.Page): Promise<StatsScreen> {
     let counter = screenCounter++;
-    await page.screenshot({path: path.resolve(__dirname, `statsErrors/${counter}.png`)});
-    return counter;
+    try {
+        await page.screenshot({path: path.resolve(__dirname, `statsErrors/${counter}.png`)});
+        return {
+            counter: counter,
+            message: 'Ok',
+        };
+    } catch (e) {
+        return {
+            counter: counter,
+            message: e.message,
+        }
+    }
+
 }
 
 let htmlCounter = 1;
-export async function saveHTMLStats(page: puppeteer.Page): Promise<number> {
+
+export async function saveHTMLStats(page: puppeteer.Page): Promise<StatsScreen> {
     let counter = htmlCounter++;
-    const code = await page.content();
-    await fs.outputFile(path.resolve(__dirname, `statsErrors/${counter}.html`), code);
-    return counter;
+    try {
+        const code = await page.content();
+        await fs.outputFile(path.resolve(__dirname, `statsErrors/${counter}.html`), code);
+        return {
+            counter: counter,
+            message: 'Ok'
+        }
+    } catch (e) {
+        return {
+            counter: counter,
+            message: 'Ok'
+        }
+    }
 }
 
 export async function acquireMutex(id: string) {

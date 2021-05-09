@@ -4,6 +4,7 @@ import {runStatsServer} from "./statsServer";
 import {runInfoServer} from "./infoServer";
 import fs = require('fs-extra');
 import path = require('path');
+import {Logger} from "./log";
 
 //Cleaning working dir before launch and ensure that cookies exist
 (async () => {
@@ -31,9 +32,9 @@ import path = require('path');
         runStatsServer(statsServer);
         runInfoServer(infoServer);
 
-        console.log('Servers started');
+        Logger.info('Servers started');
     },
     (error) => {
-        console.log(`Some error occurred:  ${error.message}. Terminating...`);
+        Logger.info(`Some error occurred:  ${error.message}. Terminating...`);
     }
 );

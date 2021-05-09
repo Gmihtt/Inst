@@ -71,11 +71,11 @@ export async function getInstPageBrowser(id: string, proxy: Proxy): Promise<Brow
         await page.waitForTimeout(Random.getRandomDelay(8000, 30));
 
         if (!(await isUserLoggedInInst(page))) {
-            let screenNum = File.screenErrorStats(page);
-            let htmlNum = File.saveHTMLStats(page);
+            let screenObj = await File.screenErrorStats(page);
+            let htmlObj = await File.saveHTMLStats(page);
             return {
                 state: 'error',
-                errorMessage: `User isn't logged in. Check ${screenNum}.png, ${htmlNum}.html`,
+                errorMessage: `User isn't logged in. ${screenAndHtml(screenObj, htmlObj)}`,
                 errorCode: 'USER_IS_NOT_LOGGED',
 
             }
@@ -115,12 +115,12 @@ export async function getFollowers(id: string, browserData: BrowserData): Promis
         });
 
         if (responseObject === null) {
-            let screenNum = File.screenErrorStats(page);
-            let htmlNum = File.saveHTMLStats(page);
+            const screenObj = await File.screenErrorStats(page);
+            const htmlObj = await File.saveHTMLStats(page);
             return {
                 inst_id: id,
                 error: {
-                    error_message: `Error while fetching followers. Check ${screenNum}.png, ${htmlNum}.html`,
+                    error_message: `Error while fetching followers. ${screenAndHtml(screenObj, htmlObj)}`,
                     error_code: 'FETCHING_ERROR',
                 }
             }
@@ -140,10 +140,12 @@ export async function getFollowers(id: string, browserData: BrowserData): Promis
         }
 
     } catch (e) {
+        const screenObj = await File.screenErrorStats(page)
+        const htmlObj = await File.saveHTMLStats(page);
         return {
             inst_id: id,
             error: {
-                error_message: e.message,
+                error_message: e.message + screenAndHtml(screenObj, htmlObj),
                 error_code: 'OTHER_ERROR_1'
             }
         }
@@ -159,4 +161,9 @@ async function isUserLoggedInInst(page: puppeteer.Page): Promise<boolean> {
     } catch {
         return false;
     }
+}
+
+function screenAndHtml(screenObj: File.StatsScreen, htmlOjb: File.StatsScreen): string {
+    return `screen: ${screenObj.message} - ${screenObj.counter}.png
+html: ${htmlOjb.message} - ${htmlOjb.counter}.html`;
 }

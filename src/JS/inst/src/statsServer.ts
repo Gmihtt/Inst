@@ -5,6 +5,7 @@ import path = require('path');
 import * as File from './file';
 import * as Stats from './stats';
 import * as Random from './random'
+import {Logger} from "./log";
 
 type GetterState = 'Working' | 'Stopping' | 'LoggingOut';
 
@@ -24,12 +25,12 @@ async function workerHandler(socket: any, id: string, timeout: number, browserDa
                 await browserData.browser.close();
                 activeFollowerGetters.delete(id);
                 File.releaseMutex(id);
-                console.log(`Getter stopped id: ${id}`);
+                Logger.info(`Getter stopped id: ${id}`);
             } else if (currentState == 'LoggingOut') {
                 await browserData.browser.close();
                 await deleteFolder(id, true);
                 activeFollowerGetters.delete(id);
-                console.log(`Logged out: ${id}`);
+                Logger.info(`Logged out: ${id}`);
             }
         } else {
             const logicError: Stats.StatsResponse = {
@@ -57,14 +58,14 @@ async function workerHandler(socket: any, id: string, timeout: number, browserDa
 export function runStatsServer(server: ws.Server) {
     server.on('connection', function connection(socket) {
 
-        console.log('Stats: connection established');
+        Logger.info('Stats: connection established');
 
         socket.onclose = () => {
-            console.log('Stats: connection closed');
+            Logger.info('Stats: connection closed');
         }
 
         socket.on('message', async function incoming(message: Buffer) {
-                console.log(`Stats: ${message.toString()}`);
+                Logger.info(`Stats: ${message.toString()}`);
                 const request: Stats.StatsRequest = JSON.parse(message.toString());
 
                 switch (request.status) {
@@ -82,7 +83,7 @@ export function runStatsServer(server: ws.Server) {
                         if (browserCreation.state == 'browser') {
                             activeFollowerGetters.set(request.inst_id, 'Working');
                             await File.acquireMutex(request.inst_id);
-                            workerHandler(socket, request.inst_id, timeout, browserCreation.browserData).catch(e => console.log(`THIS ERROR SHOULD NEVER OCCUR!!: ${e}`));
+                            workerHandler(socket, request.inst_id, timeout, browserCreation.browserData).catch(e => Logger.info(`THIS ERROR SHOULD NEVER OCCUR!!: ${e}`));
                         } else {
                             const errorObj: Stats.StatsResponse = {
                                 inst_id: request.inst_id,
@@ -156,6 +157,6 @@ async function deleteFolder(id: string, isMutexAcquired: boolean) {
 
 function sendWithLog(socket: any, data: object) {
     const dataJSON = JSON.stringify(data);
-    console.log(`Stats sent: ${dataJSON.slice(0, 150)}`);
+    Logger.info(`Stats sent: ${dataJSON.slice(0, 150)}`);
     socket.send(Buffer.from(dataJSON));
 }
