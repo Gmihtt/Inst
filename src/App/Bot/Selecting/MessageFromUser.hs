@@ -14,6 +14,7 @@ import qualified Common.TelegramUserStatus as Common
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
+import qualified Data.Char as C
 import qualified MongoDB.Queries.Accounts as Mongo
 import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.Message as Message
@@ -71,8 +72,20 @@ choseAction msg user (TgUserStatus.TgUser status) =
         else do
           Common.setMainMenu user
           Messages.failAuthMsg msg
-    TgUserStatus.AddDoubleAuth proxy username password -> Login.doubleAuth proxy msg user username password text
-    TgUserStatus.AddSusCode proxy username password -> Login.sus proxy msg user username password text
+    TgUserStatus.AddDoubleAuth proxy username accCode -> do
+      let code = T.pack $ filter C.isDigit (T.unpack accCode)
+      if T.length code /= 6 
+        then do
+          Common.setMainMenu user
+          Messages.failAuthMsg msg
+        else Login.doubleAuth proxy msg user username accCode text
+    TgUserStatus.AddSusCode proxy username accCode -> do
+      let code = T.pack $ filter C.isDigit (T.unpack accCode)
+      if T.length code /= 6 
+        then do
+          Common.setMainMenu user
+          Messages.failAuthMsg msg
+        else Login.sus proxy msg user username code text
     TgUserStatus.PhoneCheck proxy username password -> Login.phoneCheck proxy msg user username password text
     _ -> do
       Common.setMainMenu user

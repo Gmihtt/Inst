@@ -15,19 +15,22 @@ import qualified Types.Domain.TgUser as TgUser
 import qualified Types.Domain.Usernames as Usernames
 import Prelude hiding (id)
 
+collectionName :: Text
+collectionName = "accounts"
+
 updateInstAccs :: Text -> TgUser.TgUser -> Flow ()
 updateInstAccs tgId tgUser = do
-  QMongo.upsert (Mongo.select ["id" =: tgId] "accounts") (Transforms.mkDocByTgUser tgUser)
+  QMongo.upsert (Mongo.select ["id" =: tgId] collectionName) (Transforms.mkDocByTgUser tgUser)
   QUsernames.insertUsernames tgId tgUser
 
 findTgUserById :: Text -> Flow (Maybe TgUser.TgUser)
 findTgUserById tg_id = do
-  res <- QMongo.findOne (Mongo.select ["id" =: tg_id] "accounts")
+  res <- QMongo.findOne (Mongo.select ["id" =: tg_id] collectionName)
   pure $ Transforms.mkTgUserByDoc =<< res
 
 findTgUserByUsername :: Text -> Flow (Maybe TgUser.TgUser)
 findTgUserByUsername tgUsername = do
-  res <- QMongo.findOne (Mongo.select ["username" =: tgUsername] "accounts")
+  res <- QMongo.findOne (Mongo.select ["username" =: tgUsername] collectionName)
   pure $ Transforms.mkTgUserByDoc =<< res
 
 findInstAccsByTgId :: Text -> Flow [InstAccount.InstAccount]
@@ -71,4 +74,4 @@ deleteInstAccount tg_id login = do
 
 deleteTgUser :: Text -> Flow ()
 deleteTgUser tg_id = do
-  QMongo.deleteOne (Mongo.select ["id" =: tg_id] "accounts")
+  QMongo.deleteOne (Mongo.select ["id" =: tg_id] collectionName)

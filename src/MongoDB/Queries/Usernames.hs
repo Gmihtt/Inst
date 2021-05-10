@@ -14,10 +14,13 @@ import qualified Types.Domain.TgUser as TgUser
 import qualified Types.Domain.Usernames as Usernames
 import Prelude hiding (id)
 
+collectionName :: Text
+collectionName = "usernames"
+
 insertUsernames :: Text -> TgUser.TgUser -> Flow ()
 insertUsernames tgId val = do
   let usernames = mkUsernames <$> TgUser.inst_accounts val
-  QMongo.insertMany "usernames" $ Transforms.mkDocByUsernames <$> usernames
+  QMongo.insertMany collectionName $ Transforms.mkDocByUsernames <$> usernames
   pure ()
   where
     mkUsernames instAcc =
@@ -28,14 +31,14 @@ insertUsernames tgId val = do
 
 findUsernamesByInstUsernames :: Text -> Flow (Maybe Usernames.Usernames)
 findUsernamesByInstUsernames instUsername = do
-  docUsernames <- QMongo.findOne (Mongo.select ["instUsername" =: instUsername] "usernames")
+  docUsernames <- QMongo.findOne (Mongo.select ["instUsername" =: instUsername] collectionName)
   pure $ Transforms.mkUsernamesByDoc =<< docUsernames
 
 getAllUsernames :: Flow [Usernames.Usernames]
 getAllUsernames = do
-  res <- QMongo.find (Mongo.select [] "proxy_load")
+  res <- QMongo.find (Mongo.select [] collectionName)
   pure $ mapMaybe Transforms.mkUsernamesByDoc res
 
 deleteUsernames :: Text -> Flow ()
 deleteUsernames instUsername = do
-  QMongo.deleteOne (Mongo.select ["instUsername" =: instUsername] "usernames")
+  QMongo.deleteOne (Mongo.select ["instUsername" =: instUsername] collectionName)
