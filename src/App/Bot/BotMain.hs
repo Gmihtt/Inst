@@ -10,6 +10,7 @@ import qualified MongoDB.Queries.ProxyLoad as Mongo
 import Services.CheckIP.CallCheckIP (checkIP)
 import qualified Services.Proxy.GetAllProxy as GetAllProxy
 import qualified Types.Communication.Proxy.ListOfProxy as ListOfProxy
+import qualified Types.Domain.Proxy as Proxy
 import qualified Types.Domain.ProxyLoad as ProxyLoad
 import qualified Types.Domain.ProxyStatus as ProxyStatus
 
@@ -21,9 +22,9 @@ run updateId = do
 
 updateProxyLoad :: Flow ()
 updateProxyLoad = do
-  allProxy <- GetAllProxy.getAllProxy
-  checkedProxy <- mapM checkIP $ ListOfProxy.results allProxy
-  let goodProxy = map fst $ filter snd checkedProxy
+  --allProxy <- GetAllProxy.getAllProxy
+  --checkedProxy <- mapM checkIP $ ListOfProxy.results allProxy
+  let goodProxy = [Proxy.testProxySpain]--map fst $ filter snd checkedProxy
   proxyLoad <- Mongo.getAllProxyLoad
   let oldProxy = map ProxyLoad.proxy proxyLoad
   let newProxy = filter (`notElem` oldProxy) goodProxy

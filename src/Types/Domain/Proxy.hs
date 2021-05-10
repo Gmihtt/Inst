@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Types.Domain.Proxy where
 
@@ -21,6 +22,14 @@ data Proxy
         password :: Text
       }
   deriving (Show, Eq, Generic)
+
+testProxySpain :: Proxy
+testProxySpain = Proxy {
+  ip = "176.118.190.215",
+  port_http = 2560,
+  username = "user58250",
+  password = "5wh9y1"
+}
 
 instance FromJSON Proxy where
   parseJSON = parseJson
