@@ -32,10 +32,11 @@ getProxyLoad ps = do
   curTime <- Time.getCurrentTime
   let diffTime = Time.diffUTCTime curTime time - fiveMinute
   print diffTime
-  pure $
-    if diffTime >= 0
-      then Right pp
-      else Left $ round (diffTime / 60) * (-1)
+  if diffTime >= 0
+    then pure $ Right pp
+    else do
+      Chan.writeChan ps pp 
+      pure $ Left $ round (diffTime / 60) * (-1)
 
 addProxyLoad :: ProxyParams -> ProxyStatus -> IO ()
 addProxyLoad pp ps = do
