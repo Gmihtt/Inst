@@ -9,8 +9,6 @@ import qualified Database.MongoDB as Mongo
 import Database.MongoDB ((=:))
 import qualified MongoDB.Queries.Common as QMongo
 import qualified MongoDB.Transforms.Usernames as Transforms
-import qualified Types.Domain.InstAccount as InstAccount
-import qualified Types.Domain.TgUser as TgUser
 import qualified Types.Domain.Usernames as Usernames
 import Prelude hiding (id)
 
@@ -19,9 +17,8 @@ collectionName = "usernames"
 
 insertUsernames :: Usernames.Usernames -> Flow ()
 insertUsernames usernames = do
-  let tgId = Usernames.tgId usernames
   QMongo.insert collectionName $ Transforms.mkDocByUsernames usernames
-  pure()
+  pure ()
 
 findUsernamesByInstUsernames :: Text -> Flow (Maybe Usernames.Usernames)
 findUsernamesByInstUsernames instUsername = do

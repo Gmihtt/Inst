@@ -24,7 +24,7 @@ updateProxyLoad :: Flow ()
 updateProxyLoad = do
   --allProxy <- GetAllProxy.getAllProxy
   --checkedProxy <- mapM checkIP $ ListOfProxy.results allProxy
-  let goodProxy = [Proxy.testProxySpain]--map fst $ filter snd checkedProxy
+  let goodProxy = [Proxy.testProxySpain] --map fst $ filter snd checkedProxy
   proxyLoad <- Mongo.getAllProxyLoad
   let oldProxy = map ProxyLoad.proxy proxyLoad
   let newProxy = filter (`notElem` oldProxy) goodProxy

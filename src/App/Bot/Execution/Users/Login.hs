@@ -1,7 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module App.Bot.Execution.Users.Login
-where
+module App.Bot.Execution.Users.Login where
 
 import qualified App.Bot.Messages.FlowMessages as Message
 import qualified App.Scripts.Auth.API as ScriptsAuth
@@ -23,9 +22,9 @@ import qualified Telegram.Types.Domain.User as User
 import qualified Types.Communication.Scripts.Auth.Response as ResponseAuth
 import qualified Types.Domain.InstAccount as InstAccount
 import qualified Types.Domain.ProxyLoad as ProxyLoad
-import qualified Types.Domain.Usernames as Usernames
 import qualified Types.Domain.ProxyStatus as ProxyStatus
 import qualified Types.Domain.TgUser as TgUser
+import qualified Types.Domain.Usernames as Usernames
 import Prelude hiding (id)
 
 login :: ProxyStatus.ProxyParams -> Message.Message -> User.User -> Text -> Flow (Response Message.Message)
