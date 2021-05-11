@@ -31,6 +31,7 @@ getProxyLoad ps = do
   pp@ProxyParams {..} <- Chan.readChan ps
   curTime <- Time.getCurrentTime
   let diffTime = Time.diffUTCTime curTime time - fiveMinute
+  print diffTime
   pure $
     if diffTime >= 0
       then Right pp
@@ -41,6 +42,7 @@ addProxyLoad pp ps = do
   if countTry pp >= 10
     then do
       time <- Time.getCurrentTime
+      print $ "gen new time: " <> show time
       let newCountTry = 0
       let newPp = pp {countTry = newCountTry, time = time}
       Chan.writeChan ps newPp

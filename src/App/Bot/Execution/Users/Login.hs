@@ -146,7 +146,8 @@ saveAccAndUser proxyP instId accLogin accPassword user = do
   let newUsernames = Usernames.mkUsernames instId accLogin username uId
   Mongo.insertUsernames newUsernames
   Common.putInstAccs userId
-  updateProxyStatus proxyP
+  let newProxyP = proxyP {ProxyStatus.countTry = 10}
+  updateProxyStatus newProxyP
   Common.setAccountMenu user instId
 
 updateProxyStatus :: ProxyStatus.ProxyParams -> Flow ()
