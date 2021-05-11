@@ -73,22 +73,8 @@ choseAction msg user (TgUserStatus.TgUser status) =
           Common.setListOfAccounts user
           Login.addProxyTry proxy
           Messages.failAuthMsg msg
-    TgUserStatus.AddDoubleAuth proxy username accCode -> do
-      let code = T.pack $ filter C.isDigit (T.unpack accCode)
-      if T.length code /= 6 
-        then do
-          Common.setListOfAccounts user
-          Login.addProxyTry proxy
-          Messages.failAuthMsg msg
-        else Login.doubleAuth proxy msg user username accCode text
-    TgUserStatus.AddSusCode proxy username accCode -> do
-      let code = T.pack $ filter C.isDigit (T.unpack accCode)
-      if T.length code /= 6 
-        then do
-          Common.setListOfAccounts user
-          Login.addProxyTry proxy
-          Messages.failAuthMsg msg
-        else Login.sus proxy msg user username code text
+    TgUserStatus.AddDoubleAuth proxy username accCode -> Login.doubleAuth proxy msg user username accCode text
+    TgUserStatus.AddSusCode proxy username accCode -> Login.sus proxy msg user username accCode text
     TgUserStatus.PhoneCheck proxy username password -> Login.phoneCheck proxy msg user username password text
     _ -> do
       Common.setMainMenu user
