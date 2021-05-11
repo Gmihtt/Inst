@@ -21,7 +21,6 @@ collectionName = "accounts"
 updateInstAccs :: Text -> TgUser.TgUser -> Flow ()
 updateInstAccs tgId tgUser = do
   QMongo.upsert (Mongo.select ["id" =: tgId] collectionName) (Transforms.mkDocByTgUser tgUser)
-  QUsernames.insertUsernames tgId tgUser
 
 findTgUserById :: Text -> Flow (Maybe TgUser.TgUser)
 findTgUserById tg_id = do

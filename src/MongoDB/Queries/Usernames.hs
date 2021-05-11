@@ -17,17 +17,11 @@ import Prelude hiding (id)
 collectionName :: Text
 collectionName = "usernames"
 
-insertUsernames :: Text -> TgUser.TgUser -> Flow ()
-insertUsernames tgId val = do
-  let usernames = mkUsernames <$> TgUser.inst_accounts val
-  QMongo.insertMany collectionName $ Transforms.mkDocByUsernames <$> usernames
-  pure ()
-  where
-    mkUsernames instAcc =
-      let tgUsername = TgUser.username val
-       in let instId = InstAccount.id instAcc
-           in let instUsernames = InstAccount.login instAcc
-               in Usernames.mkUsernames instUsernames instId tgUsername tgId
+insertUsernames :: Usernames.Usernames -> Flow ()
+insertUsernames usernames = do
+  let tgId = Usernames.tgId usernames
+  QMongo.insert collectionName $ Transforms.mkDocByUsernames usernames
+  pure()
 
 findUsernamesByInstUsernames :: Text -> Flow (Maybe Usernames.Usernames)
 findUsernamesByInstUsernames instUsername = do
