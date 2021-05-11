@@ -70,20 +70,23 @@ choseAction msg user (TgUserStatus.TgUser status) =
       if T.length text > 5
         then Login.password proxy msg user username text
         else do
-          Common.setMainMenu user
+          Common.setListOfAccounts user
+          Login.addProxyTry proxy
           Messages.failAuthMsg msg
     TgUserStatus.AddDoubleAuth proxy username accCode -> do
       let code = T.pack $ filter C.isDigit (T.unpack accCode)
       if T.length code /= 6 
         then do
-          Common.setMainMenu user
+          Common.setListOfAccounts user
+          Login.addProxyTry proxy
           Messages.failAuthMsg msg
         else Login.doubleAuth proxy msg user username accCode text
     TgUserStatus.AddSusCode proxy username accCode -> do
       let code = T.pack $ filter C.isDigit (T.unpack accCode)
       if T.length code /= 6 
         then do
-          Common.setMainMenu user
+          Common.setListOfAccounts user
+          Login.addProxyTry proxy
           Messages.failAuthMsg msg
         else Login.sus proxy msg user username code text
     TgUserStatus.PhoneCheck proxy username password -> Login.phoneCheck proxy msg user username password text
