@@ -37,5 +37,7 @@ tryGetProxy user msg = do
   Messages.waitMessage msg
   eProxyLoad <- liftIO $ ProxyStatus.getProxyLoad proxyManager
   case eProxyLoad of
-    Left time -> Messages.timeBlockMessage time msg
+    Left time -> do
+      Common.setListOfAccounts user
+      Messages.timeBlockMessage time msg
     Right proxy -> ShowAccounts.addAccount proxy msg user
