@@ -3,11 +3,9 @@ import path = require('path');
 import {createBrowser} from "./browserCreation";
 import * as File from './file'
 import * as Random from './random'
-import {Proxy} from "./browserCreation";
 
 export interface StatsStart {
     status: 'Start'
-    proxy: Proxy
     inst_id: string
     timeout?: number
 }
@@ -52,7 +50,7 @@ export interface ErrorState {
 export type BrowserCreation = BrowserState | ErrorState;
 
 
-export async function getInstPageBrowser(id: string, proxy: Proxy): Promise<BrowserCreation> {
+export async function getInstPageBrowser(id: string): Promise<BrowserCreation> {
 
     if (!await File.isUserLoggedInBot(id)) {
         return {
@@ -62,7 +60,7 @@ export async function getInstPageBrowser(id: string, proxy: Proxy): Promise<Brow
         };
     }
 
-    let browser: puppeteer.Browser = await createBrowser(path.resolve(__dirname, path.resolve(__dirname, `cookies/${id}`)), proxy);
+    let browser: puppeteer.Browser = await createBrowser(path.resolve(__dirname, path.resolve(__dirname, `cookies/${id}`)));
 
     const page: puppeteer.Page = (await browser.pages())[0];
 

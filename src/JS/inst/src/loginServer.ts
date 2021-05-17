@@ -24,7 +24,7 @@ export function runLoginServer(server: ws.Server) {
                     const dirNumber = await Login.getNewDirNumber();
                     let browserData: null | BrowserData = null;
                     try {
-                        browserData = await Login.getBrowserAndPage(userData.proxy, dirNumber);
+                        browserData = await Login.getBrowserAndPage(dirNumber);
                     } catch (e) {
                         await deleteUserDir(dirNumber);
                         let errorInfo: LoginResponse = {

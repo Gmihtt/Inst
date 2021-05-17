@@ -5,12 +5,10 @@ import {createBrowser} from "./browserCreation";
 import fs from "fs-extra";
 import * as File from './file';
 import * as Random from './random'
-import {Proxy} from './browserCreation'
 
 
 interface LoginRequestState{
     status: 'Login'
-    proxy: Proxy
     username: string
     body: string
 }
@@ -94,9 +92,9 @@ export class Login {
     }
 
     // A constructor cannot be async, so I created async function for getting browser data
-    public static async getBrowserAndPage(proxy: Proxy, dirNumber: number): Promise<BrowserData> {
+    public static async getBrowserAndPage(dirNumber: number): Promise<BrowserData> {
 
-        let browser: puppeteer.Browser = await createBrowser(path.resolve(__dirname, `loginDirs/userDir${dirNumber}`), proxy);
+        let browser: puppeteer.Browser = await createBrowser(path.resolve(__dirname, `loginDirs/userDir${dirNumber}`));
 
         let page = (await browser.pages())[0]
         return {

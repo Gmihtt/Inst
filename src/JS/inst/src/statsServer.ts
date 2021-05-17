@@ -78,7 +78,7 @@ export function runStatsServer(server: ws.Server) {
                             timeout = request.timeout;
                         }
 
-                        const browserCreation: Stats.BrowserCreation = await Stats.getInstPageBrowser(request.inst_id, request.proxy);
+                        const browserCreation: Stats.BrowserCreation = await Stats.getInstPageBrowser(request.inst_id);
 
                         if (browserCreation.state == 'browser') {
                             activeFollowerGetters.set(request.inst_id, 'Working');
