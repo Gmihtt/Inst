@@ -1,13 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module App.Bot.Execution.Users.Login
-  ( login,
-    password,
-    doubleAuth,
-    sus,
-    phoneCheck,
-  )
-where
+module App.Bot.Execution.Users.Login where
 
 import qualified App.Bot.Messages.FlowMessages as Message
 import qualified App.Scripts.Auth.API as ScriptsAuth
@@ -22,6 +15,7 @@ import Data.Text (Text)
 import qualified Data.Text as T
 import qualified MongoDB.Queries.Accounts as Mongo
 import qualified MongoDB.Queries.ProxyLoad as Mongo
+import qualified MongoDB.Queries.Usernames as Mongo
 import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.Message as Message
 import qualified Telegram.Types.Domain.User as User
@@ -30,6 +24,7 @@ import qualified Types.Domain.InstAccount as InstAccount
 import qualified Types.Domain.ProxyLoad as ProxyLoad
 import qualified Types.Domain.ProxyStatus as ProxyStatus
 import qualified Types.Domain.TgUser as TgUser
+import qualified Types.Domain.Usernames as Usernames
 import Prelude hiding (id)
 
 login :: ProxyStatus.ProxyParams -> Message.Message -> User.User -> Text -> Flow (Response Message.Message)
@@ -148,8 +143,11 @@ saveAccAndUser proxyP instId accLogin accPassword user = do
   let username = User.username user
   let tgUser = TgUser.mkTgUser uId userFirstName username (newInstAcc : instAccs)
   Mongo.updateInstAccs uId tgUser
+  let newUsernames = Usernames.mkUsernames instId accLogin username uId
+  Mongo.insertUsernames newUsernames
   Common.putInstAccs userId
-  updateProxyStatus proxyP
+  let newProxyP = proxyP {ProxyStatus.countTry = 10}
+  updateProxyStatus newProxyP
   Common.setAccountMenu user instId
 
 updateProxyStatus :: ProxyStatus.ProxyParams -> Flow ()

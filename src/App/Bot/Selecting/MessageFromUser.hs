@@ -18,7 +18,6 @@ import qualified MongoDB.Queries.Accounts as Mongo
 import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.Message as Message
 import qualified Telegram.Types.Domain.User as User
-import qualified Types.Communication.Scripts.Info.Request as InfoRequest
 import qualified Types.Communication.Scripts.Statistics.Request as RequestStat
 import qualified Types.Domain.InstAccount as InstAccount
 import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
@@ -69,10 +68,11 @@ choseAction msg user (TgUserStatus.TgUser status) =
       if T.length text > 5
         then Login.password proxy msg user username text
         else do
-          Common.setMainMenu user
+          Common.setListOfAccounts user
+          Login.addProxyTry proxy
           Messages.failAuthMsg msg
-    TgUserStatus.AddDoubleAuth proxy username password -> Login.doubleAuth proxy msg user username password text
-    TgUserStatus.AddSusCode proxy username password -> Login.sus proxy msg user username password text
+    TgUserStatus.AddDoubleAuth proxy username accCode -> Login.doubleAuth proxy msg user username accCode text
+    TgUserStatus.AddSusCode proxy username accCode -> Login.sus proxy msg user username accCode text
     TgUserStatus.PhoneCheck proxy username password -> Login.phoneCheck proxy msg user username password text
     _ -> do
       Common.setMainMenu user
