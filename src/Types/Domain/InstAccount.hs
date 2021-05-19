@@ -16,7 +16,6 @@ import Common.Json
   )
 import Data.Text (Text)
 import GHC.Generics (Generic)
-import Types.Domain.Proxy
 import Prelude hiding (id)
 
 type InstAccounts = [InstAccount]
@@ -26,13 +25,12 @@ data InstAccount
       { id :: Text,
         login :: Text,
         password :: Text,
-        subscription :: Bool,
-        proxy :: Proxy
+        subscription :: Bool
       }
   deriving (Show, Eq, Generic)
 
-mkInstAccount :: Text -> Text -> Text -> Bool -> Proxy -> InstAccount
-mkInstAccount id login password subscription proxy =
+mkInstAccount :: Text -> Text -> Text -> Bool -> InstAccount
+mkInstAccount id login password subscription =
   InstAccount {..}
 
 instance ToJSON InstAccount where

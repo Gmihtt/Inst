@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a0d73cd68260fa2e710db0a4cc46cafc1c651a1235aaa9b0dfa0f5b6127f89e0
+-- hash: c54cf7d42123026740216e1f49f2f4cfe4946b5d9e6ad88588ab3148102c713c
 
 name:           Inst
 version:        0.1.0.0
@@ -93,21 +93,13 @@ library
       Communication.ThreadManager.Manager
       MongoDB.Queries.Accounts
       MongoDB.Queries.Common
-      MongoDB.Queries.ProxyLoad
       MongoDB.Queries.Statistics
       MongoDB.Queries.Usernames
       MongoDB.Transforms.InstAccount
       MongoDB.Transforms.InstStatistics
-      MongoDB.Transforms.Proxy
-      MongoDB.Transforms.ProxyLoad
       MongoDB.Transforms.TgUser
       MongoDB.Transforms.Usernames
       Redis.Queries
-      Services.CheckIP.CallCheckIP
-      Services.CheckIP.Routes
-      Services.Proxy.CallProxy
-      Services.Proxy.GetAllProxy
-      Services.Proxy.Routes
       Telegram.API.Methods.CallTelegram
       Telegram.API.Methods.GetUpdates
       Telegram.API.Methods.SendDocument
@@ -135,11 +127,9 @@ library
       Telegram.Types.Methods.SendDocument
       Telegram.Types.Methods.SendMessage
       Telegram.Types.Methods.SendPhoto
-      Types.Communication.CheckIP.GeoIP
-      Types.Communication.Error
-      Types.Communication.Proxy.ListOfProxy
       Types.Communication.Scripts.Auth.Request
       Types.Communication.Scripts.Auth.Response
+      Types.Communication.Scripts.Error
       Types.Communication.Scripts.Info.Request
       Types.Communication.Scripts.Info.Response
       Types.Communication.Scripts.Statistics.Request
@@ -147,9 +137,6 @@ library
       Types.Domain.Admin
       Types.Domain.InstAccount
       Types.Domain.InstStatistics
-      Types.Domain.Proxy
-      Types.Domain.ProxyLoad
-      Types.Domain.ProxyStatus
       Types.Domain.Statistic
       Types.Domain.Status.TgUsersStatus
       Types.Domain.Status.TgUserStatus

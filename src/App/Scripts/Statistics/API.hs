@@ -11,7 +11,7 @@ import Control.Monad.IO.Class (liftIO)
 import Data.Aeson (decode, encode)
 import Data.ByteString.Lazy (ByteString)
 import Data.Maybe (fromMaybe)
-import qualified Types.Communication.Error as Error
+import qualified Types.Communication.Scripts.Error as Error
 import qualified Types.Communication.Scripts.Statistics.Request as RequestStat
 import qualified Types.Communication.Scripts.Statistics.Response as ResponseStat
 import qualified Types.Domain.Statistic as Statistic

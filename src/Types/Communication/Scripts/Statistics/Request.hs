@@ -11,7 +11,6 @@ import Common.Json
   )
 import Data.Text (Text)
 import GHC.Generics (Generic)
-import Types.Domain.Proxy (Proxy)
 
 data Action
   = Start
@@ -29,8 +28,7 @@ data Request
   = Request
       { inst_id :: Text,
         status :: Action,
-        timeout :: Maybe Integer,
-        proxy :: Maybe Proxy
+        timeout :: Maybe Integer
       }
   deriving (Show, Eq, Generic)
 
@@ -40,12 +38,11 @@ instance ToJSON Request where
 instance FromJSON Request where
   parseJSON = parseJson
 
-mkStartReq :: Text -> Proxy -> Request
-mkStartReq inst_id proxy =
+mkStartReq :: Text -> Request
+mkStartReq inst_id =
   Request
     { status = Start,
       timeout = Just 60000,
-      proxy = Just proxy,
       ..
     }
 
@@ -54,7 +51,6 @@ mkStopReq inst_id =
   Request
     { status = Stop,
       timeout = Just 60000,
-      proxy = Nothing,
       ..
     }
 
@@ -63,6 +59,5 @@ mkLogoutReq inst_id =
   Request
     { status = Logout,
       timeout = Just 60000,
-      proxy = Nothing,
       ..
     }

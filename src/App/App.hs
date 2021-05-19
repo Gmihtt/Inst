@@ -22,7 +22,6 @@ import System.Log.Formatter (simpleLogFormatter)
 import System.Log.Handler (LogHandler (setFormatter))
 import qualified System.Log.Handler.Simple as Logger
 import qualified System.Log.Logger as Logger
-import qualified Types.Domain.ProxyStatus as ProxyStatus
 import qualified Types.Domain.Status.TgUsersStatus as TgUsersStatus
 
 setCommonFormatter :: LogHandler a => a -> a
@@ -43,8 +42,6 @@ app =
         authSocket <- Config.getAuthSocket
         statSocket <- Config.getStatSocket
         infoSocket <- Config.getInfoSocket
-        proxyApiKey <- Config.getProxyApiKey
-        proxyManager <- ProxyStatus.initProxyStatus
         authManager <- ScriptsAuth.authConnection authSocket
         statisticsManager <- ScriptsStatistics.statConnection statSocket
         infoManager <- ScriptInfo.infoConnection infoSocket

@@ -1,5 +1,4 @@
 token : 1416982745:AAGCiyC1EGOpD8GEqVPhbCLL_ptwRP4fvWU
-proxy_api_key : bjkiqjjfzjyb8j0j30in79l5xzufkm71769qisug
 mongo_db : "instagram"
 mongo_collection : "accounts"
 auth_socket_port : "5012"

@@ -10,7 +10,7 @@ import Common.Json
   )
 import Data.Text (Text)
 import GHC.Generics (Generic)
-import Types.Communication.Error (Error)
+import Types.Communication.Scripts.Error (Error)
 
 data Response
   = Response

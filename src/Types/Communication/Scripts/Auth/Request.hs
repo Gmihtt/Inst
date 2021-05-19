@@ -11,7 +11,6 @@ import Common.Json
   )
 import Data.Text (Text)
 import GHC.Generics (Generic)
-import Types.Domain.Proxy (Proxy)
 
 data Auth = Login | DoubleAuth | Sus | PhoneCheck deriving (Show, Eq, Generic)
 
@@ -25,17 +24,15 @@ data Request
   = Request
       { status :: Auth,
         username :: Text,
-        body :: Text,
-        proxy :: Maybe Proxy
+        body :: Text
       }
   deriving (Show, Eq, Generic)
 
-mkRequestLogin :: Text -> Text -> Proxy -> Request
-mkRequestLogin username password proxy =
+mkRequestLogin :: Text -> Text -> Request
+mkRequestLogin username password =
   Request
     { status = Login,
       body = password,
-      proxy = Just proxy,
       ..
     }
 
@@ -44,8 +41,7 @@ mkRequestDoubleAuth inst_id code =
   Request
     { status = DoubleAuth,
       username = inst_id,
-      body = code,
-      proxy = Nothing
+      body = code
     }
 
 mkRequestSus :: Text -> Text -> Request
@@ -53,8 +49,7 @@ mkRequestSus inst_id code =
   Request
     { status = Sus,
       username = inst_id,
-      body = code,
-      proxy = Nothing
+      body = code
     }
 
 mkRequestPhoneCheck :: Text -> Text -> Request
@@ -62,8 +57,7 @@ mkRequestPhoneCheck inst_id code =
   Request
     { status = PhoneCheck,
       username = inst_id,
-      body = code,
-      proxy = Nothing
+      body = code
     }
 
 instance ToJSON Request where

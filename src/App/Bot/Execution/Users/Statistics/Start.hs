@@ -17,7 +17,6 @@ import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.Message as Message
 import qualified Telegram.Types.Domain.User as User
 import qualified Types.Communication.Scripts.Statistics.Request as RequestStat
-import qualified Types.Domain.InstAccount as InstAccount
 import qualified Types.Domain.InstStatistics as InstStatistics
 import qualified Types.Domain.Statistic as Statistic
 import qualified Types.Domain.ThreadManager as Manager
@@ -56,7 +55,6 @@ sendStartMsg user instId = do
   instAccount <-
     Mongo.findInstAccountByInstId tgId instId
       >>= maybe (liftIO $ throwLogicError errMsg) pure
-  let proxy = InstAccount.proxy instAccount
-  liftIO $ API.sendMsg statManager (RequestStat.mkStartReq instId proxy)
+  liftIO $ API.sendMsg statManager (RequestStat.mkStartReq instId)
   where
     errMsg = "Start.start instAccount don't find by instId: " ++ T.unpack instId ++ " for user: " ++ show user

@@ -2,7 +2,6 @@
 
 module App.Bot.Selecting.MessageFromUser where
 
-import qualified App.Bot.Execution.Admin.AdminMenu as Admin
 import qualified App.Bot.Execution.Admin.ShowUser as Admin
 import qualified App.Bot.Execution.Users.Login as Login
 import qualified App.Bot.Messages.FlowMessages as Messages
@@ -36,7 +35,6 @@ checkStatus msg user = do
     "/start" -> setMainMenu
     "/help" -> setHelpMenu
     "/reboot" -> reboot
-    "/admin konechno proxy" -> Admin.proxyLoad msg
     "/admin konechno active" -> Admin.showAllUsers msg
     _ -> do
       status <- Common.getUserStatus userId
@@ -63,17 +61,16 @@ choseAction :: Message.Message -> User.User -> TgUserStatus.TgUserStatus -> Flow
 choseAction _ _ (TgUserStatus.TgAdmin status) = undefined
 choseAction msg user (TgUserStatus.TgUser status) =
   case status of
-    TgUserStatus.AddAccountLogin proxy -> Login.login proxy msg user text
-    TgUserStatus.AddAccountPassword proxy username -> do
+    TgUserStatus.AddAccountLogin -> Login.login msg user text
+    TgUserStatus.AddAccountPassword username -> do
       if T.length text > 5
-        then Login.password proxy msg user username text
+        then Login.password msg user username text
         else do
           Common.setListOfAccounts user
-          Login.addProxyTry proxy
           Messages.failAuthMsg msg
-    TgUserStatus.AddDoubleAuth proxy username accCode -> Login.doubleAuth proxy msg user username accCode text
-    TgUserStatus.AddSusCode proxy username accCode -> Login.sus proxy msg user username accCode text
-    TgUserStatus.PhoneCheck proxy username password -> Login.phoneCheck proxy msg user username password text
+    TgUserStatus.AddDoubleAuth username accCode -> Login.doubleAuth msg user username accCode text
+    TgUserStatus.AddSusCode username accCode -> Login.sus msg user username accCode text
+    TgUserStatus.PhoneCheck username password -> Login.phoneCheck msg user username password text
     _ -> do
       Common.setMainMenu user
       Messages.strangeMessage msg

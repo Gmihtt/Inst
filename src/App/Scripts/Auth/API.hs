@@ -9,17 +9,16 @@ import Control.Concurrent.MVar (newEmptyMVar, putMVar, takeMVar)
 import Control.Monad.IO.Class (liftIO)
 import Data.Aeson (decode, encode)
 import Data.Text (Text)
-import qualified Types.Communication.Error as Error
 import qualified Types.Communication.Scripts.Auth.Request as RequestAuth
 import qualified Types.Communication.Scripts.Auth.Response as ResponseAuth
-import Types.Domain.Proxy (Proxy)
+import qualified Types.Communication.Scripts.Error as Error
 import qualified Types.Domain.ThreadManager as Manager
 
-authLogin :: Text -> Text -> Proxy -> Flow (Either Text ResponseAuth.Response)
-authLogin username password proxy = do
+authLogin :: Text -> Text -> Flow (Either Text ResponseAuth.Response)
+authLogin username password = do
   env <- getEnvironment
   let authManager = Environment.authManager env
-  let req = RequestAuth.mkRequestLogin username password proxy
+  let req = RequestAuth.mkRequestLogin username password
   liftIO $ sendAndReceiveMsg username authManager req
 
 doubleAuth :: Text -> Text -> Flow (Either Text ResponseAuth.Response)

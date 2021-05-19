@@ -7,7 +7,6 @@ import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.Message as Message
 import qualified Telegram.Types.Domain.User as User
 import qualified Types.Domain.InstAccount as InstAccount
-import qualified Types.Domain.ProxyStatus as Proxy
 import Prelude hiding (id)
 
 selectedAcc :: Message.Message -> User.User -> InstAccount.InstAccount -> Flow (Response Message.Message)
@@ -16,9 +15,9 @@ selectedAcc msg user accLogin = do
   Common.setAccountMenu user instId
   Message.accountMenu msg
 
-addAccount :: Proxy.ProxyParams -> Message.Message -> User.User -> Flow (Response Message.Message)
-addAccount proxy msg user = do
-  Common.setAddAccountLogin user proxy
+addAccount :: Message.Message -> User.User -> Flow (Response Message.Message)
+addAccount msg user = do
+  Common.setAddAccountLogin user
   Message.loginMsg msg
 
 back :: Message.Message -> User.User -> Flow (Response Message.Message)

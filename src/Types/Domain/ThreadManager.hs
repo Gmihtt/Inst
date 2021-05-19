@@ -7,8 +7,8 @@ module Types.Domain.ThreadManager
 where
 
 import Communication.ThreadManager.Manager as X
-import qualified Types.Communication.Error as Error
 import qualified Types.Communication.Scripts.Auth.Response as Auth
+import qualified Types.Communication.Scripts.Error as Error
 import qualified Types.Communication.Scripts.Info.Response as Info
 import qualified Types.Domain.Statistic as Statistic
 
