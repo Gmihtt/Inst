@@ -14,7 +14,7 @@ import qualified MongoDB.Queries.Statistics as Mongo
 import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.Message as Message
 import qualified Telegram.Types.Domain.User as User
-import qualified Types.Communication.Error as Error
+import qualified Types.Communication.Scripts.Error as Error
 import qualified Types.Domain.InstStatistics as InstStatistics
 import qualified Types.Domain.Statistic as Statistic
 import qualified Types.Domain.ThreadManager as Manager

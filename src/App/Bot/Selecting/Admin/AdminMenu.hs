@@ -14,7 +14,6 @@ adminMenu callBack msg =
   case CallbackQuery.callback_data callBack of
     "Управление пользователями" -> Admin.selectUser msg user
     "Управление администраторами" -> Admin.selectAdmin msg user
-    "Загруженность proxy" -> Admin.proxyLoad msg
     "Вернуться в меню пользователя" -> Admin.back msg user
     _ -> Messages.strangeMessage msg
   where

@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Types.Communication.Error where
+module Types.Communication.Scripts.Error where
 
 import Common.Json
   ( FromJSON (..),

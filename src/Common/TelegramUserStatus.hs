@@ -9,7 +9,6 @@ import Common.Flow (Flow, getEnvironment)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Text (Text, pack)
 import qualified Telegram.Types.Domain.User as User
-import Types.Domain.ProxyStatus (ProxyParams)
 import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
 import qualified Types.Domain.Status.TgUsersStatus as TgUsersStatus
 
@@ -30,24 +29,24 @@ setHelp user = updateUserStatus user (TgUserStatus.TgUser TgUserStatus.Help)
 setListOfAccounts :: User.User -> Flow Bool
 setListOfAccounts user = updateUserStatus user (TgUserStatus.TgUser TgUserStatus.ListOfAccounts)
 
-setAddAccountLogin :: User.User -> ProxyParams -> Flow Bool
-setAddAccountLogin user proxy = updateUserStatus user (TgUserStatus.TgUser $ TgUserStatus.AddAccountLogin proxy)
+setAddAccountLogin :: User.User -> Flow Bool
+setAddAccountLogin user = updateUserStatus user (TgUserStatus.TgUser TgUserStatus.AddAccountLogin)
 
-setAddAccountPassword :: User.User -> ProxyParams -> TgUserStatus.Username -> Flow Bool
-setAddAccountPassword user proxy username =
-  updateUserStatus user (TgUserStatus.TgUser $ TgUserStatus.AddAccountPassword proxy username)
+setAddAccountPassword :: User.User -> TgUserStatus.Username -> Flow Bool
+setAddAccountPassword user username =
+  updateUserStatus user (TgUserStatus.TgUser $ TgUserStatus.AddAccountPassword username)
 
-setAddDoubleAuth :: User.User -> ProxyParams -> TgUserStatus.Username -> TgUserStatus.Password -> Flow Bool
-setAddDoubleAuth user proxy username password =
-  updateUserStatus user (TgUserStatus.TgUser $ TgUserStatus.AddDoubleAuth proxy username password)
+setAddDoubleAuth :: User.User -> TgUserStatus.Username -> TgUserStatus.Password -> Flow Bool
+setAddDoubleAuth user username password =
+  updateUserStatus user (TgUserStatus.TgUser $ TgUserStatus.AddDoubleAuth username password)
 
-setAddSusCode :: User.User -> ProxyParams -> TgUserStatus.Username -> TgUserStatus.Password -> Flow Bool
-setAddSusCode user proxy username password =
-  updateUserStatus user (TgUserStatus.TgUser $ TgUserStatus.AddSusCode proxy username password)
+setAddSusCode :: User.User -> TgUserStatus.Username -> TgUserStatus.Password -> Flow Bool
+setAddSusCode user username password =
+  updateUserStatus user (TgUserStatus.TgUser $ TgUserStatus.AddSusCode username password)
 
-setPhoneCheck :: User.User -> ProxyParams -> TgUserStatus.Username -> TgUserStatus.Password -> Flow Bool
-setPhoneCheck user proxy username password =
-  updateUserStatus user (TgUserStatus.TgUser $ TgUserStatus.PhoneCheck proxy username password)
+setPhoneCheck :: User.User -> TgUserStatus.Username -> TgUserStatus.Password -> Flow Bool
+setPhoneCheck user username password =
+  updateUserStatus user (TgUserStatus.TgUser $ TgUserStatus.PhoneCheck username password)
 
 setAccountMenu :: User.User -> TgUserStatus.InstId -> Flow Bool
 setAccountMenu user instId =

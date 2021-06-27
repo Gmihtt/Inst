@@ -16,7 +16,6 @@ import Database.MongoDB
     Document,
     Value (..),
   )
-import MongoDB.Transforms.Proxy (mkDocByProxy, mkProxyByDoc)
 import Types.Domain.InstAccount
   ( InstAccount (..),
     InstAccounts,
@@ -28,8 +27,7 @@ mkDocByInstAcc InstAccount {..} =
   [ "id" =: String id,
     "login" =: String login,
     "password" =: String password,
-    "subscription" =: Bool subscription,
-    "proxy" =: mkDocByProxy proxy
+    "subscription" =: Bool subscription
   ]
 
 mkDocsByInstAccs :: InstAccounts -> [Document]
@@ -41,7 +39,6 @@ mkInstAccByDoc doc = do
   login <- doc !? "login"
   password <- doc !? "password"
   subscription <- doc !? "subscription"
-  proxy <- mkProxyByDoc =<< doc !? "proxy"
   pure InstAccount {..}
 
 mkInstAccsByDocs :: [Document] -> InstAccounts
