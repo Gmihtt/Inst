@@ -117,7 +117,39 @@ export async function getFollowers(id: string, browserData: BrowserData): Promis
             }
         }
 
-        let responseObject: any = await page.evaluate(async () => {
+        await page.screenshot({path: '2-waitingToLoad.png'});
+        await page.click('[href="/accounts/activity/"]');
+        await page.waitForTimeout(10000);
+        await page.screenshot({path: '2-afterClicking.png'});
+
+        await page.addScriptTag({path: require.resolve('jquery')});
+
+        await page.evaluate(() => {
+            $('span:contains("Follow Requests")').parent().addClass('theFollowRequestButton');
+        });
+        await page.click('.theFollowRequestButton');
+        await page.screenshot({path: '2-afterClickingFollowersButton.png'});
+
+
+        await page.waitForTimeout(Random.getRandomDelay(3000, 20));
+
+        return await page.evaluate(() => {
+            let blockDiv = $('button:contains("Confirm")').first().parent().parent().parent().parent().parent();
+            let userDivs = blockDiv.children();
+            let usersCount = userDivs.length;
+            let requests = [];
+            for (let userDivIndex = 0; userDivIndex < usersCount; userDivIndex++) {
+                let usernameDiv = userDivs.eq(userDivIndex).children().eq(1);
+                let userLink = usernameDiv.children().first().children().first();
+                requests.push(userLink.text());
+            }
+            return requests;
+        });
+
+
+
+
+        /*let responseObject: any = await page.evaluate(async () => {
             try {
                 const response: Response = await fetch(`https://www.instagram.com/accounts/activity/?__a=1&include_reel=true`);
                 return response.json();
@@ -149,7 +181,7 @@ export async function getFollowers(id: string, browserData: BrowserData): Promis
         return {
             inst_id: id,
             users: IDs,
-        }
+        }*/
 
     } catch (e) {
         const screenObj = await File.screenErrorStats(page)
