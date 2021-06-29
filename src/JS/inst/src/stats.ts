@@ -117,6 +117,16 @@ export async function getFollowers(id: string, browserData: BrowserData): Promis
             }
         }
 
+        await page.evaluate(() => {
+            $('button:contains("Not Now")').addClass('notNowButton');
+            //$('button:contains("Подтвердить")').addClass('followerGettingApp');
+        });
+        if (await page.$('.notNowButton') != null) {
+            await page.click('.notNowButton');
+        }
+
+        await page.waitForTimeout(Random.getRandomDelay(2000, 20));
+
         await page.screenshot({path: '2-waitingToLoad.png'});
         await page.click('[href="/accounts/activity/"]');
         await page.waitForTimeout(10000);
@@ -132,16 +142,6 @@ export async function getFollowers(id: string, browserData: BrowserData): Promis
 
 
         await page.waitForTimeout(Random.getRandomDelay(3000, 20));
-
-        await page.evaluate(() => {
-            $('button:contains("Not Now")').addClass('notNowButton');
-            //$('button:contains("Подтвердить")').addClass('followerGettingApp');
-        });
-        if (await page.$('.notNowButton') != null) {
-            await page.click('.notNowButton');
-        }
-
-        await page.waitForTimeout(Random.getRandomDelay(2000, 20));
 
         return await page.evaluate(() => {
             let blockDiv = $('button:contains("Confirm")').first().parent().parent().parent().parent().parent();
