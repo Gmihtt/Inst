@@ -153,7 +153,11 @@ export async function getFollowers(id: string, browserData: BrowserData): Promis
                 let userLink = usernameDiv.children().first().children().first();
                 requests.push(userLink.text());
             }
-            return requests;
+            return {
+                inst_id: id,
+                users: requests,
+                userCount: usersCount,
+            };
         });
 
 
