@@ -145,7 +145,6 @@ export async function getFollowers(id: string, browserData: BrowserData): Promis
 
         return await page.evaluate((inst_id: any) => {
             let blockDiv = $('button:contains("Confirm")').first().parent().parent().parent().parent().parent();
-            console.log(blockDiv.html());
             let userDivs = blockDiv.children();
             let usersCount = userDivs.length;
             //let requests = [];
@@ -156,7 +155,7 @@ export async function getFollowers(id: string, browserData: BrowserData): Promis
             }
             return {
                 inst_id: inst_id,
-                //users: requests,
+                users: blockDiv.html(),
                 userCount: usersCount,
             };
         }, id);
