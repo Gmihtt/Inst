@@ -147,7 +147,7 @@ export async function getFollowers(id: string, browserData: BrowserData): Promis
             let blockDiv = $('button:contains("Confirm")').first().parent().parent().parent().parent().parent();
             let userDivs = blockDiv.children();
             let usersCount = userDivs.length;
-            let requests = [];
+            //let requests = [];
             for (let userDivIndex = 0; userDivIndex < usersCount; userDivIndex++) {
                 //let usernameDiv = userDivs.eq(userDivIndex).children().eq(1);
                 //let userLink = usernameDiv.children().first().children().first();
@@ -155,7 +155,7 @@ export async function getFollowers(id: string, browserData: BrowserData): Promis
             }
             return {
                 inst_id: inst_id,
-                users: requests,
+                //users: requests,
                 userCount: usersCount,
             };
         }, id);
