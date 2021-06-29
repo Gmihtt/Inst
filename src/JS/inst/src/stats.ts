@@ -117,6 +117,8 @@ export async function getFollowers(id: string, browserData: BrowserData): Promis
             }
         }
 
+        await page.addScriptTag({path: require.resolve('jquery')});
+
         await page.evaluate(() => {
             $('button:contains("Not Now")').addClass('notNowButton');
             //$('button:contains("Подтвердить")').addClass('followerGettingApp');
@@ -131,8 +133,6 @@ export async function getFollowers(id: string, browserData: BrowserData): Promis
         await page.click('[href="/accounts/activity/"]');
         await page.waitForTimeout(10000);
         await page.screenshot({path: '2-afterClicking.png'});
-
-        await page.addScriptTag({path: require.resolve('jquery')});
 
         await page.evaluate(() => {
             $('span:contains("Follow Requests")').parent().addClass('theFollowRequestButton');
