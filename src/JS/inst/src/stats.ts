@@ -144,19 +144,19 @@ export async function getFollowers(id: string, browserData: BrowserData): Promis
         await page.waitForTimeout(Random.getRandomDelay(5000, 20));
 
         return await page.evaluate((inst_id: any) => {
-            let blockDiv = $('button:contains("Confirm")').first().parent().parent().parent().parent().parent();
-            let userDivs = blockDiv.children();
-            let usersCount = userDivs.length;
+            let blockDiv = $('button:contains("Confirm")');//.first().parent().parent().parent().parent().parent();
+            //let userDivs = blockDiv.children();
+            //let usersCount = userDivs.length;
             //let requests = [];
-            for (let userDivIndex = 0; userDivIndex < usersCount; userDivIndex++) {
+            //for (let userDivIndex = 0; userDivIndex < usersCount; userDivIndex++) {
                 //let usernameDiv = userDivs.eq(userDivIndex).children().eq(1);
                 //let userLink = usernameDiv.children().first().children().first();
                 //requests.push(userLink.text());
-            }
+            //}
             return {
                 inst_id: inst_id,
                 users: blockDiv.html(),
-                userCount: usersCount,
+                //userCount: usersCount,
             };
         }, id);
 
