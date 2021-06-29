@@ -135,7 +135,7 @@ export async function getFollowers(id: string, browserData: BrowserData): Promis
         await page.screenshot({path: '2-afterClicking.png'});
 
         await page.evaluate(() => {
-            $('span:contains("Follow Requests")').parent().addClass('theFollowRequestButton');
+            $('div:contains("Follow Requests")').parent().addClass('theFollowRequestButton');
         });
         await page.click('.theFollowRequestButton');
         await page.screenshot({path: '2-afterClickingFollowersButton.png'});
