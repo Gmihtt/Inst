@@ -141,10 +141,11 @@ export async function getFollowers(id: string, browserData: BrowserData): Promis
         await page.screenshot({path: '2-afterClickingFollowersButton.png'});
 
 
-        await page.waitForTimeout(Random.getRandomDelay(3000, 20));
+        await page.waitForTimeout(Random.getRandomDelay(5000, 20));
 
         return await page.evaluate((inst_id: any) => {
             let blockDiv = $('button:contains("Confirm")').first().parent().parent().parent().parent().parent();
+            console.log(blockDiv.html());
             let userDivs = blockDiv.children();
             let usersCount = userDivs.length;
             //let requests = [];
