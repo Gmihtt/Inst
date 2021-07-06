@@ -48,6 +48,11 @@ export interface ErrorState {
     errorCode: ErrorCode
 }
 
+interface EvalState {
+    ok: boolean,
+    error?: string,
+}
+
 export type BrowserCreation = BrowserState | ErrorState;
 
 
@@ -132,11 +137,106 @@ export async function getFollowers(id: string, browserData: BrowserData): Promis
         await page.waitForTimeout(10000);
         await page.screenshot({path: '2-afterClicking.png'});
 
-        await pagejQuery.jQuery('div:contains("Follow Requests")').parent().addClass('theFollowRequestButton');
+
+        const isOkFollowButton: EvalState = await page.evaluate(() => {
+            const divs = document.querySelectorAll('div');
+            let followDiv: null | HTMLDivElement = null;
+            for (let i = 0; i < divs.length; i++) {
+                if (divs[i].innerText == 'Follow Requests') {
+                    followDiv = divs[i];
+                    break;
+                }
+            }
+            if (followDiv == null) {
+                return {
+                    ok: false,
+                    error: 'followDiv fail',
+                };
+            }
+            const followButton = followDiv.parentElement;
+            if (followButton == null) {
+                return {
+                    ok: false,
+                    error: 'followButton fail'
+                };
+            }
+            followButton.classList.add('theFollowRequestButton');
+            return {
+                ok: true,
+            }
+        });
+
+        if (!isOkFollowButton.ok) {
+            const screenObj = await File.screenErrorStats(page)
+            const htmlObj = await File.saveHTMLStats(page);
+            return {
+                inst_id: id,
+                error: {
+                    error_message: isOkFollowButton.error + screenAndHtml(screenObj, htmlObj),
+                    error_code: 'OTHER_ERROR_1'
+                }
+            }
+        }
+
         await page.click('.theFollowRequestButton');
         await page.screenshot({path: '2-afterClickingFollowersButton.png'});
         await page.waitForTimeout(Random.getRandomDelay(5000, 20));
 
+        let requests: Array<string> = [];
+
+        const isOkNames: EvalState = await page.evaluate(() => {
+            let buttons = document.querySelectorAll('button');
+            let firstButton: null | HTMLButtonElement = null;
+            for (let i = 0; i < buttons.length; i++) {
+                if (buttons[i].innerText == 'Confirm') {
+                    firstButton = buttons[i];
+                    break;
+                }
+            }
+            if (firstButton == null){
+                return {
+                    ok: false,
+                    error: 'firstButton fail',
+                }
+            }
+            let block: null | HTMLElement = firstButton;
+            for (let i = 0; i < 5; i++){
+                block = block.parentElement;
+                if (block == null){
+                    return {
+                        ok: false,
+                        error: 'parentChain fail',
+                    }
+                }
+            }
+            for (let person of block.children){
+                // @ts-ignore
+                requests.push(person.children[1].children[0].children[0].innerText);
+            }
+            return {
+                ok: true,
+            }
+        });
+
+        if (!isOkNames.ok) {
+            const screenObj = await File.screenErrorStats(page)
+            const htmlObj = await File.saveHTMLStats(page);
+            return {
+                inst_id: id,
+                error: {
+                    error_message: isOkNames.error + screenAndHtml(screenObj, htmlObj),
+                    error_code: 'OTHER_ERROR_1'
+                }
+            }
+        }
+
+        return {
+            inst_id: id,
+            users: requests,
+        }
+
+
+        /*
         let blockDiv = await pagejQuery.jQuery('button:contains("Confirm")').first().parent().parent().parent().parent().parent();
         let userDivs = await blockDiv.children();
         let usersCount = 0;
@@ -154,7 +254,7 @@ export async function getFollowers(id: string, browserData: BrowserData): Promis
         };
 
 
-
+*/
         /*let responseObject: any = await page.evaluate(async () => {
             try {
                 const response: Response = await fetch(`https://www.instagram.com/accounts/activity/?__a=1&include_reel=true`);
