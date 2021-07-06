@@ -50,6 +50,7 @@ export interface ErrorState {
 
 interface EvalState {
     ok: boolean,
+    result?: any,
     error?: string,
 }
 
@@ -182,9 +183,9 @@ export async function getFollowers(id: string, browserData: BrowserData): Promis
         await page.screenshot({path: '2-afterClickingFollowersButton.png'});
         await page.waitForTimeout(Random.getRandomDelay(5000, 20));
 
-        let requests: Array<string> = [];
 
-        const isOkNames: EvalState = await page.evaluate(() => {
+
+        const statsNames: EvalState = await page.evaluate(() => {
             let buttons = document.querySelectorAll('button');
             let firstButton: null | HTMLButtonElement = null;
             for (let i = 0; i < buttons.length; i++) {
@@ -209,22 +210,24 @@ export async function getFollowers(id: string, browserData: BrowserData): Promis
                     }
                 }
             }
+            let requests: Array<string> = [];
             for (let person of block.children){
                 // @ts-ignore
                 requests.push(person.children[1].children[0].children[0].innerText);
             }
             return {
                 ok: true,
+                result: requests,
             }
         });
 
-        if (!isOkNames.ok) {
+        if (!statsNames.ok) {
             const screenObj = await File.screenErrorStats(page)
             const htmlObj = await File.saveHTMLStats(page);
             return {
                 inst_id: id,
                 error: {
-                    error_message: isOkNames.error + screenAndHtml(screenObj, htmlObj),
+                    error_message: statsNames.error + screenAndHtml(screenObj, htmlObj),
                     error_code: 'OTHER_ERROR_1'
                 }
             }
@@ -232,7 +235,7 @@ export async function getFollowers(id: string, browserData: BrowserData): Promis
 
         return {
             inst_id: id,
-            users: requests,
+            users: statsNames.result,
         }
 
 
