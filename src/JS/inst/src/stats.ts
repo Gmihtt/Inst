@@ -3,7 +3,6 @@ import path = require('path');
 import {createBrowser} from "./browserCreation";
 import * as File from './file'
 import * as Random from './random'
-import {pageExtend} from "puppeteer-jquery";
 
 export interface StatsStart {
     status: 'Start'
@@ -123,10 +122,22 @@ export async function getFollowers(id: string, browserData: BrowserData): Promis
                 }
             }
         }
+        
+        await page.evaluate(() => {
+           const buttons = document.querySelectorAll('button');
+           let notNowButton: null | HTMLButtonElement = null;
+           for (let i = 0; i < buttons.length; i++){
+               if (buttons[i].innerText == 'Not Now'){
+                   notNowButton = buttons[i];
+                   break;
+               }
+           }
+           if (notNowButton != null){
+               notNowButton.classList.add('notNowButton');
+           }
+        });
 
-        const pagejQuery = pageExtend(page);
 
-        await pagejQuery.jQuery('button:contains("Not Now")').addClass('.notNowButton');
         if (await page.$('.notNowButton') != null) {
             await page.click('.notNowButton');
         }
