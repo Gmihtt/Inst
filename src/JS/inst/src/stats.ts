@@ -18,7 +18,7 @@ export interface StatsOther {
 export type StatsRequest = StatsStart | StatsOther
 
 type ErrorCode = 'USER_IS_NOT_LOGGED' | 'FETCHING_ERROR' | 'NO_USER_DIR' | 'LOGOUT_FAILURE' | 'LOGOUT_NO_USER' |
-    'OTHER_ERROR_1' | 'OTHER_ERROR_2' | 'LOGIC_ERROR'
+    'OTHER_ERROR_1' | 'OTHER_ERROR_2' | 'LOGIC_ERROR' | 'BUTTON_ERROR'
 
 export interface Error {
     error_message: string
@@ -145,7 +145,21 @@ export async function getFollowers(id: string, browserData: BrowserData): Promis
         await page.waitForTimeout(Random.getRandomDelay(2000, 20));
 
         await page.screenshot({path: '2-waitingToLoad.png'});
-        await page.click('[href="/accounts/activity/"]');
+
+        if (await page.$('[href="/accounts/activity/"]') != null) {
+            await page.click('[href="/accounts/activity/"]');
+        } else {
+            const screenObj = await File.screenErrorStats(page)
+            const htmlObj = await File.saveHTMLStats(page);
+            return {
+                inst_id: id,
+                error: {
+                    error_message: 'probably enet drop' + screenAndHtml(screenObj, htmlObj),
+                    error_code: 'BUTTON_ERROR'
+                }
+            }
+        }
+
         await page.waitForTimeout(10000);
         await page.screenshot({path: '2-afterClicking.png'});
 
@@ -185,7 +199,7 @@ export async function getFollowers(id: string, browserData: BrowserData): Promis
                 inst_id: id,
                 error: {
                     error_message: isOkFollowButton.error + screenAndHtml(screenObj, htmlObj),
-                    error_code: 'OTHER_ERROR_1'
+                    error_code: 'BUTTON_ERROR'
                 }
             }
         }
@@ -239,7 +253,7 @@ export async function getFollowers(id: string, browserData: BrowserData): Promis
                 inst_id: id,
                 error: {
                     error_message: statsNames.error + screenAndHtml(screenObj, htmlObj),
-                    error_code: 'OTHER_ERROR_1'
+                    error_code: 'BUTTON_ERROR'
                 }
             }
         }
