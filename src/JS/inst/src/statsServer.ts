@@ -18,8 +18,12 @@ async function workerHandler(socket: any, id: string, timeout: number, browserDa
             const currentState = activeFollowerGetters.get(id);
 
             if (currentState == 'Working') {
-                const usersInfo: Stats.StatsResponse = await Stats.getFollowers(id, browserData);
-                sendWithLog(socket, usersInfo);
+                const usersInfo: Stats.StatsResult = await Stats.getFollowers(id, browserData);
+                if (usersInfo.send) {
+                    sendWithLog(socket, usersInfo.response);
+                } else {
+                    sendWithLog(socket, usersInfo.response, false);
+                }
                 setTimeout(workerHandler, Random.getRandomDelay(timeout, 20), socket, id, timeout, browserData);
             } else if (currentState == 'Stopping') {
                 await browserData.browser.close();
@@ -155,8 +159,10 @@ async function deleteFolder(id: string, isMutexAcquired: boolean) {
 }
 
 
-function sendWithLog(socket: any, data: object) {
+function sendWithLog(socket: any, data: object, send = true) {
     const dataJSON = JSON.stringify(data);
     Logger.info(`Stats sent: ${dataJSON.slice(0, 150)}`);
-    socket.send(Buffer.from(dataJSON));
+    if (send) {
+        socket.send(Buffer.from(dataJSON));
+    }
 }
