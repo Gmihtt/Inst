@@ -3,7 +3,7 @@ version: "3"
 services:
   server:
 
-    image: danieldostanich/instv17
+    image: danieldostanich/instv20
 
     stdin_open: true 
     tty: true        

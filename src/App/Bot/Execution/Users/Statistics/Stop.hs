@@ -2,7 +2,7 @@ module App.Bot.Execution.Users.Statistics.Stop where
 
 import qualified App.Bot.Execution.Users.Statistics.Save as Save
 import qualified App.Bot.Messages.FlowMessages as Messages
-import qualified App.Scripts.Statistics.API as API
+import qualified Communication.Scripts.Statistics.API as API
 import qualified Common.Environment as Environment
 import Common.Flow (Flow, getEnvironment)
 import qualified Common.TelegramUserStatus as Common

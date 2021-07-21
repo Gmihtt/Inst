@@ -3,7 +3,7 @@
 module App.Bot.Execution.Admin.ShowUser where
 
 import qualified App.Bot.Messages.FlowMessages as Messages
-import qualified App.Scripts.Info.API as InfoAPI
+import qualified Communication.Scripts.Info.API as InfoAPI
 import qualified Common.Environment as Environment
 import Common.Flow (Flow, getEnvironment)
 import Control.Monad.IO.Class (liftIO)

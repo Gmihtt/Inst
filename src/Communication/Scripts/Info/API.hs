@@ -1,9 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module App.Scripts.Info.API where
+module Communication.Scripts.Info.API where
 
 import Common.Error (printDebug, throwSocketErr)
-import qualified Communication.Sockets.API as SocketAPI
+import qualified Communication.Scripts.MessageHandler.API as MessageHandlerAPI
 import Control.Concurrent (threadDelay)
 import Control.Concurrent.MVar (newEmptyMVar, putMVar, takeMVar)
 import Control.Monad.IO.Class (liftIO)

@@ -1,9 +1,9 @@
-module App.Scripts.Auth.API where
+module Communication.Scripts.Auth.API where
 
 import qualified Common.Environment as Environment
 import Common.Error (printDebug, throwSocketErr)
 import Common.Flow (Flow, getEnvironment)
-import qualified Communication.Sockets.API as SocketsAPI
+import qualified Communication.Scripts.MessageHandler.API as MessageHandlerAPI
 import Control.Concurrent (threadDelay)
 import Control.Concurrent.MVar (newEmptyMVar, putMVar, takeMVar)
 import Control.Monad.IO.Class (liftIO)

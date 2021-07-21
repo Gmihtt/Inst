@@ -1,12 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module App.Scripts.Statistics.API where
+module Communication.Scripts.Statistics.API where
 
 import Common.Error
   ( printDebug,
     throwSocketErr,
   )
-import qualified Communication.Sockets.API as SocketAPI
+import qualified Communication.Scripts.MessageHandler.API as MessageHandlerAPI
 import Control.Monad.IO.Class (liftIO)
 import Data.Aeson (decode, encode)
 import Data.ByteString.Lazy (ByteString)

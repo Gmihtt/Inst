@@ -6,6 +6,7 @@ hie.yaml
 configs/
 Configs/
 .idea
-*.log
+logging.log
 configs/config.yaml
+docker-compose.yml
 Inst_key.pem

@@ -30,8 +30,6 @@ dependencies:
 - time
 - http-media
 - directory
-- blaze-markup
-- blaze-html
 - servant-client
 - http-client
 - filepath

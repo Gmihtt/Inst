@@ -1,7 +1,21 @@
-module Communication.Sockets.Stream where
+{-# LANGUAGE RecordWildCards #-}
+
+module Types.Domain.Socket where
 
 import qualified Control.Concurrent.Chan as Chan
 import Data.ByteString.Lazy (ByteString)
+
+data Socket
+  = Socket
+      { host :: String,
+        port :: Int,
+        path :: String
+      }
+  deriving (Show)
+
+mkSocket :: String -> Int -> String -> Socket
+mkSocket host port path =
+  Socket {..}
 
 data Stream
   = Stream

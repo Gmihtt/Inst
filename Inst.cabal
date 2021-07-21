@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c54cf7d42123026740216e1f49f2f4cfe4946b5d9e6ad88588ab3148102c713c
+-- hash: 37fa4e0d7f32a1ab8e976ae63f0133af92c16b6975686d4b072643a7686edbe4
 
 name:           Inst
 version:        0.1.0.0
@@ -65,9 +65,6 @@ library
       App.Bot.Selecting.Users.ListOfAccounts
       App.Bot.Selecting.Users.MainMenu
       App.Bot.Selecting.Users.Statistics
-      App.Scripts.Auth.API
-      App.Scripts.Info.API
-      App.Scripts.Statistics.API
       Common.Config
       Common.Environment
       Common.Error
@@ -85,12 +82,12 @@ library
       Common.Redis
       Common.TelegramUserStatus
       Common.Transforms
-      Communication.Sockets.API
-      Communication.Sockets.App
-      Communication.Sockets.Connection
-      Communication.Sockets.Socket
-      Communication.Sockets.Stream
-      Communication.ThreadManager.Manager
+      Communication.Scripts.Auth.API
+      Communication.Scripts.Info.API
+      Communication.Scripts.MessageHandler.API
+      Communication.Scripts.MessageHandler.Messages
+      Communication.Scripts.MessageHandler.Stream
+      Communication.Scripts.Statistics.API
       MongoDB.Queries.Accounts
       MongoDB.Queries.Common
       MongoDB.Queries.Statistics
@@ -137,6 +134,8 @@ library
       Types.Domain.Admin
       Types.Domain.InstAccount
       Types.Domain.InstStatistics
+      Types.Domain.MessagesHandler
+      Types.Domain.Socket
       Types.Domain.Statistic
       Types.Domain.Status.TgUsersStatus
       Types.Domain.Status.TgUserStatus
@@ -152,8 +151,6 @@ library
       aeson
     , aeson-casing
     , base >=4.7 && <5
-    , blaze-html
-    , blaze-markup
     , bson
     , bytestring
     , containers
@@ -196,8 +193,6 @@ executable Inst-exe
     , aeson
     , aeson-casing
     , base
-    , blaze-html
-    , blaze-markup
     , bson
     , bytestring
     , containers
@@ -241,8 +236,6 @@ test-suite Inst-test
     , aeson
     , aeson-casing
     , base
-    , blaze-html
-    , blaze-markup
     , bson
     , bytestring
     , containers

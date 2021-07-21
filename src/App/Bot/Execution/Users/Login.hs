@@ -3,7 +3,7 @@
 module App.Bot.Execution.Users.Login where
 
 import qualified App.Bot.Messages.FlowMessages as Message
-import qualified App.Scripts.Auth.API as ScriptsAuth
+import qualified Communication.Scripts.Auth.API as ScriptsAuth
 import Common.Error (printDebug, throwLogicError)
 import Common.Flow (Flow)
 import qualified Common.Redis as Common

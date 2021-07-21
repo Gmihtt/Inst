@@ -6,9 +6,9 @@ module App.App
 where
 
 import App.Bot.BotMain (run)
-import qualified App.Scripts.Auth.API as ScriptsAuth
-import qualified App.Scripts.Info.API as ScriptInfo
-import qualified App.Scripts.Statistics.API as ScriptsStatistics
+import qualified Communication.Scripts.Auth.API as ScriptsAuth
+import qualified Communication.Scripts.Info.API as ScriptInfo
+import qualified Communication.Scripts.Statistics.API as ScriptsStatistics
 import qualified Common.Config as Config
 import Common.Environment (Environment (..))
 import Common.Error (Error (..))

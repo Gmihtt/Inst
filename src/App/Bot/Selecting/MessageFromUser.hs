@@ -5,7 +5,7 @@ module App.Bot.Selecting.MessageFromUser where
 import qualified App.Bot.Execution.Admin.ShowUser as Admin
 import qualified App.Bot.Execution.Users.Login as Login
 import qualified App.Bot.Messages.FlowMessages as Messages
-import qualified App.Scripts.Statistics.API as StatAPI
+import qualified Communication.Scripts.Statistics.API as StatAPI
 import qualified Common.Environment as Environment
 import Common.Flow (Flow, getEnvironment)
 import qualified Common.Redis as Common

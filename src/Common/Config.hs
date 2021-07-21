@@ -11,7 +11,7 @@ module Common.Config
 where
 
 import Common.Error (throwConfigErr)
-import Communication.Sockets.Socket (Socket, mkSocket)
+import Types.Domain.Socket (Socket, mkSocket)
 import Control.Monad.Cont (liftIO)
 import Data.Aeson (FromJSON)
 import Data.Text (Text, unpack)
