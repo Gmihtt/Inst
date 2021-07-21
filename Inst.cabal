@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 37fa4e0d7f32a1ab8e976ae63f0133af92c16b6975686d4b072643a7686edbe4
+-- hash: 62c9318426eac32b566bf0e381f36d955ef5f6144b64b90afcd3c629bbc3e6bf
 
 name:           Inst
 version:        0.1.0.0
@@ -84,9 +84,9 @@ library
       Common.Transforms
       Communication.Scripts.Auth.API
       Communication.Scripts.Info.API
-      Communication.Scripts.MessageHandler.API
-      Communication.Scripts.MessageHandler.Messages
-      Communication.Scripts.MessageHandler.Stream
+      Communication.Scripts.MessagesHandler.API
+      Communication.Scripts.MessagesHandler.Messages
+      Communication.Scripts.MessagesHandler.Stream
       Communication.Scripts.Statistics.API
       MongoDB.Queries.Accounts
       MongoDB.Queries.Common
@@ -136,12 +136,11 @@ library
       Types.Domain.InstStatistics
       Types.Domain.MessagesHandler
       Types.Domain.Socket
-      Types.Domain.Statistic
+      Types.Domain.Statistics
       Types.Domain.Status.TgUsersStatus
       Types.Domain.Status.TgUserStatus
       Types.Domain.TgUpdates
       Types.Domain.TgUser
-      Types.Domain.ThreadManager
       Types.Domain.Usernames
   other-modules:
       Paths_Inst
@@ -157,6 +156,7 @@ library
     , ctrie
     , directory
     , filepath
+    , hashable
     , hedis
     , hslogger
     , http-client
@@ -199,6 +199,7 @@ executable Inst-exe
     , ctrie
     , directory
     , filepath
+    , hashable
     , hedis
     , hslogger
     , http-client
@@ -242,6 +243,7 @@ test-suite Inst-test
     , ctrie
     , directory
     , filepath
+    , hashable
     , hedis
     , hslogger
     , hspec

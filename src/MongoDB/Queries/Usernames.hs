@@ -9,6 +9,8 @@ import qualified Database.MongoDB as Mongo
 import Database.MongoDB ((=:))
 import qualified MongoDB.Queries.Common as QMongo
 import qualified MongoDB.Transforms.Usernames as Transforms
+import qualified Types.Domain.InstAccount as InstAccount
+import qualified Types.Domain.TgUser as TgUser
 import qualified Types.Domain.Usernames as Usernames
 import Prelude hiding (id)
 
@@ -20,9 +22,9 @@ insertUsernames usernames = do
   QMongo.insert collectionName $ Transforms.mkDocByUsernames usernames
   pure ()
 
-findUsernamesByInstUsernames :: Text -> Flow (Maybe Usernames.Usernames)
+findUsernamesByInstUsernames :: InstAccount.InstUsername -> Flow (Maybe Usernames.Usernames)
 findUsernamesByInstUsernames instUsername = do
-  docUsernames <- QMongo.findOne (Mongo.select ["instUsername" =: instUsername] collectionName)
+  docUsernames <- QMongo.findOne (Mongo.select ["instUsername" =: InstAccount.username instUsername] collectionName)
   pure $ Transforms.mkUsernamesByDoc =<< docUsernames
 
 getAllUsernames :: Flow [Usernames.Usernames]
@@ -30,6 +32,6 @@ getAllUsernames = do
   res <- QMongo.find (Mongo.select [] collectionName)
   pure $ mapMaybe Transforms.mkUsernamesByDoc res
 
-deleteUsernames :: Text -> Flow ()
+deleteUsernames :: InstAccount.InstUsername -> Flow ()
 deleteUsernames instUsername = do
-  QMongo.deleteOne (Mongo.select ["instUsername" =: instUsername] collectionName)
+  QMongo.deleteOne (Mongo.select ["instUsername" =: InstAccount.username instUsername] collectionName)

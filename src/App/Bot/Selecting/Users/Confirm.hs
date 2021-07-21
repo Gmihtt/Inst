@@ -12,8 +12,9 @@ import Data.Text (Text)
 import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.CallbackQuery as CallbackQuery
 import Telegram.Types.Domain.Message (Message)
+import qualified Types.Domain.InstAccount as InstAccount
 
-logout :: CallbackQuery.CallbackQuery -> Message -> Text -> Flow (Response Message)
+logout :: CallbackQuery.CallbackQuery -> Message -> InstAccount.InstId -> Flow (Response Message)
 logout callBack msg instId = do
   liftIO $ print $ CallbackQuery.callback_data callBack
   case CallbackQuery.callback_data callBack of
@@ -25,7 +26,7 @@ logout callBack msg instId = do
   where
     user = CallbackQuery.callback_from callBack
 
-start :: CallbackQuery.CallbackQuery -> Message -> Text -> Flow (Response Message)
+start :: CallbackQuery.CallbackQuery -> Message -> InstAccount.InstId -> Flow (Response Message)
 start callBack msg instId = do
   liftIO $ print $ CallbackQuery.callback_data callBack
   case CallbackQuery.callback_data callBack of

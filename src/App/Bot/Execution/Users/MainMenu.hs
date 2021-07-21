@@ -15,8 +15,8 @@ import Prelude hiding (id)
 accounts :: Message.Message -> User.User -> Flow (Response Message.Message)
 accounts msg user = do
   Common.setListOfAccounts user
-  instAccs <- Common.getInstAccs (User.id user)
-  Message.showInstAccs msg (map InstAccount.login instAccs)
+  instAccs <- Common.getInstAccsByTgUserId (User.id user)
+  Message.showInstAccs msg (map InstAccount.instUsername instAccs)
 
 help :: Message.Message -> User.User -> Flow (Response Message.Message)
 help msg user = do

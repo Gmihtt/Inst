@@ -3,7 +3,6 @@
 
 module MongoDB.Transforms.TgUser where
 
-import Data.Maybe (fromMaybe)
 import Database.MongoDB
   ( (!?),
     (=:),
@@ -11,24 +10,23 @@ import Database.MongoDB
     Value (..),
   )
 import MongoDB.Transforms.InstAccount
-import Types.Domain.TgUser
-  ( TgUser (..),
-  )
+import qualified Types.Domain.TgUser as TgUser
 import Prelude hiding (id)
 
-mkDocByTgUser :: TgUser -> Document
-mkDocByTgUser TgUser {..} =
-  [ "id" =: String id,
+mkDocByTgUser :: TgUser.TgUser -> Document
+mkDocByTgUser TgUser.TgUser {..} =
+  [ "tgId" =: String (TgUser.id tgId),
     "first_name" =: String first_name,
-    "username" =: String (fromMaybe "" username),
+    "tgUsername" =: String (maybe "" TgUser.username tgUsername),
     "inst_accounts" =: mkDocsByInstAccs inst_accounts
   ]
 
-mkTgUserByDoc :: Document -> Maybe TgUser
+mkTgUserByDoc :: Document -> Maybe TgUser.TgUser
 mkTgUserByDoc doc = do
-  id <- doc !? "id"
+  id <- doc !? "tgId"
+  let tgId = TgUser.TgId id
   first_name <- doc !? "first_name"
-  username <- doc !? "first_name"
+  let tgUsername = TgUser.TgUsername <$> doc !? "tgUsername"
   doc_inst_account <- doc !? "inst_accounts"
   let inst_accounts = mkInstAccsByDocs doc_inst_account
-  pure $ TgUser {..}
+  pure $ TgUser.TgUser {..}

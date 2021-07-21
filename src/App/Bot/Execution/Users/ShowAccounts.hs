@@ -10,8 +10,8 @@ import qualified Types.Domain.InstAccount as InstAccount
 import Prelude hiding (id)
 
 selectedAcc :: Message.Message -> User.User -> InstAccount.InstAccount -> Flow (Response Message.Message)
-selectedAcc msg user accLogin = do
-  let instId = InstAccount.id accLogin
+selectedAcc msg user instAcc = do
+  let instId = InstAccount.instId instAcc
   Common.setAccountMenu user instId
   Message.accountMenu msg
 

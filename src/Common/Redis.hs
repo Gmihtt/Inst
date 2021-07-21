@@ -7,16 +7,17 @@ import qualified Data.Text as T
 import qualified MongoDB.Queries.Accounts as Mongo
 import qualified Redis.Queries as Redis
 import qualified Types.Domain.InstAccount as InstAccount
+import qualified Types.Domain.TgUser as TgUser
 
-getInstAccs :: Int -> Flow [InstAccount.InstAccount]
-getInstAccs userId = do
+getInstAccsByTgUserId :: Int -> Flow [InstAccount.InstAccount]
+getInstAccsByTgUserId userId = do
   mbInstAccs <- Redis.getValue userId
-  maybe (putInstAccs userId >> getInstAccs userId) pure mbInstAccs
+  maybe (putInstAccsByTgUserId userId >> getInstAccsByTgUserId userId) pure mbInstAccs
 
-putInstAccs :: Int -> Flow ()
-putInstAccs userId = do
-  let uId = T.pack $ show userId
-  instAccs <- Mongo.findInstAccsByTgId uId
+putInstAccsByTgUserId :: Int -> Flow ()
+putInstAccsByTgUserId userId = do
+  let tgId = TgUser.TgId . T.pack $ show userId
+  instAccs <- Mongo.findInstAccsByTgId tgId
   Redis.putValue userId instAccs
 
 dropInstAccs :: Int -> Flow ()

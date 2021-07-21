@@ -50,6 +50,7 @@ dependencies:
 - hslogger
 - servant-multipart
 - stm
+- hashable
 
 library:
   source-dirs: src

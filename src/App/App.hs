@@ -6,13 +6,13 @@ module App.App
 where
 
 import App.Bot.BotMain (run)
-import qualified Communication.Scripts.Auth.API as ScriptsAuth
-import qualified Communication.Scripts.Info.API as ScriptInfo
-import qualified Communication.Scripts.Statistics.API as ScriptsStatistics
 import qualified Common.Config as Config
 import Common.Environment (Environment (..))
 import Common.Error (Error (..))
 import Common.Flow (runFlow)
+import qualified Communication.Scripts.Auth.API as ScriptsAuth
+import qualified Communication.Scripts.Info.API as ScriptInfo
+import qualified Communication.Scripts.Statistics.API as ScriptsStatistics
 import Control.Exception (catch)
 import qualified Database.MongoDB as MongoDB
 import qualified Database.Redis as Redis
@@ -33,7 +33,7 @@ app :: IO ()
 app =
   catch
     ( do
-        manager <- newManager tlsManagerSettings
+        telegramManager <- newManager tlsManagerSettings
         token <- Config.getToken
         pipe <- MongoDB.connect (MongoDB.host "127.0.0.1")
         conn <- Redis.checkedConnect Redis.defaultConnectInfo
@@ -42,9 +42,9 @@ app =
         authSocket <- Config.getAuthSocket
         statSocket <- Config.getStatSocket
         infoSocket <- Config.getInfoSocket
-        authManager <- ScriptsAuth.authConnection authSocket
-        statisticsManager <- ScriptsStatistics.statConnection statSocket
-        infoManager <- ScriptInfo.infoConnection infoSocket
+        authMessagesHandler <- ScriptsAuth.authConnection authSocket
+        statisticsMessagesHandler <- ScriptsStatistics.statConnection statSocket
+        infoMessagesHandler <- ScriptInfo.infoConnection infoSocket
         tgUsersStatus <- TgUsersStatus.empty
         let logName = "BotLogger.Main"
         logger logName

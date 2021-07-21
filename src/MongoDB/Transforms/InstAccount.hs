@@ -16,30 +16,27 @@ import Database.MongoDB
     Document,
     Value (..),
   )
-import Types.Domain.InstAccount
-  ( InstAccount (..),
-    InstAccounts,
-  )
+import qualified Types.Domain.InstAccount as InstAccount
 import Prelude hiding (id)
 
-mkDocByInstAcc :: InstAccount -> Document
-mkDocByInstAcc InstAccount {..} =
-  [ "id" =: String id,
-    "login" =: String login,
+mkDocByInstAcc :: InstAccount.InstAccount -> Document
+mkDocByInstAcc InstAccount.InstAccount {..} =
+  [ "id" =: String (InstAccount.id instId),
+    "username" =: String (InstAccount.username instUsername),
     "password" =: String password,
     "subscription" =: Bool subscription
   ]
 
-mkDocsByInstAccs :: InstAccounts -> [Document]
+mkDocsByInstAccs :: InstAccount.InstAccounts -> [Document]
 mkDocsByInstAccs = map mkDocByInstAcc
 
-mkInstAccByDoc :: Document -> Maybe InstAccount
+mkInstAccByDoc :: Document -> Maybe InstAccount.InstAccount
 mkInstAccByDoc doc = do
-  id <- doc !? "id"
-  login <- doc !? "login"
+  instId <- InstAccount.InstId <$> doc !? "id"
+  instUsername <- InstAccount.InstUsername <$> doc !? "username"
   password <- doc !? "password"
   subscription <- doc !? "subscription"
-  pure InstAccount {..}
+  pure InstAccount.InstAccount {..}
 
-mkInstAccsByDocs :: [Document] -> InstAccounts
+mkInstAccsByDocs :: [Document] -> InstAccount.InstAccounts
 mkInstAccsByDocs = mapMaybe mkInstAccByDoc

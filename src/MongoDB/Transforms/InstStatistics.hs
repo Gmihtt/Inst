@@ -10,6 +10,7 @@ import Database.MongoDB
     Document,
     Value (..),
   )
+import qualified Types.Domain.InstAccount as InstAccount
 import Types.Domain.InstStatistics
   ( InstStatistics (..),
     Statistic (..),
@@ -37,14 +38,14 @@ mkStatistics = mapMaybe mkStatistic
 
 mkDocByInstStatistics :: InstStatistics -> Document
 mkDocByInstStatistics InstStatistics {..} =
-  [ "id" =: String id,
+  [ "id" =: String (InstAccount.id id),
     "statistics" =: Array (Doc <$> mkDocsByStatistics statistics),
     "lastCountUsers" =: Array (String <$> lastCountUsers)
   ]
 
 mkInstStatistics :: Document -> Maybe InstStatistics
 mkInstStatistics doc = do
-  id <- doc !? "id"
+  id <- InstAccount.InstId <$> doc !? "id"
   stat <- doc !? "statistics"
   lastCountUsers <- doc !? "lastCountUsers"
   let statistics = mkStatistics stat
