@@ -3,7 +3,6 @@ import path = require('path');
 import {createBrowser} from "./browserCreation";
 import * as File from './file'
 import * as Random from './random'
-import {pageExtend} from "puppeteer-jquery";
 
 export interface StatsStart {
     status: 'Start'
@@ -19,7 +18,7 @@ export interface StatsOther {
 export type StatsRequest = StatsStart | StatsOther
 
 type ErrorCode = 'USER_IS_NOT_LOGGED' | 'FETCHING_ERROR' | 'NO_USER_DIR' | 'LOGOUT_FAILURE' | 'LOGOUT_NO_USER' |
-    'OTHER_ERROR_1' | 'OTHER_ERROR_2' | 'LOGIC_ERROR'
+    'OTHER_ERROR_1' | 'OTHER_ERROR_2' | 'LOGIC_ERROR' | 'BUTTON_ERROR'
 
 export interface Error {
     error_message: string
@@ -30,6 +29,11 @@ export interface StatsResponse {
     inst_id: string
     users?: Array<string>
     error?: Error
+}
+
+export interface StatsResult {
+    response: StatsResponse,
+    send: boolean,
 }
 
 export interface BrowserData {
@@ -106,7 +110,7 @@ export async function getInstPageBrowser(id: string): Promise<BrowserCreation> {
 
 }
 
-export async function getFollowers(id: string, browserData: BrowserData): Promise<StatsResponse> {
+export async function getFollowers(id: string, browserData: BrowserData): Promise<StatsResult> {
     const page = browserData.page;
     try {
         await page.goto('https://www.instagram.com/');
@@ -116,17 +120,32 @@ export async function getFollowers(id: string, browserData: BrowserData): Promis
             let screenObj = await File.screenErrorStats(page);
             let htmlObj = await File.saveHTMLStats(page);
             return {
-                inst_id: id,
-                error: {
-                    error_message: `User isn't logged in. ${screenAndHtml(screenObj, htmlObj)}`,
-                    error_code: 'USER_IS_NOT_LOGGED',
+                send: true,
+                response: {
+                    inst_id: id,
+                    error: {
+                        error_message: `User isn't logged in. ${screenAndHtml(screenObj, htmlObj)}`,
+                        error_code: 'USER_IS_NOT_LOGGED',
+                    }
                 }
             }
         }
 
-        const pagejQuery = pageExtend(page);
+        await page.evaluate(() => {
+            const buttons = document.querySelectorAll('button');
+            let notNowButton: null | HTMLButtonElement = null;
+            for (let i = 0; i < buttons.length; i++) {
+                if (buttons[i].innerText == 'Not Now') {
+                    notNowButton = buttons[i];
+                    break;
+                }
+            }
+            if (notNowButton != null) {
+                notNowButton.classList.add('notNowButton');
+            }
+        });
 
-        await pagejQuery.jQuery('button:contains("Not Now")').addClass('.notNowButton');
+
         if (await page.$('.notNowButton') != null) {
             await page.click('.notNowButton');
         }
@@ -134,7 +153,24 @@ export async function getFollowers(id: string, browserData: BrowserData): Promis
         await page.waitForTimeout(Random.getRandomDelay(2000, 20));
 
         await page.screenshot({path: '2-waitingToLoad.png'});
-        await page.click('[href="/accounts/activity/"]');
+
+        if (await page.$('[href="/accounts/activity/"]') != null) {
+            await page.click('[href="/accounts/activity/"]');
+        } else {
+            const screenObj = await File.screenErrorStats(page)
+            const htmlObj = await File.saveHTMLStats(page);
+            return {
+                send: false,
+                response: {
+                    inst_id: id,
+                    error: {
+                        error_message: 'probably enet drop' + screenAndHtml(screenObj, htmlObj),
+                        error_code: 'BUTTON_ERROR'
+                    }
+                }
+            }
+        }
+
         await page.waitForTimeout(10000);
         await page.screenshot({path: '2-afterClicking.png'});
 
@@ -171,10 +207,13 @@ export async function getFollowers(id: string, browserData: BrowserData): Promis
             const screenObj = await File.screenErrorStats(page)
             const htmlObj = await File.saveHTMLStats(page);
             return {
-                inst_id: id,
-                error: {
-                    error_message: isOkFollowButton.error + screenAndHtml(screenObj, htmlObj),
-                    error_code: 'OTHER_ERROR_1'
+                send: false,
+                response: {
+                    inst_id: id,
+                    error: {
+                        error_message: isOkFollowButton.error + screenAndHtml(screenObj, htmlObj),
+                        error_code: 'BUTTON_ERROR'
+                    }
                 }
             }
         }
@@ -182,7 +221,6 @@ export async function getFollowers(id: string, browserData: BrowserData): Promis
         await page.click('.theFollowRequestButton');
         await page.screenshot({path: '2-afterClickingFollowersButton.png'});
         await page.waitForTimeout(Random.getRandomDelay(5000, 20));
-
 
 
         const statsNames: EvalState = await page.evaluate(() => {
@@ -194,16 +232,16 @@ export async function getFollowers(id: string, browserData: BrowserData): Promis
                     break;
                 }
             }
-            if (firstButton == null){
+            if (firstButton == null) {
                 return {
                     ok: false,
                     error: 'firstButton fail',
                 }
             }
             let block: null | HTMLElement = firstButton;
-            for (let i = 0; i < 5; i++){
+            for (let i = 0; i < 5; i++) {
                 block = block.parentElement;
-                if (block == null){
+                if (block == null) {
                     return {
                         ok: false,
                         error: 'parentChain fail',
@@ -211,7 +249,7 @@ export async function getFollowers(id: string, browserData: BrowserData): Promis
                 }
             }
             let requests: Array<string> = [];
-            for (let person of block.children){
+            for (let person of block.children) {
                 // @ts-ignore
                 requests.push(person.children[1].children[0].children[0].innerText);
             }
@@ -225,17 +263,23 @@ export async function getFollowers(id: string, browserData: BrowserData): Promis
             const screenObj = await File.screenErrorStats(page)
             const htmlObj = await File.saveHTMLStats(page);
             return {
-                inst_id: id,
-                error: {
-                    error_message: statsNames.error + screenAndHtml(screenObj, htmlObj),
-                    error_code: 'OTHER_ERROR_1'
+                send: false,
+                response: {
+                    inst_id: id,
+                    error: {
+                        error_message: statsNames.error + screenAndHtml(screenObj, htmlObj),
+                        error_code: 'BUTTON_ERROR'
+                    }
                 }
             }
         }
 
         return {
-            inst_id: id,
-            users: statsNames.result,
+            send: true,
+            response: {
+                inst_id: id,
+                users: statsNames.result,
+            }
         }
 
 
@@ -296,10 +340,13 @@ export async function getFollowers(id: string, browserData: BrowserData): Promis
         const screenObj = await File.screenErrorStats(page)
         const htmlObj = await File.saveHTMLStats(page);
         return {
-            inst_id: id,
-            error: {
-                error_message: e.message + screenAndHtml(screenObj, htmlObj),
-                error_code: 'OTHER_ERROR_1'
+            send: true,
+            response: {
+                inst_id: id,
+                error: {
+                    error_message: e.message + screenAndHtml(screenObj, htmlObj),
+                    error_code: 'OTHER_ERROR_1'
+                }
             }
         }
     }
