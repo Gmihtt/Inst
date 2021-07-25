@@ -1,6 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Types.Domain.Statistic where
+module Types.Domain.Statistics where
 
 import Data.Foldable (toList)
 import Data.Maybe (isJust)
@@ -9,26 +9,26 @@ import Data.Sequence ((|>))
 import qualified Data.Set as Set
 import Data.Text (Text)
 
-data Statistic
-  = Statistic
+data Statistics
+  = Statistics
       { users :: Set.Set Text,
         lastUsers :: Seq.Seq Text
       }
   deriving (Show)
 
-empty :: Statistic
+empty :: Statistics
 empty =
-  Statistic
+  Statistics
     { users = Set.empty,
       lastUsers = Seq.empty
     }
 
-addUser :: Text -> Statistic -> Statistic
-addUser user stat@(Statistic stat_users stat_lastUsers)
+addUser :: Text -> Statistics -> Statistics
+addUser user stat@(Statistics stat_users stat_lastUsers)
   | Set.member user stat_users = stat
   | isJust (Seq.elemIndexL user stat_lastUsers) = stat
   | otherwise =
-    Statistic
+    Statistics
       { users = Set.insert user stat_users,
         lastUsers = fixLastUsers |> user
       }
@@ -38,18 +38,18 @@ addUser user stat@(Statistic stat_users stat_lastUsers)
         then Seq.deleteAt 999 stat_lastUsers
         else stat_lastUsers
 
-getSize :: Statistic -> Int
-getSize Statistic {..} = Set.size users
+getSize :: Statistics -> Int
+getSize Statistics {..} = Set.size users
 
-getLastUsers :: Statistic -> [Text]
-getLastUsers Statistic {..} = toList lastUsers
+getLastUsers :: Statistics -> [Text]
+getLastUsers Statistics {..} = toList lastUsers
 
-isMember :: Text -> Statistic -> Bool
-isMember user Statistic {..} = Set.member user users
+isMember :: Text -> Statistics -> Bool
+isMember user Statistics {..} = Set.member user users
 
-initWithLastUsers :: [Text] -> Statistic
+initWithLastUsers :: [Text] -> Statistics
 initWithLastUsers lastCountUsers =
-  Statistic
+  Statistics
     { users = Set.empty,
       lastUsers = Seq.fromList lastCountUsers
     }

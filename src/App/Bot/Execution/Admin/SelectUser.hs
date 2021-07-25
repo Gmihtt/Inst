@@ -20,7 +20,7 @@ enterTgUsername msg user = do
   Common.updateUserStatus user status
   Message.enterUsername msg
 
-selectByTgUsername :: Message.Message -> User.User -> Text -> Flow (Response Message.Message)
+selectByTgUsername :: Message.Message -> User.User -> TgUser.TgUsername -> Flow (Response Message.Message)
 selectByTgUsername msg user tgUsername = do
   tgUser <-
     Mongo.findTgUserByUsername tgUsername
@@ -28,7 +28,7 @@ selectByTgUsername msg user tgUsername = do
   let instAccs = TgUser.inst_accounts tgUser
   let status = TgUserStatus.TgAdmin TgUserStatus.ShowUser
   Common.updateUserStatus user status
-  Message.showInstAccs msg (map InstAccount.login instAccs)
+  Message.showInstAccs msg (map InstAccount.instUsername instAccs)
   where
     errorMsg =
       "SelectUser.selectByTgUsername fail with tg : "
@@ -42,7 +42,7 @@ enterInstUsername msg user = do
   Common.updateUserStatus user status
   Message.enterUsername msg
 
-selectByInstUsername :: Message.Message -> User.User -> Text -> Flow (Response Message.Message)
+selectByInstUsername :: Message.Message -> User.User -> InstAccount.InstUsername -> Flow (Response Message.Message)
 selectByInstUsername msg user instUsername = do
   tgUser <-
     Mongo.findTgUserByInstUsername instUsername
@@ -50,7 +50,7 @@ selectByInstUsername msg user instUsername = do
   let instAccs = TgUser.inst_accounts tgUser
   let status = TgUserStatus.TgAdmin TgUserStatus.ShowUser
   Common.updateUserStatus user status
-  Message.showInstAccs msg (map InstAccount.login instAccs)
+  Message.showInstAccs msg (map InstAccount.instUsername instAccs)
   where
     errorMsg =
       "SelectUser.selectByInstUsername fail with tg : "

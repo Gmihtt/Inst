@@ -18,59 +18,59 @@ import Prelude hiding (id)
 collectionName :: Text
 collectionName = "accounts"
 
-updateInstAccs :: Text -> TgUser.TgUser -> Flow ()
+updateInstAccs :: TgUser.TgId -> TgUser.TgUser -> Flow ()
 updateInstAccs tgId tgUser = do
-  QMongo.upsert (Mongo.select ["id" =: tgId] collectionName) (Transforms.mkDocByTgUser tgUser)
+  QMongo.upsert (Mongo.select ["id" =: TgUser.id tgId] collectionName) (Transforms.mkDocByTgUser tgUser)
 
-findTgUserById :: Text -> Flow (Maybe TgUser.TgUser)
-findTgUserById tg_id = do
-  res <- QMongo.findOne (Mongo.select ["id" =: tg_id] collectionName)
+findTgUserById :: TgUser.TgId -> Flow (Maybe TgUser.TgUser)
+findTgUserById tgId = do
+  res <- QMongo.findOne (Mongo.select ["id" =: TgUser.id tgId] collectionName)
   pure $ Transforms.mkTgUserByDoc =<< res
 
-findTgUserByUsername :: Text -> Flow (Maybe TgUser.TgUser)
+findTgUserByUsername :: TgUser.TgUsername -> Flow (Maybe TgUser.TgUser)
 findTgUserByUsername tgUsername = do
-  res <- QMongo.findOne (Mongo.select ["username" =: tgUsername] collectionName)
+  res <- QMongo.findOne (Mongo.select ["username" =: TgUser.username tgUsername] collectionName)
   pure $ Transforms.mkTgUserByDoc =<< res
 
-findInstAccsByTgId :: Text -> Flow [InstAccount.InstAccount]
-findInstAccsByTgId tg_id = do
-  tgUser <- findTgUserById tg_id
+findInstAccsByTgId :: TgUser.TgId -> Flow [InstAccount.InstAccount]
+findInstAccsByTgId tgId = do
+  tgUser <- findTgUserById tgId
   pure $ maybe [] TgUser.inst_accounts tgUser
 
-findTgUserByInstUsername :: Text -> Flow (Maybe TgUser.TgUser)
-findTgUserByInstUsername instUsername = do
-  mbUsernames <- QUsernames.findUsernamesByInstUsernames instUsername
+findTgUserByInstUsername :: InstAccount.InstUsername -> Flow (Maybe TgUser.TgUser)
+findTgUserByInstUsername username = do
+  mbUsernames <- QUsernames.findUsernamesByInstUsernames username
   case Usernames.tgId <$> mbUsernames of
     Nothing -> pure Nothing
     Just tgId -> findTgUserById tgId
 
-findInstAccountByLogin :: Text -> Text -> Flow (Maybe InstAccount.InstAccount)
-findInstAccountByLogin tg_id login = do
-  instAccs <- findInstAccsByTgId tg_id
-  pure $ List.find ((login ==) . InstAccount.login) instAccs
+findInstAccountByLogin :: TgUser.TgId -> InstAccount.InstUsername -> Flow (Maybe InstAccount.InstAccount)
+findInstAccountByLogin tgId instUsername = do
+  instAccs <- findInstAccsByTgId tgId
+  pure $ List.find ((instUsername ==) . InstAccount.instUsername) instAccs
 
-findInstAccountByInstId :: Text -> Text -> Flow (Maybe InstAccount.InstAccount)
-findInstAccountByInstId tg_id instId = do
-  instAccs <- findInstAccsByTgId tg_id
-  pure $ List.find ((instId ==) . InstAccount.id) instAccs
+findInstAccountByInstId :: TgUser.TgId -> InstAccount.InstId -> Flow (Maybe InstAccount.InstAccount)
+findInstAccountByInstId tgId instId = do
+  instAccs <- findInstAccsByTgId tgId
+  pure $ List.find ((instId ==) . InstAccount.instId) instAccs
 
-deleteInstAccount :: Text -> Text -> Flow ()
-deleteInstAccount tg_id login = do
-  mbTgUser <- findTgUserById tg_id
-  QUsernames.deleteUsernames login
+deleteInstAccount :: TgUser.TgId -> InstAccount.InstUsername -> Flow ()
+deleteInstAccount tgId username = do
+  mbTgUser <- findTgUserById tgId
+  QUsernames.deleteUsernames username
   case mbTgUser of
     Nothing -> pure ()
     Just tgUser -> do
       let instAccs = TgUser.inst_accounts tgUser
       let newTgUser = tgUser {TgUser.inst_accounts = deleteInstAcc instAccs}
-      updateInstAccs tg_id newTgUser
+      updateInstAccs tgId newTgUser
   where
     deleteInstAcc [] = []
     deleteInstAcc (instAcc : accs) =
-      if InstAccount.login instAcc == login
+      if InstAccount.instUsername instAcc == username
         then accs
         else instAcc : deleteInstAcc accs
 
-deleteTgUser :: Text -> Flow ()
-deleteTgUser tg_id = do
-  QMongo.deleteOne (Mongo.select ["id" =: tg_id] collectionName)
+deleteTgUser :: TgUser.TgId -> Flow ()
+deleteTgUser tgId = do
+  QMongo.deleteOne (Mongo.select ["id" =: TgUser.id tgId] collectionName)

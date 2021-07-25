@@ -14,10 +14,10 @@ import qualified Types.Domain.InstAccount as InstAccount
 backToListAccounts :: Message.Message -> User.User -> Flow (Response Message.Message)
 backToListAccounts msg user = do
   Common.setListOfAccounts user
-  instAccs <- Common.getInstAccs (User.id user)
-  Messages.showInstAccs msg (map InstAccount.login instAccs)
+  instAccs <- Common.getInstAccsByTgUserId (User.id user)
+  Messages.showInstAccs msg (map InstAccount.instUsername instAccs)
 
-backToAccountMenu :: Message.Message -> User.User -> Text -> Flow (Response Message.Message)
+backToAccountMenu :: Message.Message -> User.User -> InstAccount.InstId -> Flow (Response Message.Message)
 backToAccountMenu msg user instId = do
   Common.setAccountMenu user instId
   Message.accountMenu msg

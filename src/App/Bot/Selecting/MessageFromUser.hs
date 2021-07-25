@@ -5,11 +5,11 @@ module App.Bot.Selecting.MessageFromUser where
 import qualified App.Bot.Execution.Admin.ShowUser as Admin
 import qualified App.Bot.Execution.Users.Login as Login
 import qualified App.Bot.Messages.FlowMessages as Messages
-import qualified Communication.Scripts.Statistics.API as StatAPI
 import qualified Common.Environment as Environment
 import Common.Flow (Flow, getEnvironment)
 import qualified Common.Redis as Common
 import qualified Common.TelegramUserStatus as Common
+import qualified Communication.Scripts.Statistics.API as StatAPI
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
@@ -20,6 +20,7 @@ import qualified Telegram.Types.Domain.User as User
 import qualified Types.Communication.Scripts.Statistics.Request as RequestStat
 import qualified Types.Domain.InstAccount as InstAccount
 import qualified Types.Domain.Status.TgUserStatus as TgUserStatus
+import qualified Types.Domain.TgUser as TgUser
 
 messageFromUser :: Message.Message -> Flow (Response Message.Message)
 messageFromUser msg = do
@@ -48,10 +49,10 @@ checkStatus msg user = do
       Messages.mainMenu msg
     reboot = do
       env <- getEnvironment
-      let statManager = Environment.statisticsManager env
-      let uId = T.pack $ show userId
+      let handler = Environment.statisticsMessagesHandler env
+      let uId = TgUser.TgId . T.pack $ show userId
       instAccs <- Mongo.findInstAccsByTgId uId
-      liftIO $ mapM (StatAPI.sendMsg statManager . RequestStat.mkLogoutReq . InstAccount.id) instAccs
+      liftIO $ mapM (StatAPI.sendMsg handler . RequestStat.mkLogoutReq . InstAccount.id . InstAccount.instId) instAccs
       Common.dropInstAccs userId
       Mongo.deleteTgUser uId
       setMainMenu
@@ -61,7 +62,7 @@ choseAction :: Message.Message -> User.User -> TgUserStatus.TgUserStatus -> Flow
 choseAction _ _ (TgUserStatus.TgAdmin status) = undefined
 choseAction msg user (TgUserStatus.TgUser status) =
   case status of
-    TgUserStatus.AddAccountLogin -> Login.login msg user text
+    TgUserStatus.AddAccountLogin -> Login.login msg user (InstAccount.InstUsername text)
     TgUserStatus.AddAccountPassword username -> do
       if T.length text > 5
         then Login.password msg user username text

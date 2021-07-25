@@ -11,12 +11,12 @@ module Common.Config
 where
 
 import Common.Error (throwConfigErr)
-import Types.Domain.Socket (Socket, mkSocket)
 import Control.Monad.Cont (liftIO)
 import Data.Aeson (FromJSON)
 import Data.Text (Text, unpack)
 import qualified Data.Yaml as Yaml
 import Data.Yaml ((.:))
+import Types.Domain.Socket (Socket, mkSocket)
 
 getValue :: FromJSON a => Text -> IO a
 getValue field = do

@@ -10,8 +10,8 @@ import Servant.Client
 callTelegram :: ClientM a -> Flow a
 callTelegram method = do
   env <- getEnvironment
-  let eManager = Environment.manager env
-  res <- liftIO $ runClientM method (mkClientEnv eManager (BaseUrl Https "api.telegram.org" 443 ""))
+  let manager = Environment.telegramManager env
+  res <- liftIO $ runClientM method (mkClientEnv manager (BaseUrl Https "api.telegram.org" 443 ""))
   either (tryCallAgain method) pure res
 
 tryCallAgain :: ClientM a -> ClientError -> Flow a

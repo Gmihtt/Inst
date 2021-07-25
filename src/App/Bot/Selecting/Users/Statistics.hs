@@ -11,8 +11,9 @@ import Data.Text (Text)
 import Telegram.Types.Communication.Response (Response (..))
 import qualified Telegram.Types.Domain.CallbackQuery as CallbackQuery
 import Telegram.Types.Domain.Message (Message)
+import qualified Types.Domain.InstAccount as InstAccount
 
-statistics :: CallbackQuery.CallbackQuery -> Message -> Text -> Flow (Response Message)
+statistics :: CallbackQuery.CallbackQuery -> Message -> InstAccount.InstId -> Flow (Response Message)
 statistics callBack msg instId =
   case CallbackQuery.callback_data callBack of
     "Current" -> GetStatistics.oneStatistics msg user instId

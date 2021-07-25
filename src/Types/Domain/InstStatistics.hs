@@ -14,11 +14,12 @@ import Data.Text (Text)
 import Data.Time (UTCTime (..))
 import Data.Time.Calendar (diffDays)
 import GHC.Generics (Generic)
+import qualified Types.Domain.InstAccount as InstAccount
 import Prelude hiding (id)
 
 data InstStatistics
   = InstStatistics
-      { id :: Text,
+      { id :: InstAccount.InstId,
         statistics :: Statistics,
         lastCountUsers :: [Text]
       }
@@ -48,8 +49,11 @@ instance FromJSON Statistic where
 mkStatistic :: Int32 -> UTCTime -> Statistic
 mkStatistic count finish = Statistic {..}
 
-mkInstStatistics :: Text -> Statistics -> [Text] -> InstStatistics
-mkInstStatistics id statistics lastCountUsers = InstStatistics {..}
+mkInstStatistics :: InstAccount.InstId -> Statistics -> [Text] -> InstStatistics
+mkInstStatistics id statistics lastCountUsers =
+  InstStatistics
+    { ..
+    }
 
 addStatistic :: InstStatistics -> Statistic -> InstStatistics
 addStatistic InstStatistics {..} stat =

@@ -44,6 +44,7 @@ import qualified Data.Text as Text
 import Telegram.API.Methods.SendMessage (sendMessage)
 import Telegram.Types.Communication.Response (Response (..))
 import Telegram.Types.Domain.Message (Message)
+import qualified Types.Domain.InstAccount as InstAccount
 
 mainMenu :: Message -> Flow (Response Message)
 mainMenu msg = sendMessage (Just Keyboard.mainMenuKeyboard) (Messages.mainMenu msg)
@@ -80,10 +81,10 @@ sendStat :: Message -> Int -> Flow (Response Message)
 sendStat msg stat = do
   sendMessage Nothing (Messages.stat msg stat)
 
-showInstAccs :: Message -> [Text] -> Flow (Response Message)
-showInstAccs msg instAccs =
+showInstAccs :: Message -> [InstAccount.InstUsername] -> Flow (Response Message)
+showInstAccs msg instUsernames =
   sendMessage
-    (Just $ Keyboard.instAccsKeyboard instAccs)
+    (Just $ Keyboard.instAccsKeyboard $ InstAccount.username <$> instUsernames)
     (Messages.showInstAccs msg)
 
 strangeMessage :: Message -> Flow (Response Message)
