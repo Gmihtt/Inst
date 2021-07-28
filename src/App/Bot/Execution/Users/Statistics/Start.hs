@@ -59,4 +59,4 @@ sendStartMsg user instId = do
       >>= maybe (liftIO $ throwLogicError errMsg) pure
   liftIO $ API.sendMsg handler (RequestStat.mkStartReq (InstAccount.id instId))
   where
-    errMsg = "Start.start instAccount don't find by instId: " ++ show instId ++ " for user: " ++ show user
+    errMsg = "Start.start instAccount wasn't find by instId: " ++ show instId ++ " for user: " ++ show user

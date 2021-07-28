@@ -15,18 +15,18 @@ import Prelude hiding (id)
 
 mkDocByTgUser :: TgUser.TgUser -> Document
 mkDocByTgUser TgUser.TgUser {..} =
-  [ "tgId" =: String (TgUser.id tgId),
+  [ "id" =: String (TgUser.id tgId),
     "first_name" =: String first_name,
-    "tgUsername" =: String (maybe "" TgUser.username tgUsername),
+    "username" =: String (maybe "" TgUser.username tgUsername),
     "inst_accounts" =: mkDocsByInstAccs inst_accounts
   ]
 
 mkTgUserByDoc :: Document -> Maybe TgUser.TgUser
 mkTgUserByDoc doc = do
-  id <- doc !? "tgId"
+  id <- doc !? "id"
   let tgId = TgUser.TgId id
   first_name <- doc !? "first_name"
-  let tgUsername = TgUser.TgUsername <$> doc !? "tgUsername"
+  let tgUsername = TgUser.TgUsername <$> doc !? "username"
   doc_inst_account <- doc !? "inst_accounts"
   let inst_accounts = mkInstAccsByDocs doc_inst_account
   pure $ TgUser.TgUser {..}
