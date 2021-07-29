@@ -114,7 +114,7 @@ export async function getFollowers(id: string, browserData: BrowserData): Promis
     const page = browserData.page;
     try {
         await page.goto('https://www.instagram.com/');
-        await page.waitForTimeout(Random.getRandomDelay(5000, 30));
+        await page.waitForTimeout(Random.getRandomDelay(10000, 30));
 
         if (!(await isUserLoggedInInst(page))) {
             let screenObj = await File.screenErrorStats(page);
