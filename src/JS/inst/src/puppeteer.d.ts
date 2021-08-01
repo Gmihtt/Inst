@@ -50,6 +50,8 @@ declare module "puppeteer" {
         waitForSelector(selector: string, options?: any): Promise<any>;
 
         setViewport(viewport: Viewport): Promise<void>;
+
+        reload(any): Promise<any>;
     }
 
     interface HTTPResponse {

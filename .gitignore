@@ -10,3 +10,4 @@ logging.log
 configs/config.yaml
 docker-compose.yml
 Inst_key.pem
+mediumInstServer.pem
