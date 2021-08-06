@@ -200,6 +200,14 @@ export class Login {
     private async loginAction(data: UserData): Promise<void> {
         await this.page.goto('https://www.instagram.com/accounts/login/');
 
+        console.log('before load');
+
+        await this.page.waitForNavigation({
+            waitUntil: "load"
+        });
+        
+        console.log('after Load');
+
         await this.clickAcceptCookies();
 
         await this.fillInputsAndSubmit(data.username, data.code);
