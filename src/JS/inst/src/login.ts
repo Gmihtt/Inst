@@ -200,19 +200,12 @@ export class Login {
     private async loginAction(data: UserData): Promise<void> {
         await this.page.goto('https://www.instagram.com/accounts/login/');
 
-        console.log('before load');
+        await this.page.waitForSelector('[name=username]');
 
-        await this.page.waitForNavigation({
-            waitUntil: "load"
-        });
-        
-        console.log('after Load');
-
+        // I'm not sure that this part occures
         await this.clickAcceptCookies();
 
         await this.fillInputsAndSubmit(data.username, data.code);
-
-        await this.page.waitForTimeout(Random.getRandomDelay(5000, 30));
     }
 
     public async doubleAuth(username: string, code: string): Promise<LoginResponse> {
@@ -318,7 +311,7 @@ export class Login {
     private async clickAcceptCookies(): Promise<void> {
 
         await this.page.addScriptTag({path: require.resolve('jquery')});
-
+        
         await this.page.evaluate(() => {
             $('button:contains("Accept")').addClass('cookiesAcceptInst');
             $('button:contains("Принять")').addClass('cookiesAcceptInst');
@@ -360,8 +353,15 @@ export class Login {
 
 
 
-    private async isDoubleAuth() {
-        return await this.page.$('#verificationCodeDescription') != null;
+    private async isDoubleAuth(): Promise<boolean> {
+        try {
+            this.page.waitForSelector('#verificationCodeDescription',{
+                timeout: 10000
+            });
+            return true;
+        } catch (e){
+            return false;
+        }
     }
 
     private async checkUnusualPlace() {
@@ -406,7 +406,7 @@ export class Login {
 
 
     private async fillInputsAndSubmit(username: string, password: string) {
-        await this.page.waitForSelector('[name=username]');
+    
         await this.page.type('[name=username]', username, {
             delay: Random.getRandomDelay(150, 30),
         });

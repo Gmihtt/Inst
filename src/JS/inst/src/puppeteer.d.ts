@@ -1,3 +1,5 @@
+import { ElementHandle } from "puppeteer";
+
 declare module "puppeteer" {
     //import {Serializable} from "puppeteer/lib/cjs/puppeteer/common/EvalTypes";
 
@@ -47,7 +49,8 @@ declare module "puppeteer" {
 
         waitForNavigation(options?: any): Promise<HTTPResponse>;
 
-        waitForSelector(selector: string, options?: any): Promise<any>;
+        waitForSelector(selector: string, options?: object): Promise<?ElementHandle>
+
 
         setViewport(viewport: Viewport): Promise<void>;
 
